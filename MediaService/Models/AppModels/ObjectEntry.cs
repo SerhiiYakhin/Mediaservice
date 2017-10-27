@@ -1,21 +1,17 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using MediaService.Models.AspNetModels;
 
 namespace MediaService.Models.AppModels
 {
-    public partial class Object
+    public abstract class ObjectEntry
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Object()
-        {
-            Tags = new HashSet<Tag>();
-            AspNetUsers = new HashSet<AspNetUser>();
-        }
+        public ObjectEntry() => Owners = new HashSet<ApplicationUser>();
 
-        public int ObjectId { get; set; }
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity), Column("ObjectEntryId")]
+        public Guid Id { get; set; }
 
         public int ParentId { get; set; }
 
@@ -23,20 +19,21 @@ namespace MediaService.Models.AppModels
         [StringLength(50)]
         public string Name { get; set; }
 
-        [Required]
-        [StringLength(20)]
+        [StringLength(30)]
         public string Discriminator { get; set; }
 
+        [Required]
         public long Size { get; set; }
 
-        public short NodeLevel { get; set; }
-
+        [Required]
         [Column(TypeName = "datetime2")]
         public DateTime Created { get; set; }
 
+        [Required]
         [Column(TypeName = "datetime2")]
         public DateTime Downloaded { get; set; }
 
+        [Required]
         [Column(TypeName = "datetime2")]
         public DateTime Modified { get; set; }
 
@@ -44,9 +41,6 @@ namespace MediaService.Models.AppModels
         public string Thumbnail { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Tag> Tags { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<AspNetUser> AspNetUsers { get; set; }
+        public virtual ICollection<ApplicationUser> Owners { get; set; }
     }
 }

@@ -6,7 +6,7 @@
     <ProductVersion>
     </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{F61C0251-702C-42A9-A84C-633C8EC41039}</ProjectGuid>
+    <ProjectGuid>{8B60080C-8794-43A3-838A-06377039C7AC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MS.Tests</RootNamespace>
@@ -100,7 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MediaService\MediaService.csproj">
-      <Project>{A0AE056D-6A46-45DF-A647-7FF6794FD504}</Project>
+      <Project>{E6A94637-D6FE-4011-BA5B-59EF406CF56B}</Project>
       <Name>MediaService</Name>
     </ProjectReference>
   </ItemGroup>

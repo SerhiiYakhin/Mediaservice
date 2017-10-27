@@ -6,7 +6,6 @@ using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
 using Owin;
 using MediaService.Models;
-using MediaService.Models.AccountModels;
 
 namespace MediaService
 {
