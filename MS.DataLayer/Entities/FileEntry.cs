@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MediaService.Models.AppModels
+namespace MS.DataLayer.Entities
 {
     public sealed class FileEntry : ObjectEntry
     {

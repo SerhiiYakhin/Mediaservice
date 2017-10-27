@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using MS.DataLayer.Identity;
 
-namespace MediaService.Models.AppModels
+namespace MS.DataLayer.Entities
 {
     public abstract class ObjectEntry
     {

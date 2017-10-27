@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MediaService.Models.AppModels
+namespace MS.DataLayer.Entities
 {
     public sealed class DirectoryEntry : ObjectEntry
     {
