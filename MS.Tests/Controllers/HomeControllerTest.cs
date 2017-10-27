@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MediaService.Controllers;
 
-namespace MediaService.Tests.Controllers
+namespace MS.Tests.Controllers
 {
     [TestClass]
     public class HomeControllerTest
