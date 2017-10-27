@@ -2,7 +2,7 @@
     [ObjectEntryId] UNIQUEIDENTIFIER DEFAULT (newsequentialid()) NOT NULL,
     [ParentId]      INT              NOT NULL,
     [Name]          NVARCHAR (50)    NOT NULL,
-    [Discriminator] NVARCHAR (30)    NOT NULL,
+    [Discriminator] NVARCHAR (15)    NOT NULL,
     [Size]          BIGINT           NOT NULL,
     [Created]       DATETIME2 (7)    NOT NULL,
     [Downloaded]    DATETIME2 (7)    NOT NULL,

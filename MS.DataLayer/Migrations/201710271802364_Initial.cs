@@ -1,8 +1,9 @@
-using System.Data.Entity.Migrations;
-
 namespace MS.DataLayer.Migrations
 {
-    public partial class init : DbMigration
+    using System;
+    using System.Data.Entity.Migrations;
+    
+    public partial class Initial : DbMigration
     {
         public override void Up()
         {
@@ -13,7 +14,7 @@ namespace MS.DataLayer.Migrations
                         ObjectEntryId = c.Guid(nullable: false, identity: true),
                         ParentId = c.Int(nullable: false),
                         Name = c.String(nullable: false, maxLength: 50),
-                        Discriminator = c.String(nullable: false, maxLength: 30),
+                        Discriminator = c.String(nullable: false, maxLength: 15),
                         Size = c.Long(nullable: false),
                         Created = c.DateTime(nullable: false, precision: 7, storeType: "datetime2"),
                         Downloaded = c.DateTime(nullable: false, precision: 7, storeType: "datetime2"),

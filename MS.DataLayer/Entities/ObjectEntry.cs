@@ -20,7 +20,7 @@ namespace MS.DataLayer.Entities
         [StringLength(50)]
         public string Name { get; set; }
 
-        [StringLength(30)]
+        [StringLength(15)]
         public string Discriminator { get; set; }
 
         [Required]
