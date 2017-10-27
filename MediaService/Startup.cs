@@ -1,7 +1,7 @@
 ﻿using Microsoft.Owin;
 using Owin;
 
-[assembly: OwinStartupAttribute(typeof(MediaService.Startup))]
+[assembly: OwinStartup(typeof(MediaService.Startup))]
 namespace MediaService
 {
     public partial class Startup

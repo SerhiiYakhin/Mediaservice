@@ -59,6 +59,11 @@
     <Compile Include="Entities\Tag.cs" />
     <Compile Include="Identity\ApplicationDbContext.cs" />
     <Compile Include="Identity\ApplicationUser.cs" />
+    <Compile Include="Migrations\201710271159089_init.cs" />
+    <Compile Include="Migrations\201710271159089_init.Designer.cs">
+      <DependentUpon>201710271159089_init.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -67,6 +72,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Repositories\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201710271159089_init.resx">
+      <DependentUpon>201710271159089_init.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
