@@ -6,36 +6,32 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using MediaService.Models.AccountViewModels;
-using MS.DataLayer.Identity;
+using MS.BusinessLayer.Interfaces;
 
 namespace MediaService.Controllers
 {
     [Authorize]
     public class AccountController : Controller
     {
-        private ApplicationSignInManager _signInManager;
-        private ApplicationUserManager _userManager;
+        private IUserService _userService;
+        private ISignInService _signInService;
 
-        public AccountController()
+        public AccountController(IUserService userService, ISignInService signInService)
         {
+            _userService = userService;
+            _signInService = signInService;
         }
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
+        private IUserService UserService
         {
-            UserManager = userManager;
-            SignInManager = signInManager;
+            get => _userService ?? HttpContext.GetOwinContext().Get<IUserService>();
+            set => _userService = value;
         }
 
-        public ApplicationSignInManager SignInManager
+        private ISignInService SignInService
         {
-            get => _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
-            private set => _signInManager = value;
-        }
-
-        public ApplicationUserManager UserManager
-        {
-            get => _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            private set => _userManager = value;
+            get => _signInService ?? HttpContext.GetOwinContext().Get<ISignInService>();
+            set => _signInService = value;
         }
 
         //
@@ -61,7 +57,8 @@ namespace MediaService.Controllers
 
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, shouldLockout: false);
+            var result = await SignInService.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+            //var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
                 case SignInStatus.Success:

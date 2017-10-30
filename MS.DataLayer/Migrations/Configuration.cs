@@ -1,3 +1,5 @@
+using MS.DataLayer.EF;
+
 namespace MS.DataLayer.Migrations
 {
     using System;
@@ -5,14 +7,14 @@ namespace MS.DataLayer.Migrations
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<MS.DataLayer.Identity.ApplicationDbContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<ApplicationContext>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
         }
 
-        protected override void Seed(MS.DataLayer.Identity.ApplicationDbContext context)
+        protected override void Seed(ApplicationContext context)
         {
             //  This method will be called after migrating to the latest version.
 

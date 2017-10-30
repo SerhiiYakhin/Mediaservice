@@ -1,18 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
-using MS.DataLayer.Entities;
+using System.Collections.Generic;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 
-namespace MS.DataLayer.Identity
+namespace MS.DataLayer.Entities
 {
-    public sealed class ApplicationUser : IdentityUser
+    public class ApplicationUser : IdentityUser
     {
-        public ApplicationUser()
-        {
-            ObjectEntries = new HashSet<ObjectEntry>();
-        }
+        public ApplicationUser() => ObjectEntries = new HashSet<ObjectEntry>();
+
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
@@ -20,6 +17,8 @@ namespace MS.DataLayer.Identity
             // Add custom user claims here
             return userIdentity;
         }
+
+        public virtual UserProfile ClientProfile { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public ICollection<ObjectEntry> ObjectEntries { get; set; }
