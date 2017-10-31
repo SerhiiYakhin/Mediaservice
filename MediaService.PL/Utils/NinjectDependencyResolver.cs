@@ -15,9 +15,8 @@ namespace MediaService.PL.Utils
         public NinjectDependencyResolver(IKernel kernelParam)
         {
             _kernel = kernelParam;
-            //todo: fix this werid hack (check clien model validation)
-            _kernel.Unbind<ModelValidatorProvider>();
-            //_kernel.Rebind<ModelValidatorProvider>().To<AttributeValidatorProvider>();
+            //todo: fix this weird hack (check client model validation)
+            //_kernel.Rebind<ModelValidatorProvider>().To<DataAnnotationsModelValidatorProvider>();
             AddBindings();
         }
 
@@ -33,29 +32,6 @@ namespace MediaService.PL.Utils
 
             _kernel.Bind<ITagService>().To<TagService>();
             _kernel.Bind<IUserService>().To<UserService>();
-
-            //_kernel.Load(Assembly.GetExecutingAssembly());
-
-            //_kernel.Bind<ApplicationDbContext>().ToSelf().InRequestScope();
-            //_kernel.Bind<IUserStore<ApplicationUser>>().To<ApplicationUserStore>();
-            //_kernel.Bind<ApplicationUserManager>().ToSelf();
-            //_kernel.Bind<ApplicationSignInManager>().ToSelf();
-            //_kernel.Bind<IAuthenticationManager>().ToMethod(x => HttpContext.Current.GetOwinContext().Authentication);
-            //_kernel.Bind<IDataProtectionProvider>().ToMethod(x => _app.GetDataProtectionProvider());
-
-
-            //_kernel.Bind<IUserStore<ApplicationUser>>().To<UserStore<ApplicationUser>>();
-            //_kernel.Bind<UserManager<ApplicationUser>>().ToSelf();
-
-            //_kernel.Bind<HttpContextBase>().ToMethod(ctx => new HttpContextWrapper(HttpContext.Current)).InTransientScope();
-
-            //_kernel.Bind<ApplicationSignInManager>().ToMethod((context) =>
-            //{
-            //    var cbase = new HttpContextWrapper(HttpContext.Current);
-            //    return cbase.GetOwinContext().Get<ApplicationSignInManager>();
-            //});
-
-            //_kernel.Bind<ApplicationUserManager>().ToSelf();
         }
     }
 }

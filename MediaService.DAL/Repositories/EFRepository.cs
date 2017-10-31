@@ -28,7 +28,6 @@ namespace MediaService.DAL.Repositories
 
         public Task<List<TEntity>> GetAsync(Expression<Func<TEntity, bool>> predicate)
         {
-
             return _dbSet.AsNoTracking().Where(predicate).ToListAsync();
         }
 
