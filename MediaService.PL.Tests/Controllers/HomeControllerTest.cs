@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MediaService.PL;
 using MediaService.PL.Controllers;
 
 namespace MediaService.PL.Tests.Controllers
@@ -35,7 +30,7 @@ namespace MediaService.PL.Tests.Controllers
             ViewResult result = controller.About() as ViewResult;
 
             // Assert
-            Assert.AreEqual("Your application description page.", result.ViewBag.Message);
+            Assert.AreEqual("Your application description page.", result?.ViewBag.Message);
         }
 
         [TestMethod]

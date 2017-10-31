@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace MediaService.DAL.Interfaces
 {
@@ -11,7 +13,9 @@ namespace MediaService.DAL.Interfaces
 
         IEnumerable<TEntity> Get();
 
-        IEnumerable<TEntity> Get(Func<TEntity, bool> predicate);
+        IEnumerable<TEntity> Get(Expression<Func<TEntity, bool>> predicate);
+
+        Task<List<TEntity>> GetAsync(Expression<Func<TEntity, bool>> predicate);
 
         void Remove(TEntity item);
 

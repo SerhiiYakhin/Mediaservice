@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using MediaService.DAL.Interfaces;
 
 namespace MediaService.DAL.Repositories
@@ -19,9 +21,15 @@ namespace MediaService.DAL.Repositories
 
         public IEnumerable<TEntity> Get() => _dbSet.AsNoTracking().ToList();
 
-        public IEnumerable<TEntity> Get(Func<TEntity, bool> predicate)
+        public IEnumerable<TEntity> Get(Expression<Func<TEntity, bool>> predicate)
         {
             return _dbSet.AsNoTracking().Where(predicate).ToList();
+        }
+
+        public Task<List<TEntity>> GetAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+
+            return _dbSet.AsNoTracking().Where(predicate).ToListAsync();
         }
 
         public TEntity FindById(int id) => _dbSet.Find(id);

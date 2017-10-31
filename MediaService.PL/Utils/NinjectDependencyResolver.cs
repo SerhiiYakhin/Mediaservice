@@ -15,6 +15,9 @@ namespace MediaService.PL.Utils
         public NinjectDependencyResolver(IKernel kernelParam)
         {
             _kernel = kernelParam;
+            //todo: fix this werid hack (check clien model validation)
+            _kernel.Unbind<ModelValidatorProvider>();
+            //_kernel.Rebind<ModelValidatorProvider>().To<AttributeValidatorProvider>();
             AddBindings();
         }
 
@@ -28,8 +31,8 @@ namespace MediaService.PL.Utils
             _kernel.Bind<IObjectService<FileEntryDto>>().To<ObjectService<FileEntryDto>>();
             _kernel.Bind<IObjectService<DirectoryEntryDto>>().To<ObjectService<DirectoryEntryDto>>();
 
-            _kernel.Bind<ITagService>().To<ITagService>();
-            _kernel.Bind<IUserService>().To<IUserService>();
+            _kernel.Bind<ITagService>().To<TagService>();
+            _kernel.Bind<IUserService>().To<UserService>();
 
             //_kernel.Load(Assembly.GetExecutingAssembly());
 

@@ -25,7 +25,6 @@ namespace MediaService.PL.Controllers
 
         public AccountController()
         {
-            _userService = (IUserService) DependencyResolver.Current.GetService(typeof(IUserService));
         }
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager, IUserService userService)
@@ -35,22 +34,22 @@ namespace MediaService.PL.Controllers
             _userService = userService;
         }
 
-        public ApplicationSignInManager SignInManager
+        private ApplicationSignInManager SignInManager
         {
             get => _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
-            private set => _signInManager = value;
+            set => _signInManager = value;
         }
 
-        public ApplicationUserManager UserManager
+        private ApplicationUserManager UserManager
         {
             get => _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            private set => _userManager = value;
+            set => _userManager = value;
         }
 
-        public IUserService UserService
+        private IUserService UserService
         {
             get => _userService ?? HttpContext.GetOwinContext().GetUserManager<IUserService>();
-            private set => _userService = value;
+            set => _userService = value;
         }
 
         //
@@ -84,8 +83,7 @@ namespace MediaService.PL.Controllers
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
-                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
-                case SignInStatus.Failure:
+                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, model.RememberMe });
                 default:
                     ModelState.AddModelError("", "Invalid login attempt.");
                     return View(model);
@@ -130,7 +128,6 @@ namespace MediaService.PL.Controllers
                     return RedirectToLocal(model.ReturnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
-                case SignInStatus.Failure:
                 default:
                     ModelState.AddModelError("", "Invalid code.");
                     return View(model);
@@ -149,7 +146,7 @@ namespace MediaService.PL.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
-            if (UserService.UserExist(u => u.Nickname.Equals(model.Nickname)))
+            if (UserService.GetUserByNick(model.Nickname) != null)
             {
                 ModelState.AddModelError("Nickname", "User with that Nickname is already exist");
             }
@@ -322,7 +319,7 @@ namespace MediaService.PL.Controllers
                 return View("Error");
             }
 
-            return RedirectToAction("VerifyCode", new { Provider = model.SelectedProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
+            return RedirectToAction("VerifyCode", new { Provider = model.SelectedProvider, model.ReturnUrl, model.RememberMe });
         }
 
         //
@@ -348,7 +345,6 @@ namespace MediaService.PL.Controllers
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
                     return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = false });
-                case SignInStatus.Failure:
                 default:
                     // If the user does not have an account, then prompt the user to create an account
                     ViewBag.ReturnUrl = returnUrl;

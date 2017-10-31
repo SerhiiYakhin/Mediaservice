@@ -8,7 +8,7 @@ using MediaService.DAL.Interfaces;
 
 namespace MediaService.BLL.Services
 {
-    class TagService : ITagService
+    public class TagService : ITagService
     {
         private IUnitOfWork Database { get; }
 

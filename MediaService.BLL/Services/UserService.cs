@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediaService.BLL.DTO;
@@ -11,7 +12,7 @@ using MediaService.DAL.Interfaces;
 
 namespace MediaService.BLL.Services
 {
-    class UserService : IUserService
+    public class UserService : IUserService
     {
         private IUnitOfWork Database { get; }
 
@@ -19,20 +20,29 @@ namespace MediaService.BLL.Services
         
         public void Dispose() => Database.Dispose();
 
+        public bool UserExist(Expression<Func<UserDto, bool>> predicate)
+        {
+            Mapper.Initialize(cfg => cfg.CreateMap<Expression<Func<UserDto, bool>>, Expression<Func<UserProfile, bool>>>());
+            var userPredicate = Mapper.Map<Expression<Func<UserDto, bool>>, Expression<Func<UserProfile, bool>>>(predicate);
+
+            return Database.Users.Get(userPredicate).Any();
+        }
+
         public UserDto GetUserById(string id)
         {
             throw new NotImplementedException();
         }
 
-        public bool UserExist(Func<UserDto, bool> predicate)
+        public UserDto GetUserByNick(string nickName)
         {
-            Mapper.Initialize(cfg => cfg.CreateMap<Func<UserDto, bool>, Func<UserProfile, bool>>());
-            var userPredicate = Mapper.Map<Func<UserDto, bool>, Func<UserProfile, bool>>(predicate);
+            Mapper.Initialize(cfg => cfg.CreateMap<UserProfile, UserDto>());
 
-            return Database.Users.Get(userPredicate).Any();
+            var user = Database.Users.Get(u => u.Nickname.Equals(nickName)).SingleOrDefault();
+
+            return Mapper.Map<UserProfile, UserDto>(user);
         }
 
-        public IEnumerable<UserDto> GetUsers(Predicate<UserDto> predicate)
+        public IEnumerable<UserDto> GetUsers(Expression<Func<UserDto, bool>> predicate)
         {
             throw new NotImplementedException();
         }
@@ -44,7 +54,12 @@ namespace MediaService.BLL.Services
 
         public void CreateUser(UserDto userDto)
         {
-            throw new NotImplementedException();
+            Mapper.Initialize(cfg => cfg.CreateMap<UserDto, UserProfile>());
+
+            var user = Mapper.Map<UserDto, UserProfile>(userDto);
+
+            Database.Users.Create(user);
+            Database.SaveAsync();
         }
 
         public void DeleteUser(UserDto userDto)
@@ -57,7 +72,12 @@ namespace MediaService.BLL.Services
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<UserDto>> GetUsersAsync(Predicate<UserDto> predicate)
+        public Task<UserDto> GetUserByNickAsync(string nickName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<UserDto>> GetUsersAsync(Expression<Func<UserDto, bool>> predicate)
         {
             throw new NotImplementedException();
         }
@@ -70,6 +90,7 @@ namespace MediaService.BLL.Services
         public Task CreateUserAsync(UserDto userDto)
         {
             Mapper.Initialize(cfg => cfg.CreateMap<UserDto, UserProfile>());
+
             var user = Mapper.Map<UserDto, UserProfile>(userDto);
 
             Database.Users.Create(user);
