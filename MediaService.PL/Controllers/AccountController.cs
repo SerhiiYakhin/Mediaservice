@@ -6,7 +6,7 @@ using Microsoft.Owin.Security;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 
-using AutoMapper;
+using static MediaService.PL.Utils.MapperModule;
 
 using MediaService.BLL.DTO;
 using MediaService.BLL.Interfaces;
@@ -160,7 +160,6 @@ namespace MediaService.PL.Controllers
 
                     if (result.Succeeded)
                     {
-                        Mapper.Initialize(cfg => cfg.CreateMap<RegisterViewModel, UserDto>());
                         var userProfile = Mapper.Map<RegisterViewModel, UserDto>(model);
                         userProfile.Id = user.Id;
 

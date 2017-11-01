@@ -13,8 +13,6 @@ namespace MediaService.PL
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            //ModelValidatorProviders.Providers.Clear();
-            //ModelValidatorProviders.Providers.Add(new DataAnnotationsModelValidatorProvider());
         }
     }
 }

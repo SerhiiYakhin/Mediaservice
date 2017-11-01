@@ -82,6 +82,7 @@
     <Compile Include="DTO\ObjectEntryDto.cs" />
     <Compile Include="DTO\TagDto.cs" />
     <Compile Include="DTO\UserDto.cs" />
+    <Compile Include="Infrastructure\MapperModule.cs" />
     <Compile Include="Infrastructure\OperationDetails.cs" />
     <Compile Include="Infrastructure\ServiceModule.cs" />
     <Compile Include="Infrastructure\ValidationException.cs" />

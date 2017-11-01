@@ -18,7 +18,6 @@ namespace MediaService.PL
         // For more information on configuring authentication, please visit https://go.microsoft.com/fwlink/?LinkId=301864
         private void ConfigureAuth(IAppBuilder app)
         {
-            var x = (IUserService) DependencyResolver.Current.GetService(typeof(IUserService));
             // Configure the db context, user manager and signin manager to use a single instance per request
             app.CreatePerOwinContext<IUserService>(() => (IUserService)DependencyResolver.Current.GetService(typeof(IUserService)));
             //app.CreatePerOwinContext<IUserService>(() => _userService);
