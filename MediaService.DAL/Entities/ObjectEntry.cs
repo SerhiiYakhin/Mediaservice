@@ -11,9 +11,9 @@ namespace MediaService.DAL.Entities
         public ObjectEntry() => Owners = new HashSet<UserProfile>();
 
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity), Column("ObjectEntryId")]
-        public Guid Id { get; set; }
+        public Guid  Id { get; set; }
 
-        public int ParentId { get; set; }
+        public Guid? ParentId { get; set; }
 
         [Required]
         [StringLength(50)]

@@ -6,16 +6,18 @@ namespace MediaService.DAL.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
-        IRepository<ObjectEntry>    Objects     { get; }
+        IRepository<ObjectEntry, Guid>    Objects     { get; }
 
-        IRepository<DirectoryEntry> Directories { get; }
+        IRepository<DirectoryEntry, Guid> Directories { get; }
 
-        IRepository<FileEntry>      Files       { get; }
+        IRepository<FileEntry, Guid>      Files       { get; }
 
-        IRepository<Tag>            Tags        { get; }
+        IRepository<Tag, Guid>            Tags        { get; }
 
-        IRepository<UserProfile>    Users       { get; }
+        IRepository<UserProfile, string>  Users       { get; }
 
-        Task SaveAsync();
+        int SaveChanges();
+
+        Task<int> SaveChangesAsync();
     } 
 }

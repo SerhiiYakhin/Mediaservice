@@ -1,105 +1,129 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using MediaService.BLL.DTO;
-using MediaService.BLL.Infrastructure;
 using MediaService.BLL.Interfaces;
 using MediaService.DAL.Entities;
 using MediaService.DAL.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using static AutoMapper.Mapper;
 
 namespace MediaService.BLL.Services
 {
     public class UserService : IUserService
     {
+        private IRuntimeMapper _dtoToEntity;
+
+        private IRuntimeMapper _entityToDto;
+
+        //private static Action<IMapperConfigurationExpression> _dtoToEntityCfg = cfg => cfg.CreateMap<UserDto, UserProfile>();
+
+        //private static Action<IMapperConfigurationExpression> _entityToDtoCfg = cfg => cfg.CreateMap<UserDto, UserProfile>();
+
+        //private static Action<IMapperConfigurationExpression> DtoToEntityCfg => _dtoToEntityCfg ?? (_dtoToEntityCfg = cfg => cfg.CreateMap<UserDto, UserProfile>());
+
+        //private static Action<IMapperConfigurationExpression> EntityToDtoCfg => _entityToDtoCfg ?? (_entityToDtoCfg = cfg => cfg.CreateMap<UserProfile, UserDto>());
+
+        private IRuntimeMapper DtoToEntity => _dtoToEntity ?? (_dtoToEntity =
+                                                  new Mapper(new MapperConfiguration(cfg => cfg.CreateMap<UserDto, UserProfile>()))
+                                                      .DefaultContext
+                                                      .Mapper);
+
+        private IRuntimeMapper EntityToDto => _entityToDto ?? (_entityToDto =
+                                                  new Mapper(new MapperConfiguration(cfg => cfg.CreateMap<UserProfile, UserDto>()))
+                                                      .DefaultContext
+                                                      .Mapper);
+
         private IUnitOfWork Database { get; }
 
         public UserService(IUnitOfWork uow) => Database = uow;
-        
+
         public void Dispose() => Database.Dispose();
 
-        public bool UserExist(Expression<Func<UserDto, bool>> predicate)
+        public UserDto FindById(string id)
         {
-            Mapper.Initialize(cfg => cfg.CreateMap<Expression<Func<UserDto, bool>>, Expression<Func<UserProfile, bool>>>());
-            var userPredicate = Mapper.Map<Expression<Func<UserDto, bool>>, Expression<Func<UserProfile, bool>>>(predicate);
-
-            return Database.Users.Get(userPredicate).Any();
+            return EntityToDto.Map<UserDto>(Database.Users.FindByKey(id));
         }
 
-        public UserDto GetUserById(string id)
+        public async Task<UserDto> FindByIdAsync(string id)
         {
-            throw new NotImplementedException();
+            return EntityToDto.Map<UserDto>(await Database.Users.FindByKeyAsync(id));
+        }
+
+        public IEnumerable<UserDto> GetData()
+        {
+            Initialize(cfg => cfg.CreateMap<IEnumerable<UserProfile>, IEnumerable<UserDto>>());
+            return Map<IEnumerable<UserProfile>, IEnumerable<UserDto>>(Database.Users.GetData());
+        }
+
+        public async Task<IEnumerable<UserDto>> GetDataAsync()
+        {
+            Initialize(cfg => cfg.CreateMap<IEnumerable<UserProfile>, IEnumerable<UserDto>>());
+            return Map<IEnumerable<UserProfile>, IEnumerable<UserDto>>(await Database.Users.GetDataAsync());
+        }
+
+        public void Add(UserDto item)
+        {
+            Database.Users.Add(DtoToEntity.Map<UserProfile>(item));
+        }
+
+        public async Task AddAsync(UserDto item)
+        {
+            await Database.Users.AddAsync(DtoToEntity.Map<UserProfile>(item));
+        }
+
+        public void AddRange(IEnumerable<UserDto> items)
+        {
+            Initialize(cfg => cfg.CreateMap<IEnumerable<UserDto>, IEnumerable<UserProfile>>());
+            Database.Users.AddRange(Map<IEnumerable<UserDto>, IEnumerable<UserProfile>>(items));
+        }
+
+        public async Task AddRangeAsync(IEnumerable<UserDto> items)
+        {
+            Initialize(cfg => cfg.CreateMap<IEnumerable<UserDto>, IEnumerable<UserProfile>>());
+            await Database.Users.AddRangeAsync(Map<IEnumerable<UserDto>, IEnumerable<UserProfile>>(items));
+        }
+
+        public void Update(UserDto item)
+        {
+            Database.Users.Update(DtoToEntity.Map<UserProfile>(item));
+        }
+
+        public async Task UpdateAsync(UserDto item)
+        {
+            await Database.Users.UpdateAsync(DtoToEntity.Map<UserProfile>(item));
+        }
+
+        public void Remove(UserDto item)
+        {
+            Database.Users.Remove(DtoToEntity.Map<UserProfile>(item));
+        }
+
+        public async Task RemoveAsync(UserDto item)
+        {
+            await Database.Users.RemoveAsync(DtoToEntity.Map<UserProfile>(item));
+        }
+
+        public void RemoveRange(IEnumerable<UserDto> items)
+        {
+            Initialize(cfg => cfg.CreateMap<IEnumerable<UserDto>, IEnumerable<UserProfile>>());
+            Database.Users.RemoveRange(Map<IEnumerable<UserDto>, IEnumerable<UserProfile>>(items));
+        }
+
+        public async Task RemoveRangeAsync(IEnumerable<UserDto> items)
+        {
+            Initialize(cfg => cfg.CreateMap<IEnumerable<UserDto>, IEnumerable<UserProfile>>());
+            await Database.Users.RemoveRangeAsync(Map<IEnumerable<UserDto>, IEnumerable<UserProfile>>(items));
         }
 
         public UserDto GetUserByNick(string nickName)
         {
-            Mapper.Initialize(cfg => cfg.CreateMap<UserProfile, UserDto>());
-
-            var user = Database.Users.Get(u => u.Nickname.Equals(nickName)).SingleOrDefault();
-
-            return Mapper.Map<UserProfile, UserDto>(user);
+            return EntityToDto.Map<UserDto>(Database.Users.GetData(u => u.Nickname.Equals(nickName)).SingleOrDefault());
         }
 
-        public IEnumerable<UserDto> GetUsers(Expression<Func<UserDto, bool>> predicate)
+        public async Task<UserDto> GetUserByNickAsync(string nickName)
         {
-            throw new NotImplementedException();
-        }
-
-        public OperationDetails EditUser(UserDto item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void CreateUser(UserDto userDto)
-        {
-            Mapper.Initialize(cfg => cfg.CreateMap<UserDto, UserProfile>());
-
-            var user = Mapper.Map<UserDto, UserProfile>(userDto);
-
-            Database.Users.Create(user);
-            Database.SaveAsync();
-        }
-
-        public void DeleteUser(UserDto userDto)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<UserDto> GetUserByIdAsync(string id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<UserDto> GetUserByNickAsync(string nickName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<UserDto>> GetUsersAsync(Expression<Func<UserDto, bool>> predicate)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<OperationDetails> EditUserAsync(UserDto item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task CreateUserAsync(UserDto userDto)
-        {
-            Mapper.Initialize(cfg => cfg.CreateMap<UserDto, UserProfile>());
-
-            var user = Mapper.Map<UserDto, UserProfile>(userDto);
-
-            Database.Users.Create(user);
-            return Database.SaveAsync();
-        }
-
-        public Task DeleteUserAsync(UserDto userDto)
-        {
-            throw new NotImplementedException();
+            return EntityToDto.Map<UserDto>((await Database.Users.GetDataAsync(u => u.Nickname.Equals(nickName))).SingleOrDefault());
         }
     }
 }

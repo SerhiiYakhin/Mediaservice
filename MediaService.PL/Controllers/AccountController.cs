@@ -164,7 +164,7 @@ namespace MediaService.PL.Controllers
                         var userProfile = Mapper.Map<RegisterViewModel, UserDto>(model);
                         userProfile.Id = user.Id;
 
-                        await UserService.CreateUserAsync(userProfile);
+                        await UserService.AddAsync(userProfile);
 
                         await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
                     

@@ -8,62 +8,40 @@ using MediaService.DAL.Interfaces;
 
 namespace MediaService.BLL.Services
 {
-    public class ObjectService<TEntity> : IObjectService<TEntity> where TEntity : ObjectEntryDto
+    public class ObjectService<TEntity> : Service<TEntity, Guid>, IObjectService<TEntity> where TEntity : ObjectEntryDto
     {
-        private IUnitOfWork Database { get; }
-
-        public ObjectService(IUnitOfWork uow) => Database = uow;
-
-        public TEntity GetObject(Guid? id)
+        public IEnumerable<TEntity> GetBy(string name = null, Guid? parentId = null, long? size = null, DateTime? created = null, DateTime? downloaded = null, DateTime? modified = null, ICollection<UserDto> owners = null)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<TEntity> GetObjects()
+        public Task<IEnumerable<TEntity>> GetByAsync(string name = null, Guid? parentId = null, long? size = null, DateTime? created = null, DateTime? downloaded = null, DateTime? modified = null, ICollection<UserDto> owners = null)
         {
             throw new NotImplementedException();
         }
 
-        public OperationDetails EditObject(TEntity item)
+        public IEnumerable<TEntity> GetByName(string name)
         {
             throw new NotImplementedException();
         }
 
-        public OperationDetails CreateObjects(params TEntity[] list)
+        public Task<IEnumerable<TEntity>> GetByNameAsync(string name)
         {
             throw new NotImplementedException();
         }
 
-        public OperationDetails DeleteObjects(params TEntity[] list)
+        public IEnumerable<TEntity> GetByParentId(Guid id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<TEntity> GetObjectAsync(Guid? id)
+        public Task<IEnumerable<TEntity>> GetByParentIdAsync(Guid id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<TEntity>> GetObjectsAsync()
+        public ObjectService(IUnitOfWork uow) : base(uow)
         {
-            throw new NotImplementedException();
         }
-
-        public Task<OperationDetails> EditObjectAsync(TEntity item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<OperationDetails> CreateObjectsAsync(params TEntity[] list)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<OperationDetails> DeleteObjectsAsync(params TEntity[] list)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Dispose() => Database.Dispose();
     }
 }

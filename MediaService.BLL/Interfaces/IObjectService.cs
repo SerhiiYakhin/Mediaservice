@@ -2,22 +2,39 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MediaService.BLL.DTO;
-using MediaService.BLL.Infrastructure;
 
 namespace MediaService.BLL.Interfaces
 {
-    public interface IObjectService<TEntity> : IDisposable where TEntity : ObjectEntryDto
+    public interface IObjectService<TEntity> : IService<TEntity, Guid> where TEntity : class
     {
-        TEntity GetObject(Guid? id);
-        IEnumerable<TEntity> GetObjects();
-        OperationDetails EditObject(TEntity item);
-        OperationDetails CreateObjects(params TEntity[] list);
-        OperationDetails DeleteObjects(params TEntity[] list);
+        IEnumerable<TEntity> GetByName(string name);
 
-        Task<TEntity> GetObjectAsync(Guid? id);
-        Task<IEnumerable<TEntity>> GetObjectsAsync();
-        Task<OperationDetails> EditObjectAsync(TEntity item);
-        Task<OperationDetails> CreateObjectsAsync(params TEntity[] list);
-        Task<OperationDetails> DeleteObjectsAsync(params TEntity[] list);
+        Task<IEnumerable<TEntity>> GetByNameAsync(string name);
+
+
+        IEnumerable<TEntity> GetByParentId(Guid id);
+
+        Task<IEnumerable<TEntity>> GetByParentIdAsync(Guid id);
+
+
+        IEnumerable<TEntity> GetBy(
+            string name = null,
+            Guid? parentId = null,
+            long? size = null,
+            DateTime? created = null,
+            DateTime? downloaded = null,
+            DateTime? modified = null,
+            ICollection<UserDto> owners = null
+            );
+
+        Task<IEnumerable<TEntity>> GetByAsync(
+            string name = null,
+            Guid? parentId = null,
+            long? size = null,
+            DateTime? created = null,
+            DateTime? downloaded = null,
+            DateTime? modified = null,
+            ICollection<UserDto> owners = null
+        );
     }
 }

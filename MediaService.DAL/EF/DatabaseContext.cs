@@ -22,19 +22,6 @@ namespace MediaService.DAL.EF
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            //modelBuilder.Entity<ObjectEntry>()
-            //    .Property(e => e.Thumbnail)
-            //    .IsFixedLength();
-
-            //modelBuilder.Entity<FileEntry>()
-            //    .HasMany(e => e.Tags)
-            //    .WithMany(e => e.FileEntries)
-            //    .Map(m => m.ToTable("FilesTags").MapLeftKey("Id").MapRightKey("Id"));
-
-            //modelBuilder.Entity<ObjectEntry>()
-            //    .HasMany(e => e.Owners)
-            //    .WithMany(e => e.ObjectEntries)
-            //    .Map(m => m.ToTable("UsersObjects").MapLeftKey("ObjectId").MapRightKey("UserId"));
         }
     }
 }

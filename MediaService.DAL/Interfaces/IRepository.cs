@@ -5,20 +5,45 @@ using System.Threading.Tasks;
 
 namespace MediaService.DAL.Interfaces
 {
-    public interface IRepository<TEntity> where TEntity : class
+    public interface IRepository<TEntity, in TKey> where TEntity : class
     {
-        void Create(TEntity item);
+        TEntity FindByKey(TKey key);
 
-        TEntity FindById(int id);
+        Task<TEntity> FindByKeyAsync(TKey key);
 
-        IEnumerable<TEntity> Get();
 
-        IEnumerable<TEntity> Get(Expression<Func<TEntity, bool>> predicate);
+        IEnumerable<TEntity> GetData();
 
-        Task<List<TEntity>> GetAsync(Expression<Func<TEntity, bool>> predicate);
+        Task<IEnumerable<TEntity>> GetDataAsync();
+
+
+        IEnumerable<TEntity> GetData(Expression<Func<TEntity, bool>> predicate);
+
+        Task<IEnumerable<TEntity>> GetDataAsync(Expression<Func<TEntity, bool>> predicate);
+
+
+        void Add(TEntity item);
+
+        Task AddAsync(TEntity item);
+
+
+        void AddRange(IEnumerable<TEntity> items);
+
+        Task AddRangeAsync(IEnumerable<TEntity> items);
+
+
+        void Update(TEntity item);
+
+        Task UpdateAsync(TEntity item);
+
 
         void Remove(TEntity item);
 
-        void Update(TEntity item);
+        Task RemoveAsync(TEntity item);
+
+
+        void RemoveRange(IEnumerable<TEntity> items);
+
+        Task RemoveRangeAsync(IEnumerable<TEntity> items);
     }
 }

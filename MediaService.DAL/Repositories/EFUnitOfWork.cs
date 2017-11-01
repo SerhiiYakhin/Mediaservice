@@ -1,8 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using MediaService.DAL.EF;
+﻿using MediaService.DAL.EF;
 using MediaService.DAL.Entities;
 using MediaService.DAL.Interfaces;
+using System;
+using System.Threading.Tasks;
 
 namespace MediaService.DAL.Repositories
 {
@@ -12,15 +12,15 @@ namespace MediaService.DAL.Repositories
 
         private bool _disposed = false;
 
-        private IRepository<ObjectEntry>    _objects;
+        private IRepository<ObjectEntry, Guid>    _objects;
 
-        private IRepository<DirectoryEntry> _directories;
+        private IRepository<DirectoryEntry, Guid> _directories;
 
-        private IRepository<FileEntry>      _files;
+        private IRepository<FileEntry, Guid>      _files;
 
-        private IRepository<Tag>            _tags;
+        private IRepository<Tag, Guid>            _tags;
 
-        private IRepository<UserProfile>    _users;
+        private IRepository<UserProfile, string>  _users;
 
         public EFUnitOfWork(string connectionString)
         {
@@ -29,19 +29,21 @@ namespace MediaService.DAL.Repositories
 
         #region Repositories
 
-        public IRepository<ObjectEntry>    Objects     => _objects     ?? (_objects     = new EFRepository<ObjectEntry>(_db));
+        public IRepository<ObjectEntry, Guid>    Objects     => _objects     ?? (_objects     = new EFRepository<ObjectEntry, Guid>(_db));
 
-        public IRepository<DirectoryEntry> Directories => _directories ?? (_directories = new EFRepository<DirectoryEntry>(_db));
+        public IRepository<DirectoryEntry, Guid> Directories => _directories ?? (_directories = new EFRepository<DirectoryEntry, Guid>(_db));
 
-        public IRepository<FileEntry>      Files       => _files       ?? (_files       = new EFRepository<FileEntry>(_db));
+        public IRepository<FileEntry, Guid>      Files       => _files       ?? (_files       = new EFRepository<FileEntry, Guid>(_db));
 
-        public IRepository<Tag>            Tags        => _tags        ?? (_tags        = new EFRepository<Tag>(_db));
+        public IRepository<Tag, Guid>            Tags        => _tags        ?? (_tags        = new EFRepository<Tag, Guid>(_db));
 
-        public IRepository<UserProfile>    Users       => _users       ?? (_users       = new EFRepository<UserProfile>(_db));
+        public IRepository<UserProfile, string>  Users       => _users       ?? (_users       = new EFRepository<UserProfile, string>(_db));
 
         #endregion
 
-        public async Task SaveAsync() => await _db.SaveChangesAsync();
+        public int SaveChanges() => _db.SaveChanges();
+
+        public async Task<int> SaveChangesAsync() => await _db.SaveChangesAsync();
 
         public void Dispose()
         {
