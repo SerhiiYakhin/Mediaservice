@@ -1,4 +1,6 @@
-﻿using MediaService.DAL.Interfaces;
+﻿#define OBJECT_METHODS_REALIZATION
+
+using MediaService.DAL.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -39,7 +41,33 @@ namespace MediaService.DAL.Repositories
             return await Task.Run(() => _dbSet.AsNoTracking().Where(predicate).AsEnumerable());
         }
 
+#if OBJECT_METHODS_REALIZATION
 
+        public void Add(object item) => _dbSet.Add((TEntity)item);
+
+        public async Task AddAsync(object item) => await Task.Run(() => _dbSet.Add((TEntity)item));
+
+
+        public void AddRange(object items) => _dbSet.AddRange((IEnumerable<TEntity>)items);
+
+        public async Task AddRangeAsync(object items) => await Task.Run(() => _dbSet.AddRange((IEnumerable<TEntity>)items));
+
+
+        public void Update(object item) => _context.Entry(item).State = EntityState.Modified;
+
+        public async Task UpdateAsync(object item) => await Task.Run(() => _context.Entry(item).State = EntityState.Modified);
+
+
+        public void Remove(object item) => _dbSet.Remove((TEntity)item);
+
+        public async Task RemoveAsync(object item) => await Task.Run(() => _dbSet.Remove((TEntity)item));
+
+
+        public void RemoveRange(object items) => _dbSet.RemoveRange((IEnumerable<TEntity>)items);
+
+        public async Task RemoveRangeAsync(object items) => await Task.Run(() => _dbSet.RemoveRange((IEnumerable<TEntity>)items));
+#else
+        
         public void Add(TEntity item) => _dbSet.Add(item);
 
         public async Task AddAsync(TEntity item) => await Task.Run(() => _dbSet.Add(item));
@@ -63,5 +91,8 @@ namespace MediaService.DAL.Repositories
         public void RemoveRange(IEnumerable<TEntity> items) => _dbSet.RemoveRange(items);
 
         public async Task RemoveRangeAsync(IEnumerable<TEntity> items) => await Task.Run(() => _dbSet.RemoveRange(items));
+
+#endif
+
     }
 }

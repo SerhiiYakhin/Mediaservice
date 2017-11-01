@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define OBJECT_METHODS_REALIZATION
+
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -21,6 +23,33 @@ namespace MediaService.DAL.Interfaces
 
         Task<IEnumerable<TEntity>> GetDataAsync(Expression<Func<TEntity, bool>> predicate);
 
+#if OBJECT_METHODS_REALIZATION
+
+        void Add(object item);
+
+        Task AddAsync(object item);
+
+
+        void AddRange(object items);
+
+        Task AddRangeAsync(object items);
+
+
+        void Update(object item);
+
+        Task UpdateAsync(object item);
+
+
+        void Remove(object item);
+
+        Task RemoveAsync(object item);
+
+
+        void RemoveRange(object items);
+
+        Task RemoveRangeAsync(object items);
+
+#else
 
         void Add(TEntity item);
 
@@ -45,5 +74,8 @@ namespace MediaService.DAL.Interfaces
         void RemoveRange(IEnumerable<TEntity> items);
 
         Task RemoveRangeAsync(IEnumerable<TEntity> items);
+
+#endif
+
     }
 }

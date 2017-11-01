@@ -61,7 +61,6 @@
     <Compile Include="Repositories\EFRepository.cs" />
     <Compile Include="Repositories\EFUnitOfWork.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />

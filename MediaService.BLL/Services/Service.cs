@@ -2,19 +2,25 @@
 using MediaService.DAL.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AutoMapper;
+using MediaService.BLL.Infrastructure;
 
 namespace MediaService.BLL.Services
 {
     public abstract class Service<TDto, TId> : IService<TDto, TId> where TDto : class
     {
+        private IMapper _mapper;
+
         protected IUnitOfWork Database { get; }
 
-        protected virtual dynamic Repository { get; }
+        protected dynamic Repository { get; set; }
 
-        protected virtual Type EntityType { get; }
+        protected Type EntityType { get; set; }
+
+        protected Type CollectionEntityType { get; set; }
+
+        protected IMapper DtoMapper => _mapper ?? (_mapper = MapperModule.GetMapper());
 
         protected Service(IUnitOfWork uow) => Database = uow;
 
@@ -22,94 +28,88 @@ namespace MediaService.BLL.Services
 
         public TDto FindById(TId key)
         {
-            //var item = Repository.FindByKey(key);
-            //Type gt = typeof(item).MakeGenericType(EntityType);
-            //object t = Activator.CreateInstance(gt, this, this.GetConfiguration(ThreadType));
-            //Mapper.Initialize(cfg => cfg.CreateMap<EntityType, TDto>());
-            //return Mapper.Map<EntityType, TDto>(Repository.FindByKey(key));
-            return Repository.FindByKey(key);
+            return DtoMapper.Map<TDto>(Repository.FindByKey(key));
         }
 
         public async Task<TDto> FindByIdAsync(TId key)
         {
-            return await Repository.FindByKeyAsync(key);
+            return await DtoMapper.Map<TDto>(Repository.FindByKeyAsync(key));
         }
 
 
         public IEnumerable<TDto> GetData()
         {
-            return Repository.GetData();
+            return DtoMapper.Map<IEnumerable<TDto>>(Repository.GetData());
         }
 
         public async Task<IEnumerable<TDto>> GetDataAsync()
         {
-            return await Repository.GetDataAsync();
-        }
-
-
-        public IEnumerable<TDto> GetData(Expression<Func<TDto, bool>> predicate)
-        {
-            return Repository.GetData(predicate);
-        }
-
-        public async Task<IEnumerable<TDto>> GetDataAsync(Expression<Func<TDto, bool>> predicate)
-        {
-            return await Repository.GetDataAsync(predicate);
+            return await DtoMapper.Map<IEnumerable<TDto>>(Repository.GetDataAsync());
         }
 
 
         public void Add(TDto item)
         {
-            Repository.Add(item);
+            Repository.Add(DtoMapper.Map(item, typeof(TDto), EntityType));
+            Database.SaveChanges();
         }
 
         public async Task AddAsync(TDto item)
         {
-            await Repository.AddAsync(item);
+            await Repository.AddAsync(DtoMapper.Map(item, typeof(TDto), EntityType));
+            await Database.SaveChangesAsync();
         }
 
 
         public void AddRange(IEnumerable<TDto> items)
         {
-            Repository.AddRange(items);
+            Repository.AddRange(DtoMapper.Map(items, typeof(IEnumerable<TDto>), CollectionEntityType));
+            Database.SaveChanges();
         }
 
         public async Task AddRangeAsync(IEnumerable<TDto> items)
         {
-            await Repository.AddRangeAsync(items);
+            await Repository.AddRangeAsync(DtoMapper.Map(items, typeof(IEnumerable<TDto>), CollectionEntityType));
+            await Database.SaveChangesAsync();
         }
 
 
         public void Update(TDto item)
         {
-            Repository.Update(item);
+            Repository.Update(DtoMapper.Map(item, typeof(TDto), EntityType));
+            Database.SaveChanges();
         }
 
         public async Task UpdateAsync(TDto item)
         {
-            await Repository.UpdateAsync(item);
+            await Repository.UpdateAsync(DtoMapper.Map(item, typeof(TDto), EntityType));
+            await Database.SaveChangesAsync();
         }
 
 
         public void Remove(TDto item)
         {
-            Repository.Remove(item);
+            Repository.Remove(DtoMapper.Map(item, typeof(TDto), EntityType));
+            Database.SaveChanges();
         }
 
         public async Task RemoveAsync(TDto item)
         {
-            await Repository.RemoveAsync(item);
+            await Repository.RemoveAsync(DtoMapper.Map(item, typeof(TDto), EntityType));
+            await Database.SaveChangesAsync();
         }
 
 
         public void RemoveRange(IEnumerable<TDto> items)
         {
-            Repository.RemoveRange(items);
+            Repository.RemoveRange(DtoMapper.Map(items, typeof(IEnumerable<TDto>), CollectionEntityType));
+            Database.SaveChanges();
         }
 
         public async Task RemoveRangeAsync(IEnumerable<TDto> items)
         {
-            await Repository.RemoveRangeAsync(items);
+            await Repository.RemoveRangeAsync(DtoMapper.Map(items, typeof(IEnumerable<TDto>), CollectionEntityType));
+            await Database.SaveChangesAsync();
         }
     }
 }

@@ -6,15 +6,15 @@ namespace MediaService.PL.Utils
 {
     public static class MapperModule
     {
-        public static IMapper Mapper { get; }
+        private static readonly MapperConfiguration Config;
+
+        public static IMapper GetMapper() => Config.CreateMapper();
 
         static MapperModule()
         {
-            var config = new MapperConfiguration(cfg => {
-                cfg.CreateMap<RegisterViewModel, UserDto>();
+            Config = new MapperConfiguration(cfg => {
+                cfg.CreateMap<RegisterViewModel, UserDto>().ReverseMap();
             });
-
-            Mapper = config.CreateMapper();
         }
     }
 }

@@ -6,26 +6,26 @@ namespace MediaService.BLL.Infrastructure
 {
     static class MapperModule
     {
-        public static IMapper Mapper { get; }
+        private static readonly MapperConfiguration Config;
+
+        public static IMapper GetMapper() => Config.CreateMapper();
 
         static MapperModule()
         {
-            var config = new MapperConfiguration(cfg => {
-                cfg.CreateMap<UserDto, UserProfile>();
+            Config = new MapperConfiguration(cfg => {
+                cfg.CreateMap<UserDto, UserProfile>().ReverseMap();
 
-                cfg.CreateMap<ObjectEntryDto, ObjectEntry>();
+                cfg.CreateMap<ObjectEntryDto, ObjectEntry>().ReverseMap();
 
                 cfg.CreateMap<ObjectEntryDto, ObjectEntry>()
                     .Include<FileEntryDto, FileEntry>()
-                    .Include<DirectoryEntryDto, DirectoryEntry>();
+                    .Include<DirectoryEntryDto, DirectoryEntry>().ReverseMap();
 
-                cfg.CreateMap<FileEntryDto, FileEntry>(); ;
-                cfg.CreateMap<DirectoryEntryDto, DirectoryEntry>();
+                cfg.CreateMap<FileEntryDto, FileEntry>().ReverseMap();
+                cfg.CreateMap<DirectoryEntryDto, DirectoryEntry>().ReverseMap();
 
-                cfg.CreateMap<TagDto, Tag>();
+                cfg.CreateMap<TagDto, Tag>().ReverseMap();
             });
-
-            Mapper = config.CreateMapper();
         }
     }
 }

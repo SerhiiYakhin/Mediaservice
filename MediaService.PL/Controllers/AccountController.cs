@@ -2,11 +2,12 @@
 using System.Web;
 using System.Web.Mvc;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.Owin.Security;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 
-using static MediaService.PL.Utils.MapperModule;
+using MediaService.PL.Utils;
 
 using MediaService.BLL.DTO;
 using MediaService.BLL.Interfaces;
@@ -20,8 +21,9 @@ namespace MediaService.PL.Controllers
     public class AccountController : Controller
     {
         private ApplicationSignInManager _signInManager;
-        private ApplicationUserManager _userManager;
-        private IUserService _userService;
+        private ApplicationUserManager   _userManager;
+        private IUserService             _userService;
+        private IMapper                  _mapper;
 
         public AccountController()
         {
@@ -33,6 +35,7 @@ namespace MediaService.PL.Controllers
             SignInManager = signInManager;
             _userService = userService;
         }
+        private IMapper DtoMapper => _mapper ?? (_mapper = MapperModule.GetMapper());
 
         private ApplicationSignInManager SignInManager
         {
@@ -160,7 +163,7 @@ namespace MediaService.PL.Controllers
 
                     if (result.Succeeded)
                     {
-                        var userProfile = Mapper.Map<RegisterViewModel, UserDto>(model);
+                        var userProfile = DtoMapper.Map<RegisterViewModel, UserDto>(model);
                         userProfile.Id = user.Id;
 
                         await UserService.AddAsync(userProfile);
