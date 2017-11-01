@@ -65,55 +65,65 @@ namespace MediaService.BLL.Services
         public void Add(UserDto item)
         {
             Database.Users.Add(DtoToEntity.Map<UserProfile>(item));
+            Database.SaveChanges();
         }
 
         public async Task AddAsync(UserDto item)
         {
             await Database.Users.AddAsync(DtoToEntity.Map<UserProfile>(item));
+            await Database.SaveChangesAsync();
         }
 
         public void AddRange(IEnumerable<UserDto> items)
         {
             Initialize(cfg => cfg.CreateMap<IEnumerable<UserDto>, IEnumerable<UserProfile>>());
             Database.Users.AddRange(Map<IEnumerable<UserDto>, IEnumerable<UserProfile>>(items));
+            Database.SaveChanges();
         }
 
         public async Task AddRangeAsync(IEnumerable<UserDto> items)
         {
             Initialize(cfg => cfg.CreateMap<IEnumerable<UserDto>, IEnumerable<UserProfile>>());
             await Database.Users.AddRangeAsync(Map<IEnumerable<UserDto>, IEnumerable<UserProfile>>(items));
+            await Database.SaveChangesAsync();
         }
 
         public void Update(UserDto item)
         {
             Database.Users.Update(DtoToEntity.Map<UserProfile>(item));
+            Database.SaveChanges();
         }
 
         public async Task UpdateAsync(UserDto item)
         {
             await Database.Users.UpdateAsync(DtoToEntity.Map<UserProfile>(item));
+            await Database.SaveChangesAsync();
         }
 
         public void Remove(UserDto item)
         {
             Database.Users.Remove(DtoToEntity.Map<UserProfile>(item));
+            Database.SaveChanges();
         }
 
         public async Task RemoveAsync(UserDto item)
         {
             await Database.Users.RemoveAsync(DtoToEntity.Map<UserProfile>(item));
+            await Database.SaveChangesAsync();
         }
 
         public void RemoveRange(IEnumerable<UserDto> items)
         {
             Initialize(cfg => cfg.CreateMap<IEnumerable<UserDto>, IEnumerable<UserProfile>>());
             Database.Users.RemoveRange(Map<IEnumerable<UserDto>, IEnumerable<UserProfile>>(items));
+            Database.SaveChanges();
         }
 
         public async Task RemoveRangeAsync(IEnumerable<UserDto> items)
         {
             Initialize(cfg => cfg.CreateMap<IEnumerable<UserDto>, IEnumerable<UserProfile>>());
             await Database.Users.RemoveRangeAsync(Map<IEnumerable<UserDto>, IEnumerable<UserProfile>>(items));
+            await Database.SaveChangesAsync();
         }
 
         public UserDto GetUserByNick(string nickName)

@@ -16,6 +16,7 @@ namespace MediaService.PL.Utils
         {
             _kernel = kernelParam;
             //todo: fix this weird hack (check client model validation)
+            _kernel.Unbind<ModelValidatorProvider>();
             //_kernel.Rebind<ModelValidatorProvider>().To<DataAnnotationsModelValidatorProvider>();
             AddBindings();
         }
