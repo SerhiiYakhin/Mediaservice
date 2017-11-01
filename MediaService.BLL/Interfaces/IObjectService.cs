@@ -5,19 +5,19 @@ using MediaService.BLL.DTO;
 
 namespace MediaService.BLL.Interfaces
 {
-    public interface IObjectService<TEntity> : IService<TEntity, Guid> where TEntity : class
+    public interface IObjectService<TObjectDto> : IService<TObjectDto, Guid> where TObjectDto : ObjectEntryDto
     {
-        IEnumerable<TEntity> GetByName(string name);
+        IEnumerable<TObjectDto> GetByName(string name);
 
-        Task<IEnumerable<TEntity>> GetByNameAsync(string name);
-
-
-        IEnumerable<TEntity> GetByParentId(Guid id);
-
-        Task<IEnumerable<TEntity>> GetByParentIdAsync(Guid id);
+        Task<IEnumerable<TObjectDto>> GetByNameAsync(string name);
 
 
-        IEnumerable<TEntity> GetBy(
+        IEnumerable<TObjectDto> GetByParentId(Guid id);
+
+        Task<IEnumerable<TObjectDto>> GetByParentIdAsync(Guid id);
+
+
+        IEnumerable<TObjectDto> GetBy(
             string name = null,
             Guid? parentId = null,
             long? size = null,
@@ -27,7 +27,7 @@ namespace MediaService.BLL.Interfaces
             ICollection<UserDto> owners = null
             );
 
-        Task<IEnumerable<TEntity>> GetByAsync(
+        Task<IEnumerable<TObjectDto>> GetByAsync(
             string name = null,
             Guid? parentId = null,
             long? size = null,

@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using MediaService.BLL.DTO;
 using MediaService.BLL.Interfaces;
 using MediaService.BLL.Services;
+using MediaService.BLL.Services.ObjectsServices;
 using Ninject;
 
 namespace MediaService.PL.Utils
@@ -25,9 +26,9 @@ namespace MediaService.PL.Utils
 
         private void AddBindings()
         {
-            _kernel.Bind<IObjectService<ObjectEntryDto>>().To<ObjectService<ObjectEntryDto>>();
-            _kernel.Bind<IObjectService<FileEntryDto>>().To<ObjectService<FileEntryDto>>();
-            _kernel.Bind<IObjectService<DirectoryEntryDto>>().To<ObjectService<DirectoryEntryDto>>();
+            _kernel.Bind<IObjectService<ObjectEntryDto>>().To<ObjectService>();
+            _kernel.Bind<IObjectService<FileEntryDto>>().To<FileService>();
+            _kernel.Bind<IObjectService<DirectoryEntryDto>>().To<DirectoryService>();
 
             _kernel.Bind<ITagService>().To<TagService>();
             _kernel.Bind<IUserService>().To<UserService>();

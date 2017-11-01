@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -14,12 +15,16 @@ namespace MediaService.DAL.Interfaces
         Task<TEntity> FindByKeyAsync(TKey key);
 
 
+        IQueryable<TEntity> GetQuery();
+
         IEnumerable<TEntity> GetData();
 
         Task<IEnumerable<TEntity>> GetDataAsync();
 
 
         IEnumerable<TEntity> GetData(Expression<Func<TEntity, bool>> predicate);
+
+        IQueryable<TEntity> GetQuery(Expression<Func<TEntity, bool>> predicate);
 
         Task<IEnumerable<TEntity>> GetDataAsync(Expression<Func<TEntity, bool>> predicate);
 

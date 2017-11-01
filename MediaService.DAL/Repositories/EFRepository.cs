@@ -26,9 +26,20 @@ namespace MediaService.DAL.Repositories
         public async Task<TEntity> FindByKeyAsync(TKey key) => await _dbSet.FindAsync(key);
 
 
+        public IQueryable<TEntity> GetQuery()
+        {
+            return _dbSet.AsNoTracking().AsQueryable();
+        }
+
+        public IQueryable<TEntity> GetQuery(Expression<Func<TEntity, bool>> predicate)
+        {
+            return _dbSet.AsNoTracking().Where(predicate);
+        }
+
+
         public IEnumerable<TEntity> GetData() => _dbSet.AsNoTracking();
 
-        public async Task<IEnumerable<TEntity>> GetDataAsync() => await Task.Run(()=> _dbSet.AsNoTracking());
+        public async Task<IEnumerable<TEntity>> GetDataAsync() => await Task.Run(() => _dbSet.AsNoTracking());
 
 
         public IEnumerable<TEntity> GetData(Expression<Func<TEntity, bool>> predicate)
