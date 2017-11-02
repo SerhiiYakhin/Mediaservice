@@ -1,98 +1,34 @@
 ﻿using MediaService.BLL.DTO;
 using MediaService.BLL.Interfaces;
+using MediaService.DAL.Entities;
 using MediaService.DAL.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MediaService.BLL.Services
 {
-    public class TagService : ITagService
+    public class TagService : Service<TagDto, Guid>, ITagService
     {
-        private IUnitOfWork Database { get; }
-
-        public TagService(IUnitOfWork uow) => Database = uow;
-
-        public void Dispose() => Database.Dispose();
-
-        public TagDto FindById(Guid id)
+        public TagService(IUnitOfWork uow) : base(uow)
         {
-            throw new NotImplementedException();
-        }
+            Repository = Database.Tags;
 
-        public Task<TagDto> FindByIdAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
+            EntityType = typeof(Tag);
 
-        public IEnumerable<TagDto> GetData()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<TagDto>> GetDataAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Add(TagDto item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task AddAsync(TagDto item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void AddRange(IEnumerable<TagDto> items)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task AddRangeAsync(IEnumerable<TagDto> items)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Update(TagDto item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateAsync(TagDto item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Remove(TagDto item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task RemoveAsync(TagDto item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RemoveRange(IEnumerable<TagDto> items)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task RemoveRangeAsync(IEnumerable<TagDto> items)
-        {
-            throw new NotImplementedException();
+            CollectionEntityType = typeof(IEnumerable<Tag>);
         }
 
         public TagDto GetTagByName(string name)
         {
-            throw new NotImplementedException();
+            return DtoMapper.Map<TagDto>(Database.Tags.GetData(t => t.Name.Equals(name)).SingleOrDefault());
         }
 
-        public Task<TagDto> GetTagByNameAsync(string name)
+        public async Task<TagDto> GetTagByNameAsync(string name)
         {
-            throw new NotImplementedException();
+            return DtoMapper.Map<TagDto>((await Database.Tags.GetDataAsync(t => t.Name.Equals(name)))
+                .SingleOrDefault());
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediaService.BLL.Infrastructure;
+using Microsoft.AspNet.Identity;
 
 namespace MediaService.BLL.Services
 {
@@ -48,68 +49,148 @@ namespace MediaService.BLL.Services
         }
 
 
-        public void Add(TDto item)
+        public IdentityResult Add(TDto item)
         {
-            Repository.Add(DtoMapper.Map(item, typeof(TDto), EntityType));
-            Database.SaveChanges();
+            try
+            {
+                Repository.Add(DtoMapper.Map(item, typeof(TDto), EntityType));
+                Database.SaveChanges();
+                return IdentityResult.Success;
+            }
+            catch (Exception e)
+            {
+                return new IdentityResult(e.Message);
+            }
         }
 
-        public async Task AddAsync(TDto item)
+        public async Task<IdentityResult> AddAsync(TDto item)
         {
-            await Repository.AddAsync(DtoMapper.Map(item, typeof(TDto), EntityType));
-            await Database.SaveChangesAsync();
-        }
-
-
-        public void AddRange(IEnumerable<TDto> items)
-        {
-            Repository.AddRange(DtoMapper.Map(items, typeof(IEnumerable<TDto>), CollectionEntityType));
-            Database.SaveChanges();
-        }
-
-        public async Task AddRangeAsync(IEnumerable<TDto> items)
-        {
-            await Repository.AddRangeAsync(DtoMapper.Map(items, typeof(IEnumerable<TDto>), CollectionEntityType));
-            await Database.SaveChangesAsync();
-        }
-
-
-        public void Update(TDto item)
-        {
-            Repository.Update(DtoMapper.Map(item, typeof(TDto), EntityType));
-            Database.SaveChanges();
-        }
-
-        public async Task UpdateAsync(TDto item)
-        {
-            await Repository.UpdateAsync(DtoMapper.Map(item, typeof(TDto), EntityType));
-            await Database.SaveChangesAsync();
+            try
+            {
+                await Repository.AddAsync(DtoMapper.Map(item, typeof(TDto), EntityType));
+                await Database.SaveChangesAsync();
+                return IdentityResult.Success;
+            }
+            catch (Exception e)
+            {
+                return new IdentityResult(e.Message);
+            }
         }
 
 
-        public void Remove(TDto item)
+        public IdentityResult AddRange(IEnumerable<TDto> items)
         {
-            Repository.Remove(DtoMapper.Map(item, typeof(TDto), EntityType));
-            Database.SaveChanges();
+            try
+            {
+                Repository.AddRange(DtoMapper.Map(items, typeof(IEnumerable<TDto>), CollectionEntityType));
+                Database.SaveChanges();
+                return IdentityResult.Success;
+            }
+            catch (Exception e)
+            {
+                return new IdentityResult(e.Message);
+            }
         }
 
-        public async Task RemoveAsync(TDto item)
+        public async Task<IdentityResult> AddRangeAsync(IEnumerable<TDto> items)
         {
-            await Repository.RemoveAsync(DtoMapper.Map(item, typeof(TDto), EntityType));
-            await Database.SaveChangesAsync();
+            try
+            {
+                await Repository.AddRangeAsync(DtoMapper.Map(items, typeof(IEnumerable<TDto>), CollectionEntityType));
+                await Database.SaveChangesAsync();
+                return IdentityResult.Success;
+            }
+            catch (Exception e)
+            {
+                return new IdentityResult(e.Message);
+            }
         }
 
 
-        public void RemoveRange(IEnumerable<TDto> items)
+        public IdentityResult Update(TDto item)
         {
-            Repository.RemoveRange(DtoMapper.Map(items, typeof(IEnumerable<TDto>), CollectionEntityType));
-            Database.SaveChanges();
+            try
+            {
+                Repository.Update(DtoMapper.Map(item, typeof(TDto), EntityType));
+                Database.SaveChanges();
+                return IdentityResult.Success;
+            }
+            catch (Exception e)
+            {
+                return new IdentityResult(e.Message);
+            }
         }
 
-        public async Task RemoveRangeAsync(IEnumerable<TDto> items)
+        public async Task<IdentityResult> UpdateAsync(TDto item)
         {
-            await Repository.RemoveRangeAsync(DtoMapper.Map(items, typeof(IEnumerable<TDto>), CollectionEntityType));
-            await Database.SaveChangesAsync();
+            try
+            {
+                await Repository.UpdateAsync(DtoMapper.Map(item, typeof(TDto), EntityType));
+                await Database.SaveChangesAsync();
+                return IdentityResult.Success;
+            }
+            catch (Exception e)
+            {
+                return new IdentityResult(e.Message);
+            }
+        }
+
+
+        public IdentityResult Remove(TDto item)
+        {
+            try
+            {
+                Repository.Remove(DtoMapper.Map(item, typeof(TDto), EntityType));
+                Database.SaveChanges();
+                return IdentityResult.Success;
+            }
+            catch (Exception e)
+            {
+                return new IdentityResult(e.Message);
+            }
+        }
+
+        public async Task<IdentityResult> RemoveAsync(TDto item)
+        {
+            try
+            {
+                await Repository.RemoveAsync(DtoMapper.Map(item, typeof(TDto), EntityType));
+                await Database.SaveChangesAsync();
+                return IdentityResult.Success;
+            }
+            catch (Exception e)
+            {
+                return new IdentityResult(e.Message);
+            }
+        }
+
+
+        public IdentityResult RemoveRange(IEnumerable<TDto> items)
+        {
+            try
+            {
+                Repository.RemoveRange(DtoMapper.Map(items, typeof(IEnumerable<TDto>), CollectionEntityType));
+                Database.SaveChanges();
+                return IdentityResult.Success;
+            }
+            catch (Exception e)
+            {
+                return new IdentityResult(e.Message);
+            }
+        }
+
+        public async Task<IdentityResult> RemoveRangeAsync(IEnumerable<TDto> items)
+        {
+            try
+            {
+                await Repository.RemoveRangeAsync(DtoMapper.Map(items, typeof(IEnumerable<TDto>), CollectionEntityType));
+                await Database.SaveChangesAsync();
+                return IdentityResult.Success;
+            }
+            catch (Exception e)
+            {
+                return new IdentityResult(e.Message);
+            }
         }
     }
 }

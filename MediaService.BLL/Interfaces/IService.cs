@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MediaService.BLL.Infrastructure;
+using Microsoft.AspNet.Identity;
 
 namespace MediaService.BLL.Interfaces
 {
@@ -16,28 +18,28 @@ namespace MediaService.BLL.Interfaces
         Task<IEnumerable<TDto>> GetDataAsync();
 
 
-        void Add(TDto item);
+        IdentityResult Add(TDto item);
 
-        Task AddAsync(TDto item);
-
-
-        void AddRange(IEnumerable<TDto> items);
-
-        Task AddRangeAsync(IEnumerable<TDto> items);
+        Task<IdentityResult> AddAsync(TDto item);
 
 
-        void Update(TDto item);
+        IdentityResult AddRange(IEnumerable<TDto> items);
 
-        Task UpdateAsync(TDto item);
-
-
-        void Remove(TDto item);
-
-        Task RemoveAsync(TDto item);
+        Task<IdentityResult> AddRangeAsync(IEnumerable<TDto> items);
 
 
-        void RemoveRange(IEnumerable<TDto> items);
+        IdentityResult Update(TDto item);
 
-        Task RemoveRangeAsync(IEnumerable<TDto> items);
+        Task<IdentityResult> UpdateAsync(TDto item);
+
+
+        IdentityResult Remove(TDto item);
+
+        Task<IdentityResult> RemoveAsync(TDto item);
+
+
+        IdentityResult RemoveRange(IEnumerable<TDto> items);
+
+        Task<IdentityResult> RemoveRangeAsync(IEnumerable<TDto> items);
     }
 }

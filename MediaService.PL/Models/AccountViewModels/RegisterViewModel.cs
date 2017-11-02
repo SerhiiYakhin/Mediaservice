@@ -5,7 +5,7 @@ namespace MediaService.PL.Models.AccountViewModels
     public class RegisterViewModel
     {
         [Required]
-        [StringLength(20, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 2)]
+        [StringLength(30, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 2)]
         [Display(Name = "Nickname")]
         public string Nickname { get; set; }
 
