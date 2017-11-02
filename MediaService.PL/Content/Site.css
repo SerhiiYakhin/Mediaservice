@@ -91,4 +91,5 @@ a {
     background-color: #fff;
     padding-top: 50px;
     padding-bottom: 75px;
+   overflow-wrap:break-word;
 }
