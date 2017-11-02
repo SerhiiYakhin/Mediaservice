@@ -11,7 +11,7 @@
     <div class="col-xs-4">
     </div>
     <div class="container">
-        <div class="col-xs-4" id="authForms">
+        <div class="col-xs-4 authForms">
 
             @using (Html.BeginForm("Login", "Account", new { ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
             {
@@ -37,6 +37,8 @@
                         </div>
                         <div class="form-group">
                             <input type="submit" value="Войти" class="btn btn-primary btn-block" />
+                            <input type="button" value="Через FB" class="btn btn-outline-primary btn-block fbBtn" />
+                            <input type="button" value="Через Google" class="btn btn-outline-primary btn-block googleBtn" />
                         </div>
 
                         @*Enable this once you have account confirmation enabled for password reset functionality

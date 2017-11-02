@@ -87,9 +87,22 @@ a {
     color: #d3095f;
 }
 
-#authForms {
+.authForms {
     background-color: #fff;
     padding-top: 50px;
     padding-bottom: 75px;
-   overflow-wrap:break-word;
+    overflow-wrap: break-word;
+    position: fixed;
+}
+.fbBtn {
+    background-image: url(/fonts/icons-buttons/facebook.svg); /* 16px x 16px */
+    background-repeat: no-repeat; /* make the background image appear only once */
+    background-position: 0px 0px; /* equivalent to 'top left' */
+    padding-left: 16px;
+}
+.googleBtn {
+    background-image: url(/fonts/icons-buttons/google.svg); /* 16px x 16px */
+    background-repeat: no-repeat; /* make the background image appear only once */
+    background-position: 0px 0px; /* equivalent to 'top left' */
+    padding-left: 16px;
 }
