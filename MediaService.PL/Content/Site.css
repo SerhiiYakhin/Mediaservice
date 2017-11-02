@@ -1,12 +1,14 @@
-﻿body {
+﻿@import url(http://fonts.googleapis.com/css?family=Raleway:400,300,700);
+body {
+    background-color: #e8e9f2;
     padding-top: 50px;
     padding-bottom: 20px;
 }
 
 /* Set padding to keep content from hitting the edges */
 .body-content {
-    padding-left: 15px;
-    padding-right: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 /* Override the default bootstrap behavior where horizontal description lists 
@@ -15,10 +17,78 @@
 .dl-horizontal dt {
     white-space: normal;
 }
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Raleway', sans-serif;
+    text-align: center;
+}
+h1 {
+    font-weight: 700;
+}
+
+h3 {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 600;
+}
+h4 {
+    font-weight: 400;
+    color: #999999;
+}
+
+
 
 /* Set width on the form input elements since they're 100% wide by default */
 input,
 select,
 textarea {
-    max-width: 280px;
+    max-width: 220px;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #d3095f;
+    border-color: #d3095f;
+}
+
+.btn-primary:focus,
+.btn-primary.focus {
+    color: #fff;
+    background-color: #d3095f;
+    border-color: #d3095f;
+}
+
+.btn-primary:hover {
+    color: #fff;
+    background-color: #d3095f;
+    border-color: #d3095f;
+}
+
+.btn-primary:active,
+.btn-primary.active,
+.open > .dropdown-toggle.btn-primary {
+    color: #fff;
+    background-color: #d3095f;
+    border-color: #d3095f;
+}
+
+       
+.open > .dropdown-toggle.btn-primary.focus {
+    color: #fff;
+    background-color: #d3095f;
+    border-color: #d3095f;
+}
+
+.btn-primary:active,
+.btn-primary.active,
+.open > .dropdown-toggle.btn-primary {
+    background-image: none;
+}
+
+a {
+    color: #d3095f;
+}
+
+#authForms {
+    background-color: #fff;
+    padding-top: 50px;
+    padding-bottom: 75px;
 }

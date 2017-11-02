@@ -33,7 +33,7 @@ namespace MediaService.PL.Controllers
         {
             UserManager = userManager;
             SignInManager = signInManager;
-            UserService = userService;
+            _userService = userService;
         }
         private IMapper DtoMapper => _mapper ?? (_mapper = MapperModule.GetMapper());
 
@@ -376,19 +376,8 @@ namespace MediaService.PL.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-
-                if (UserService.GetUserByNick(model.Email) != null)
-                {
-                    ModelState.AddModelError("Nickname", "User with that Nickname is already exist");
-                }
-
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
                 var result = await UserManager.CreateAsync(user);
-                var userProfilee = new UserDto {Id = user.Id, Nickname = user.UserName};
-                //var userProfile = DtoMapper.Map<ExternalLoginConfirmationViewModel, UserDto>(model);
-                //userProfile.Id = user.Id;
-                await UserService.AddAsync(userProfilee);
-
                 if (result.Succeeded)
                 {
                     result = await UserManager.AddLoginAsync(user.Id, info.Login);
