@@ -28,16 +28,16 @@ namespace MediaService.PL.Controllers
             SignInManager = signInManager;
         }
 
-        private ApplicationSignInManager SignInManager
+        public ApplicationSignInManager SignInManager
         {
             get => _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
-            set => _signInManager = value;
+            private set => _signInManager = value;
         }
 
-        private ApplicationUserManager UserManager
+        public ApplicationUserManager UserManager
         {
             get => _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            set => _userManager = value;
+            private set => _userManager = value;
         }
 
         //
