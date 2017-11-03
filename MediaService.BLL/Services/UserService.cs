@@ -4,11 +4,10 @@ using MediaService.BLL.DTO;
 using MediaService.BLL.Interfaces;
 using MediaService.DAL.Entities;
 using MediaService.DAL.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
-using MediaService.BLL.Infrastructure;
 
 namespace MediaService.BLL.Services
 {
@@ -21,18 +20,34 @@ namespace MediaService.BLL.Services
             Repository = Database.Users;
 
             EntityType = typeof(UserProfile);
-
+            
             CollectionEntityType = typeof(IEnumerable<UserProfile>);
         }
 
         public UserDto GetUserByNick(string nickName)
         {
-            return DtoMapper.Map<UserDto>(Database.Users.GetData(u => u.Nickname.Equals(nickName)).SingleOrDefault());
+            try
+            {
+                return DtoMapper.Map<UserDto>(Database.Users.GetDataParallel(u => u.Nickname.Equals(nickName)).SingleOrDefault());
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e);
+                return null;
+            }
         }
 
         public async Task<UserDto> GetUserByNickAsync(string nickName)
         {
-            return DtoMapper.Map<UserDto>((await Database.Users.GetDataAsync(u => u.Nickname.Equals(nickName))).SingleOrDefault());
+            try
+            {
+                return DtoMapper.Map<UserDto>((await Database.Users.GetDataAsyncParallel(u => u.Nickname.Equals(nickName))).SingleOrDefault());
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e);
+                return null;
+            }
         }
     }
 

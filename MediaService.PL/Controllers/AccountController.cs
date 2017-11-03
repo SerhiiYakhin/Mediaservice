@@ -1,7 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Web;
 using System.Web.Mvc;
 using System.Threading.Tasks;
+using System.Web.Routing;
 using AutoMapper;
 using Microsoft.Owin.Security;
 using Microsoft.AspNet.Identity;
@@ -14,6 +17,8 @@ using MediaService.BLL.Interfaces;
 using MediaService.PL.Models.AccountViewModels;
 using MediaService.PL.Models.IdentityModels;
 using MediaService.PL.Models.IdentityModels.Managers;
+using Microsoft.Win32.SafeHandles;
+using NLog;
 
 namespace MediaService.PL.Controllers
 {
@@ -35,6 +40,9 @@ namespace MediaService.PL.Controllers
             SignInManager = signInManager;
             UserService = userService;
         }
+
+        protected static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
+
         private IMapper DtoMapper => _mapper ?? (_mapper = MapperModule.GetMapper());
 
         private ApplicationSignInManager SignInManager
@@ -180,12 +188,8 @@ namespace MediaService.PL.Controllers
 
                             return RedirectToAction("Index", "Home");
                         }
-                        AddErrors(addResult);
-                        var deleteResult = await UserManager.CreateAsync(user, model.Password);
-                        if (!deleteResult.Succeeded)
-                        {
-                            AddErrors(deleteResult);
-                        }
+                        await UserManager.DeleteAsync(user);
+                        return View("Error");
                     }
 
                     AddErrors(result);
@@ -409,15 +413,8 @@ namespace MediaService.PL.Controllers
                             return RedirectToLocal(returnUrl);
                         }
                     }
-                    else
-                    {
-                        AddErrors(addResult);
-                        var deleteResult = await UserManager.DeleteAsync(user);
-                        if (!deleteResult.Succeeded)
-                        {
-                            AddErrors(deleteResult);
-                        }
-                    }
+                    await UserManager.DeleteAsync(user);
+                    return View("Error");
                 }
                 AddErrors(result);
             }
@@ -455,6 +452,12 @@ namespace MediaService.PL.Controllers
                 {
                     _signInManager.Dispose();
                     _signInManager = null;
+                }
+
+                if (_userService != null)
+                {
+                    _userService.Dispose();
+                    _userService = null;
                 }
             }
 

@@ -17,16 +17,27 @@ namespace MediaService.DAL.Interfaces
 
         IQueryable<TEntity> GetQuery();
 
+        IQueryable<TEntity> GetQuery(Expression<Func<TEntity, bool>> predicate);
+
+
         IEnumerable<TEntity> GetData();
 
         Task<IEnumerable<TEntity>> GetDataAsync();
 
 
+        IEnumerable<TEntity> GetDataParallel();
+
+        Task<IEnumerable<TEntity>> GetDataAsyncParallel();
+
+
         IEnumerable<TEntity> GetData(Expression<Func<TEntity, bool>> predicate);
 
-        IQueryable<TEntity> GetQuery(Expression<Func<TEntity, bool>> predicate);
-
         Task<IEnumerable<TEntity>> GetDataAsync(Expression<Func<TEntity, bool>> predicate);
+
+
+        IEnumerable<TEntity> GetDataParallel(Expression<Func<TEntity, bool>> predicate);
+
+        Task<IEnumerable<TEntity>> GetDataAsyncParallel(Expression<Func<TEntity, bool>> predicate);
 
 #if OBJECT_METHODS_REALIZATION
 
@@ -38,6 +49,10 @@ namespace MediaService.DAL.Interfaces
         void AddRange(object items);
 
         Task AddRangeAsync(object items);
+
+        void AddRangeParallel(object items);
+
+        Task AddRangeAsyncParallel(object items);
 
 
         void Update(object item);
@@ -53,6 +68,10 @@ namespace MediaService.DAL.Interfaces
         void RemoveRange(object items);
 
         Task RemoveRangeAsync(object items);
+
+        void RemoveRangeParallel(object items);
+
+        Task RemoveRangeAsyncParallel(object items);
 
 #else
 

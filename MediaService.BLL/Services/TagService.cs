@@ -22,13 +22,29 @@ namespace MediaService.BLL.Services
 
         public TagDto GetTagByName(string name)
         {
-            return DtoMapper.Map<TagDto>(Database.Tags.GetData(t => t.Name.Equals(name)).SingleOrDefault());
+            try
+            {
+                return DtoMapper.Map<TagDto>(Database.Tags.GetDataParallel(t => t.Name.Equals(name)).SingleOrDefault());
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e);
+                return null;
+            }
         }
 
         public async Task<TagDto> GetTagByNameAsync(string name)
         {
-            return DtoMapper.Map<TagDto>((await Database.Tags.GetDataAsync(t => t.Name.Equals(name)))
-                .SingleOrDefault());
+            try
+            {
+                return DtoMapper.Map<TagDto>((await Database.Tags.GetDataAsyncParallel(t => t.Name.Equals(name)))
+                    .SingleOrDefault());
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e);
+                return null;
+            }
         }
     }
 }
