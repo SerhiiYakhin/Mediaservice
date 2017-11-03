@@ -277,6 +277,7 @@
     <Content Include="fonts\icons-buttons\facebook.svg" />
     <Content Include="fonts\icons-buttons\folder-pink.svg" />
     <Content Include="fonts\icons-buttons\folder.svg" />
+    <Content Include="fonts\icons-buttons\google.svg" />
     <Content Include="fonts\icons-buttons\icon-play.svg" />
     <Content Include="fonts\icons-buttons\list.svg" />
     <Content Include="fonts\icons-buttons\minus.svg" />
