@@ -9,7 +9,7 @@
     <div class="col-xs-4">
     </div>
 
-        <div class="col-xs-4 authForms">
+        <div class="col-xs-4" id="authForms">
             @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
             {
                 <h3>Зарегистрируйтесь</h3>
@@ -38,8 +38,6 @@
                         </div>
                         <div class="form-group">
                             <input type="submit" class="btn btn-primary btn-block" value="Зарегистрироваться" />
-                            <input type="button" value="Через FB" class="btn btn-outline-primary btn-block fbBtn" />
-                            <input type="button" value="Через Google" class="btn btn-outline-primary btn-block googleBtn" />
                         </div>
                     </div>
             }
