@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -16,28 +17,42 @@ namespace MediaService.BLL.Interfaces
         Task<IEnumerable<TDto>> GetDataAsync();
 
 
-        void Add(TDto item);
+        IEnumerable<TDto> GetDataParallel();
 
-        Task AddAsync(TDto item);
-
-
-        void AddRange(IEnumerable<TDto> items);
-
-        Task AddRangeAsync(IEnumerable<TDto> items);
+        Task<IEnumerable<TDto>> GetDataAsyncParallel();
 
 
-        void Update(TDto item);
+        IdentityResult Add(TDto item);
 
-        Task UpdateAsync(TDto item);
-
-
-        void Remove(TDto item);
-
-        Task RemoveAsync(TDto item);
+        Task<IdentityResult> AddAsync(TDto item);
 
 
-        void RemoveRange(IEnumerable<TDto> items);
+        IdentityResult AddRange(IEnumerable<TDto> items);
 
-        Task RemoveRangeAsync(IEnumerable<TDto> items);
+        Task<IdentityResult> AddRangeAsync(IEnumerable<TDto> items);
+
+
+        IdentityResult AddRangeParallel(IEnumerable<TDto> items);
+
+        Task<IdentityResult> AddRangeAsyncParallel(IEnumerable<TDto> items);
+
+
+        IdentityResult Update(TDto item);
+
+        Task<IdentityResult> UpdateAsync(TDto item);
+
+
+        IdentityResult Remove(TDto item);
+
+        Task<IdentityResult> RemoveAsync(TDto item);
+
+
+        IdentityResult RemoveRange(IEnumerable<TDto> items);
+
+        Task<IdentityResult> RemoveRangeAsync(IEnumerable<TDto> items);
+
+        IdentityResult RemoveRangeParallel(IEnumerable<TDto> items);
+
+        Task<IdentityResult> RemoveRangeAsyncParallel(IEnumerable<TDto> items);
     }
 }
