@@ -61,15 +61,15 @@ namespace MediaService.PL
             //   consumerKey: "",
             //   consumerSecret: "");
 
-            //app.UseFacebookAuthentication(
-            //   appId: "",
-            //   appSecret: "");
+            app.UseFacebookAuthentication(
+               appId: "1956709024594856",
+               appSecret: "4fd4b9b1f37c56db5ca44d8318d48ffa");
 
-            //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-            //{
-            //    ClientId = "",
-            //    ClientSecret = ""
-            //});
+            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
+             {
+                 ClientId = "399844496480-amechr0p04vqj11hv17qvfocs2lf9428.apps.googleusercontent.com",
+                 ClientSecret = "4XJTMEEOSvWoTli2X2tZ8Cq3"
+             });
         }
     }
 }

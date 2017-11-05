@@ -227,7 +227,7 @@ namespace MediaService.PL.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await UserManager.FindByNameAsync(model.Email);
+                var user = await UserManager.FindByEmailAsync(model.Email);
                 if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
                 {
                     // Don't reveal that the user does not exist or is not confirmed
@@ -267,7 +267,7 @@ namespace MediaService.PL.Controllers
             {
                 return View(model);
             }
-            var user = await UserManager.FindByNameAsync(model.Email);
+            var user = await UserManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
                 // Don't reveal that the user does not exist
@@ -382,11 +382,9 @@ namespace MediaService.PL.Controllers
                 return RedirectToAction("Index", "Manage");
             }
 
-            if (UserService.GetUserByNick(model.Email) != null)
+            if (UserService.GetUserByNick(model.Nickname) != null)
             {
-                //todo: make correct redirect with message about email duplicate (already registered)
-                ModelState.AddModelError("Email", "User with that Email is already registered");
-                return View("Login");
+                ModelState.AddModelError("Nickname", "User with that nickname is already exist");
             }
 
             if (ModelState.IsValid)
@@ -398,7 +396,7 @@ namespace MediaService.PL.Controllers
                     return View("ExternalLoginFailure");
                 }
                 
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser { UserName = model.Nickname, Email = model.Email };
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
