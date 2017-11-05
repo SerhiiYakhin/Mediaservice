@@ -41,7 +41,7 @@ namespace MediaService.PL
                         validateInterval: TimeSpan.FromMinutes(30),
                         regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager))
                 }
-            });            
+            });
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
             // Enables the application to temporarily store user information when they are verifying the second factor in the two-factor authentication process.
@@ -65,11 +65,11 @@ namespace MediaService.PL
             //   appId: "",
             //   appSecret: "");
 
-            //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-            //{
-            //    ClientId = "",
-            //    ClientSecret = ""
-            //});
+            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
+            {
+                ClientId = "399844496480-amechr0p04vqj11hv17qvfocs2lf9428.apps.googleusercontent.com",
+                ClientSecret = "4XJTMEEOSvWoTli2X2tZ8Cq3"
+            });
         }
     }
 }
