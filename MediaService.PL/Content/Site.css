@@ -1,4 +1,11 @@
-﻿
+﻿a {
+    color: #d3095f;
+}
+
+a:any-link {
+    color: #d3095f;
+}
+
 body {
     background-color: #e8e9f2;
     padding-top: 50px;
@@ -26,7 +33,6 @@ h1 {
 }
 
 h3 {
-    font-family: 'Raleway', sans-serif;
     font-weight: 600;
 }
 h4 {
@@ -82,9 +88,7 @@ textarea {
 .open > .dropdown-toggle.btn-primary {
     background-image: none;
 }
-.btn-outline {
-    background-color: transparent;
-}
+
 
 .btn-primary.btn-outline {
     color: grey;
@@ -97,10 +101,6 @@ textarea {
 }
 
 
-}
-a {
-    color: #d3095f;
-}
 
 .authForms {
     background-color: #fff;
@@ -108,18 +108,32 @@ a {
     padding-bottom: 75px;
    overflow-wrap: break-word;
 }
-.fbBtn {
+
+
+#Facebook {
     background-image: url(/fonts/icons-buttons/facebook.svg);
     background-repeat: no-repeat;
     background-position: 0 0;
     padding-left: 16px;
     background-size: 32px;
+    background-color: transparent;
+    font-size: 14px;
+    height: 34px;
+    padding: 6px 12px;
+
+
 }
 
-.googleBtn {
+#Google {
     background-image: url(/fonts/icons-buttons/google.svg);
     background-repeat: no-repeat;
     background-position: 0 0;
-    padding-left: 16px;
     background-size: 32px;
+    background-color: transparent;
+    color: #B6B2B6;
+    border-color: #B6B2B6;
+    font-size: 14px;
+    height: 34px;
+    padding: 6px 32px;
 }
+

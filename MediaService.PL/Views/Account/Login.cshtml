@@ -12,48 +12,50 @@
     </div>
     <div class="container">
         <div class="col-xs-4 authForms">
-
-            @using (Html.BeginForm("Login", "Account", new { ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+            <div class="col-xs-8 col-xs-offset-2">
+                @using (Html.BeginForm("Login", "Account", new { ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
             {
-                <h3>Войдите в аккаунт</h3>
-                <p class="text-center">
-                    или @Html.ActionLink("Создайте аккаунт", "Register")
-                </p>
+                    <h3>Войдите в аккаунт</h3>
+                    <p class="text-center">
+                        или @Html.ActionLink("Создайте аккаунт", "Register")
+                    </p>
                     @Html.AntiForgeryToken()
-                    <div class="col-xs-8 col-xs-offset-2">
-                        <div class="form-group">
-                        </div>
 
-                        <div class="form-group">
-                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = "E-mail" })
-                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-                        </div>
-                        <div class="form-group">
-                            @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Пароль" })
-                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-                        </div>
-                        <div class="form-group">
-                        </div>
-                        <div class="form-group">
-                            <input type="submit" value="Войти" class="btn btn-primary outline btn-block" />
-                            <input type="submit" value="Через FB" class="btn btn-primary btn-outline btn-block fbBtn" />
-                            <input type="submit" value="Через Google" class="btn btn-primary btn-outline btn-block googleBtn" />
-                        </div>
-
-                        @*Enable this once you have account confirmation enabled for password reset functionality
-                            <p>
-                                @Html.ActionLink("Forgot your password?", "ForgotPassword")
-                            </p>*@
+                    <div class="form-group">
                     </div>
-            }
 
+                    <div class="form-group">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = "E-mail" })
+                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group">
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Пароль" })
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group">
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Войти" class="btn btn-primary  btn-block" />
+                 
+                    </div>
+                    @*Enable this once you have account confirmation enabled for password reset functionality
+                <p>
+                    @Html.ActionLink("Forgot your password?", "ForgotPassword")
+                </p>*@
+                  
 
+                }
+                <section id="socialLoginForm">
+                    @Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel { ReturnUrl = ViewBag.ReturnUrl })
+                </section>
 
+            </div>
 
         </div>
     </div>
     <div class="col-xs-4">
+
     </div>
 </div>
 @*<div class="col-md-4">
