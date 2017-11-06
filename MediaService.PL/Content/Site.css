@@ -114,14 +114,13 @@ textarea {
     background-image: url(/fonts/icons-buttons/facebook.svg);
     background-repeat: no-repeat;
     background-position: 0 0;
-    padding-left: 16px;
     background-size: 32px;
     background-color: transparent;
+    color: #B6B2B6;
+    border-color: #B6B2B6;
     font-size: 14px;
     height: 34px;
-    padding: 6px 12px;
-
-
+    padding: 6px 32px;
 }
 
 #Google {
