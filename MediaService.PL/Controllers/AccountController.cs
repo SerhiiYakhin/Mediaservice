@@ -1,7 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Web;
 using System.Web.Mvc;
 using System.Threading.Tasks;
+using System.Web.Routing;
 using AutoMapper;
 using Microsoft.Owin.Security;
 using Microsoft.AspNet.Identity;
@@ -14,6 +17,8 @@ using MediaService.BLL.Interfaces;
 using MediaService.PL.Models.AccountViewModels;
 using MediaService.PL.Models.IdentityModels;
 using MediaService.PL.Models.IdentityModels.Managers;
+using Microsoft.Win32.SafeHandles;
+using NLog;
 
 namespace MediaService.PL.Controllers
 {
@@ -33,8 +38,11 @@ namespace MediaService.PL.Controllers
         {
             UserManager = userManager;
             SignInManager = signInManager;
-            _userService = userService;
+            UserService = userService;
         }
+
+        protected static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
+
         private IMapper DtoMapper => _mapper ?? (_mapper = MapperModule.GetMapper());
 
         private ApplicationSignInManager SignInManager
@@ -166,17 +174,22 @@ namespace MediaService.PL.Controllers
                         var userProfile = DtoMapper.Map<RegisterViewModel, UserDto>(model);
                         userProfile.Id = user.Id;
 
-                        await UserService.AddAsync(userProfile);
+                        var addResult = await UserService.AddAsync(userProfile);
 
-                        await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
-                        // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
-                        // Send an email with this link
-                        // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                        // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                        // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                        if (addResult.Succeeded)
+                        {
+                            await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
 
-                        return RedirectToAction("Index", "Home");
+                            // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
+                            // Send an email with this link
+                            // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                            // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                            // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+
+                            return RedirectToAction("Index", "Home");
+                        }
+                        await UserManager.DeleteAsync(user);
+                        return View("Error");
                     }
 
                     AddErrors(result);
@@ -214,7 +227,7 @@ namespace MediaService.PL.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await UserManager.FindByNameAsync(model.Email);
+                var user = await UserManager.FindByEmailAsync(model.Email);
                 if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
                 {
                     // Don't reveal that the user does not exist or is not confirmed
@@ -254,7 +267,7 @@ namespace MediaService.PL.Controllers
             {
                 return View(model);
             }
-            var user = await UserManager.FindByNameAsync(model.Email);
+            var user = await UserManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
                 // Don't reveal that the user does not exist
@@ -358,6 +371,7 @@ namespace MediaService.PL.Controllers
 
         //
         // POST: /Account/ExternalLoginConfirmation
+        //todo: Make exeption handling logic more practical
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -368,6 +382,11 @@ namespace MediaService.PL.Controllers
                 return RedirectToAction("Index", "Manage");
             }
 
+            if (UserService.GetUserByNick(model.Nickname) != null)
+            {
+                ModelState.AddModelError("Nickname", "User with that nickname is already exist");
+            }
+
             if (ModelState.IsValid)
             {
                 // Get the information about the user from the external login provider
@@ -376,16 +395,24 @@ namespace MediaService.PL.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                
+                var user = new ApplicationUser { UserName = model.Nickname, Email = model.Email };
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
-                    result = await UserManager.AddLoginAsync(user.Id, info.Login);
-                    if (result.Succeeded)
+                    var userProfile = DtoMapper.Map<ApplicationUser, UserDto>(user);
+                    var addResult = await UserService.AddAsync(userProfile);
+                    if (addResult.Succeeded)
                     {
-                        await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                        return RedirectToLocal(returnUrl);
+                        result = await UserManager.AddLoginAsync(user.Id, info.Login);
+                        if (result.Succeeded)
+                        {
+                            await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                            return RedirectToLocal(returnUrl);
+                        }
                     }
+                    await UserManager.DeleteAsync(user);
+                    return View("Error");
                 }
                 AddErrors(result);
             }
@@ -423,6 +450,12 @@ namespace MediaService.PL.Controllers
                 {
                     _signInManager.Dispose();
                     _signInManager = null;
+                }
+
+                if (_userService != null)
+                {
+                    _userService.Dispose();
+                    _userService = null;
                 }
             }
 

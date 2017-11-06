@@ -1,12 +1,21 @@
-﻿body {
+﻿a {
+    color: #d3095f;
+}
+
+a:any-link {
+    color: #d3095f;
+}
+
+body {
+    background-color: #e8e9f2;
     padding-top: 50px;
     padding-bottom: 20px;
 }
 
 /* Set padding to keep content from hitting the edges */
 .body-content {
-    padding-left: 15px;
-    padding-right: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 /* Override the default bootstrap behavior where horizontal description lists 
@@ -15,10 +24,116 @@
 .dl-horizontal dt {
     white-space: normal;
 }
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Raleway', sans-serif;
+    text-align: center;
+}
+h1 {
+    font-weight: 700;
+}
+
+h3 {
+    font-weight: 600;
+}
+h4 {
+    font-weight: 400;
+    color: #999999;
+}
+
+
 
 /* Set width on the form input elements since they're 100% wide by default */
 input,
 select,
 textarea {
-    max-width: 280px;
+    max-width: 220px;
 }
+
+.btn-primary {
+    color: #fff;
+    background-color: #d3095f;
+    border-color: #d3095f;
+}
+
+.btn-primary:focus,
+.btn-primary.focus {
+    color: #fff;
+    background-color: #d3095f;
+    border-color: #d3095f;
+}
+
+.btn-primary:hover {
+    color: #fff;
+    background-color: #d3095f;
+    border-color: #d3095f;
+}
+
+.btn-primary:active,
+.btn-primary.active,
+.open > .dropdown-toggle.btn-primary {
+    color: #fff;
+    background-color: #d3095f;
+    border-color: #d3095f;
+}
+
+       
+.open > .dropdown-toggle.btn-primary.focus {
+    color: #fff;
+    background-color: #d3095f;
+    border-color: #d3095f;
+}
+
+.btn-primary:active,
+.btn-primary.active,
+.open > .dropdown-toggle.btn-primary {
+    background-image: none;
+}
+
+
+.btn-primary.btn-outline {
+    color: grey;
+    border-color: grey;
+
+}
+.btn-outline:hover {
+    background-color: transparent;
+    border-color: grey;
+}
+
+
+
+.authForms {
+    background-color: #fff;
+    padding-top: 50px;
+    padding-bottom: 75px;
+   overflow-wrap: break-word;
+}
+
+
+#Facebook {
+    background-image: url(/fonts/icons-buttons/facebook.svg);
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    padding-left: 16px;
+    background-size: 32px;
+    background-color: transparent;
+    font-size: 14px;
+    height: 34px;
+    padding: 6px 12px;
+
+
+}
+
+#Google {
+    background-image: url(/fonts/icons-buttons/google.svg);
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-size: 32px;
+    background-color: transparent;
+    color: #B6B2B6;
+    border-color: #B6B2B6;
+    font-size: 14px;
+    height: 34px;
+    padding: 6px 32px;
+}
+
