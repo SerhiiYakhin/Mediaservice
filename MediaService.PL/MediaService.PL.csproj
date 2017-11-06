@@ -325,6 +325,7 @@
     <Content Include="fonts\Raleway\Raleway-ThinItalic.ttf" />
     <Content Include="Connected Services\Application Insights\ConnectedService.json" />
     <Content Include="Connected Services\atluxAzureStorage\ConnectedService.json" />
+    <None Include="Properties\PublishProfiles\LuxStorage - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.2.1.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
