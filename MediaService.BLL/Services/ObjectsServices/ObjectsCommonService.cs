@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using MediaService.BLL.DTO;
+﻿using MediaService.BLL.DTO;
 using MediaService.DAL.Entities;
 using MediaService.DAL.Interfaces;
-using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,72 +8,31 @@ using System.Threading.Tasks;
 
 namespace MediaService.BLL.Services.ObjectsServices
 {
-    public sealed class ObjectsCommonService<TObjectDto, TObject>
+    public class ObjectsCommonService<TObjectDto, TObject> : Service<TObjectDto, TObject, Guid>
         where TObjectDto : ObjectEntryDto
         where TObject : ObjectEntry
     {
-        private IMapper DtoMapper { get; }
 
-        private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
-
-        private IRepository<TObject, Guid> Repository { get; }
-
-        public ObjectsCommonService(IMapper dtoMapper, IRepository<TObject, Guid> repository)
-        {
-            DtoMapper = dtoMapper;
-            Repository = repository;
-        }
+        public ObjectsCommonService(IUnitOfWork uow) : base(uow) { }
 
         public IEnumerable<TObjectDto> GetByName(string name)
         {
-            try
-            {
-                return DtoMapper.Map<IEnumerable<TObjectDto>>(Repository.GetDataParallel(o => o.Name.Equals(name)));
-            }
-            catch (Exception e)
-            {
-                Logger.Error(e);
-                return Enumerable.Empty<TObjectDto>();
-            }
+            return DtoMapper.Map<IEnumerable<TObjectDto>>(Repository.GetDataParallel(o => o.Name.Equals(name)));
         }
 
         public async Task<IEnumerable<TObjectDto>> GetByNameAsync(string name)
         {
-            try
-            {
-                return DtoMapper.Map<IEnumerable<TObjectDto>>(await Repository.GetDataAsyncParallel(o => o.Name.Equals(name)));
-            }
-            catch (Exception e)
-            {
-                Logger.Error(e);
-                return Enumerable.Empty<TObjectDto>();
-            }
+            return DtoMapper.Map<IEnumerable<TObjectDto>>(await Repository.GetDataAsyncParallel(o => o.Name.Equals(name)));
         }
 
         public IEnumerable<TObjectDto> GetByParentId(Guid id)
         {
-            try
-            {
-                return DtoMapper.Map<IEnumerable<TObjectDto>>(Repository.GetDataParallel(o => o.ParentId.Equals(id)));
-            }
-            catch (Exception e)
-            {
-                Logger.Error(e);
-                return Enumerable.Empty<TObjectDto>();
-            }
+            return DtoMapper.Map<IEnumerable<TObjectDto>>(Repository.GetDataParallel(o => o.ParentId.Equals(id)));
         }
 
         public async Task<IEnumerable<TObjectDto>> GetByParentIdAsync(Guid id)
         {
-            try
-            {
-                return DtoMapper.Map<IEnumerable<TObjectDto>>(await Repository.GetDataAsyncParallel(o => o.ParentId.Equals(id)));
-            }
-            catch (Exception e)
-            {
-                Logger.Error(e);
-                return Enumerable.Empty<TObjectDto>();
-            }
+            return DtoMapper.Map<IEnumerable<TObjectDto>>(await Repository.GetDataAsyncParallel(o => o.ParentId.Equals(id)));
         }
 
         public IEnumerable<TObjectDto> GetBy(
@@ -88,16 +45,8 @@ namespace MediaService.BLL.Services.ObjectsServices
             ICollection<UserDto> owners = null
             )
         {
-            try
-            {
-                var objects = GetQuery(name, parentId, size, created, downloaded, modified, owners);
-                return DtoMapper.Map<IEnumerable<TObjectDto>>(objects.AsParallel());
-            }
-            catch (Exception e)
-            {
-                Logger.Error(e);
-                return Enumerable.Empty<TObjectDto>();
-            }
+            var objects = GetQuery(name, parentId, size, created, downloaded, modified, owners);
+            return DtoMapper.Map<IEnumerable<TObjectDto>>(objects.AsParallel());
         }
 
         public async Task<IEnumerable<TObjectDto>> GetByAsync(
@@ -110,16 +59,8 @@ namespace MediaService.BLL.Services.ObjectsServices
             ICollection<UserDto> owners = null
         )
         {
-            try
-            {
-                var objects = GetQuery(name, parentId, size, created, downloaded, modified, owners);
-                return await Task.Run(() => DtoMapper.Map<IEnumerable<TObjectDto>>(objects.AsParallel()));
-            }
-            catch (Exception e)
-            {
-                Logger.Error(e);
-                return Enumerable.Empty<TObjectDto>();
-            }
+            var objects = GetQuery(name, parentId, size, created, downloaded, modified, owners);
+            return await Task.Run(() => DtoMapper.Map<IEnumerable<TObjectDto>>(objects.AsParallel()));
         }
 
         private IQueryable<TObject> GetQuery(string name, Guid? parentId, long? size, DateTime? created, DateTime? downloaded, DateTime? modified, ICollection<UserDto> owners)

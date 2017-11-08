@@ -1,6 +1,6 @@
-﻿using System;
+﻿using MediaService.DAL.Entities;
+using System;
 using System.Threading.Tasks;
-using MediaService.DAL.Entities;
 
 namespace MediaService.DAL.Interfaces
 {

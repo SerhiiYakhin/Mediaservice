@@ -12,11 +12,6 @@ namespace MediaService.DAL.Entities
         [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public string Id       { get; set; }
 
-        [Required]
-        [StringLength(128, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 2)]
-        [Display(Name = "Nickname")]
-        public string Nickname { get; set; }
-
         [StringLength(60)]
         public string Avatar   { get; set; }
 

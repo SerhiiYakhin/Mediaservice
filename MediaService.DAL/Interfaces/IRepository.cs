@@ -1,6 +1,4 @@
-﻿#define OBJECT_METHODS_REALIZATION
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -39,42 +37,6 @@ namespace MediaService.DAL.Interfaces
 
         Task<IEnumerable<TEntity>> GetDataAsyncParallel(Expression<Func<TEntity, bool>> predicate);
 
-#if OBJECT_METHODS_REALIZATION
-
-        void Add(object item);
-
-        Task AddAsync(object item);
-
-
-        void AddRange(object items);
-
-        Task AddRangeAsync(object items);
-
-        void AddRangeParallel(object items);
-
-        Task AddRangeAsyncParallel(object items);
-
-
-        void Update(object item);
-
-        Task UpdateAsync(object item);
-
-
-        void Remove(object item);
-
-        Task RemoveAsync(object item);
-
-
-        void RemoveRange(object items);
-
-        Task RemoveRangeAsync(object items);
-
-        void RemoveRangeParallel(object items);
-
-        Task RemoveRangeAsyncParallel(object items);
-
-#else
-
         void Add(TEntity item);
 
         Task AddAsync(TEntity item);
@@ -83,6 +45,10 @@ namespace MediaService.DAL.Interfaces
         void AddRange(IEnumerable<TEntity> items);
 
         Task AddRangeAsync(IEnumerable<TEntity> items);
+
+        void AddRangeParallel(IEnumerable<TEntity> items);
+
+        Task AddRangeAsyncParallel(IEnumerable<TEntity> items);
 
 
         void Update(TEntity item);
@@ -99,7 +65,9 @@ namespace MediaService.DAL.Interfaces
 
         Task RemoveRangeAsync(IEnumerable<TEntity> items);
 
-#endif
+        void RemoveRangeParallel(IEnumerable<TEntity> items);
+
+        Task RemoveRangeAsyncParallel(IEnumerable<TEntity> items);
 
     }
 }

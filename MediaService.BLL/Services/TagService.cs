@@ -3,48 +3,24 @@ using MediaService.BLL.Interfaces;
 using MediaService.DAL.Entities;
 using MediaService.DAL.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace MediaService.BLL.Services
 {
-    public class TagService : Service<TagDto, Guid>, ITagService
+    public class TagService : Service<TagDto, Tag, Guid>,  ITagService
     {
-        public TagService(IUnitOfWork uow) : base(uow)
-        {
-            Repository = Database.Tags;
-
-            EntityType = typeof(Tag);
-
-            CollectionEntityType = typeof(IEnumerable<Tag>);
-        }
+        public TagService(IUnitOfWork uow) : base(uow) { }
 
         public TagDto GetTagByName(string name)
         {
-            try
-            {
-                return DtoMapper.Map<TagDto>(Database.Tags.GetDataParallel(t => t.Name.Equals(name)).SingleOrDefault());
-            }
-            catch (Exception e)
-            {
-                Logger.Error(e);
-                return null;
-            }
+            return DtoMapper.Map<TagDto>(Database.Tags.GetDataParallel(t => t.Name.Equals(name)).SingleOrDefault());
         }
 
         public async Task<TagDto> GetTagByNameAsync(string name)
         {
-            try
-            {
-                return DtoMapper.Map<TagDto>((await Database.Tags.GetDataAsyncParallel(t => t.Name.Equals(name)))
-                    .SingleOrDefault());
-            }
-            catch (Exception e)
-            {
-                Logger.Error(e);
-                return null;
-            }
+            return DtoMapper.Map<TagDto>((await Database.Tags.GetDataAsyncParallel(t => t.Name.Equals(name)))
+                .SingleOrDefault());
         }
     }
 }

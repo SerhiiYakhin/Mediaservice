@@ -1,24 +1,17 @@
-﻿using System;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Web;
-using System.Web.Mvc;
-using System.Threading.Tasks;
-using System.Web.Routing;
-using AutoMapper;
-using Microsoft.Owin.Security;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-
-using MediaService.PL.Utils;
-
-using MediaService.BLL.DTO;
+﻿using AutoMapper;
 using MediaService.BLL.Interfaces;
 using MediaService.PL.Models.AccountViewModels;
 using MediaService.PL.Models.IdentityModels;
 using MediaService.PL.Models.IdentityModels.Managers;
-using Microsoft.Win32.SafeHandles;
+using MediaService.PL.Utils;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Security;
 using NLog;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
 
 namespace MediaService.PL.Controllers
 {
@@ -43,7 +36,7 @@ namespace MediaService.PL.Controllers
 
         protected static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
 
-        private IMapper DtoMapper => _mapper ?? (_mapper = MapperModule.GetMapper());
+        private IMapper Mapper => _mapper ?? (_mapper = MapperModule.GetMapper());
 
         private ApplicationSignInManager SignInManager
         {
@@ -86,7 +79,7 @@ namespace MediaService.PL.Controllers
 
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+            var result = await SignInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -157,39 +150,24 @@ namespace MediaService.PL.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
-            if (UserService.GetUserByNick(model.Nickname) != null)
-            {
-                ModelState.AddModelError("Nickname", "User with that Nickname is already exist");
-            }
-
             if (ModelState.IsValid)
             {
                 if (ValidateRequest)
                 {
-                    var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                    var user = Mapper.Map<RegisterViewModel, ApplicationUser>(model);
                     var result = await UserManager.CreateAsync(user, model.Password);
 
                     if (result.Succeeded)
                     {
-                        var userProfile = DtoMapper.Map<RegisterViewModel, UserDto>(model);
-                        userProfile.Id = user.Id;
+                        await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
 
-                        var addResult = await UserService.AddAsync(userProfile);
+                        // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
+                        // Send an email with this link
+                        // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                        // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                        // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                        if (addResult.Succeeded)
-                        {
-                            await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-
-                            // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
-                            // Send an email with this link
-                            // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                            // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                            // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-
-                            return RedirectToAction("Index", "Home");
-                        }
-                        await UserManager.DeleteAsync(user);
-                        return View("Error");
+                        return RedirectToAction("Index", "Home");
                     }
 
                     AddErrors(result);
@@ -371,7 +349,6 @@ namespace MediaService.PL.Controllers
 
         //
         // POST: /Account/ExternalLoginConfirmation
-        //todo: Make exeption handling logic more practical
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -382,11 +359,6 @@ namespace MediaService.PL.Controllers
                 return RedirectToAction("Index", "Manage");
             }
 
-            if (UserService.GetUserByNick(model.Nickname) != null)
-            {
-                ModelState.AddModelError("Nickname", "User with that nickname is already exist");
-            }
-
             if (ModelState.IsValid)
             {
                 // Get the information about the user from the external login provider
@@ -395,24 +367,17 @@ namespace MediaService.PL.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                
-                var user = new ApplicationUser { UserName = model.Nickname, Email = model.Email };
+
+                var user = Mapper.Map<ExternalLoginConfirmationViewModel, ApplicationUser>(model);
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
-                    var userProfile = DtoMapper.Map<ApplicationUser, UserDto>(user);
-                    var addResult = await UserService.AddAsync(userProfile);
-                    if (addResult.Succeeded)
+                    result = await UserManager.AddLoginAsync(user.Id, info.Login);
+                    if (result.Succeeded)
                     {
-                        result = await UserManager.AddLoginAsync(user.Id, info.Login);
-                        if (result.Succeeded)
-                        {
-                            await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                            return RedirectToLocal(returnUrl);
-                        }
+                        await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                        return RedirectToLocal(returnUrl);
                     }
-                    await UserManager.DeleteAsync(user);
-                    return View("Error");
                 }
                 AddErrors(result);
             }
