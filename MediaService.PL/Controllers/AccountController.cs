@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MediaService.BLL.DTO;
 using MediaService.BLL.Interfaces;
 using MediaService.PL.Models.AccountViewModels;
 using MediaService.PL.Models.IdentityModels;
@@ -8,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using NLog;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -19,9 +21,14 @@ namespace MediaService.PL.Controllers
     public class AccountController : Controller
     {
         private ApplicationSignInManager _signInManager;
-        private ApplicationUserManager   _userManager;
-        private IUserService             _userService;
-        private IMapper                  _mapper;
+
+        private ApplicationUserManager _userManager;
+
+        private IUserService _userService;
+
+        private IDirectoryService _directoryService;
+
+        private IMapper _mapper;
 
         public AccountController()
         {
@@ -54,6 +61,12 @@ namespace MediaService.PL.Controllers
         {
             get => _userService ?? HttpContext.GetOwinContext().GetUserManager<IUserService>();
             set => _userService = value;
+        }
+
+        private IDirectoryService DirectoryService
+        {
+            get => _directoryService ?? HttpContext.GetOwinContext().GetUserManager<IDirectoryService>();
+            set => _directoryService = value;
         }
 
         //
@@ -160,7 +173,17 @@ namespace MediaService.PL.Controllers
                     if (result.Succeeded)
                     {
                         await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-
+                        await DirectoryService.AddAsync(new DirectoryEntryDto
+                            {
+                                NodeLevel = 0,
+                                Created = DateTime.Now,
+                                Downloaded = DateTime.Now,
+                                Modified = DateTime.Now,
+                                Size = 0,
+                                Thumbnail = "",
+                                Name = "root",
+                                Owners = null
+                            });
                         // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                         // Send an email with this link
                         // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
@@ -415,6 +438,12 @@ namespace MediaService.PL.Controllers
                 {
                     _signInManager.Dispose();
                     _signInManager = null;
+                }
+                
+                if (_directoryService != null)
+                {
+                    _directoryService.Dispose();
+                    _directoryService = null;
                 }
 
                 if (_userService != null)
