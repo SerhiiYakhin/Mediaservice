@@ -7,7 +7,7 @@ namespace MediaService.PL.Models.AccountViewModels
         [Required]
         [StringLength(30, ErrorMessage = "{0} должно иметь как минимум {2} символа.", MinimumLength = 2)]
         [Display(Name = "Имя пользователя")]
-        public string Nickname { get; set; }
+        public string UserName { get; set; }
 
         [Required]
         [EmailAddress]

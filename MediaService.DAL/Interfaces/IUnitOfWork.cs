@@ -1,6 +1,6 @@
-﻿using System;
+﻿using MediaService.DAL.Entities;
+using System;
 using System.Threading.Tasks;
-using MediaService.DAL.Entities;
 
 namespace MediaService.DAL.Interfaces
 {
@@ -14,7 +14,9 @@ namespace MediaService.DAL.Interfaces
 
         IRepository<Tag, Guid>            Tags        { get; }
 
-        IRepository<UserProfile, string>  Users       { get; }
+        IRepository<UserProfile, Guid> UsersProfiles { get; }
+
+        IRepository<AspNetUser, string> AspNetUsers { get; }
 
         int SaveChanges();
 

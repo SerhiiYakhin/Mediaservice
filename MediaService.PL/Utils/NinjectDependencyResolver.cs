@@ -27,11 +27,12 @@ namespace MediaService.PL.Utils
         private void AddBindings()
         {
             _kernel.Bind<IObjectService<ObjectEntryDto>>().To<ObjectService>();
-            _kernel.Bind<IObjectService<FileEntryDto>>().To<FileService>();
-            _kernel.Bind<IObjectService<DirectoryEntryDto>>().To<DirectoryService>();
+            _kernel.Bind<IFilesService>().To<FileService>();
+            _kernel.Bind<IDirectoryService>().To<DirectoryService>();
 
             _kernel.Bind<ITagService>().To<TagService>();
-            _kernel.Bind<IUserService>().To<UserService>();
+            _kernel.Bind<IUserProfileService>().To<UserProfileService>();
+            _kernel.Bind<IApplicationUserService>().To<ApplicationUserService>();
         }
     }
 }

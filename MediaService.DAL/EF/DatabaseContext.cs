@@ -15,6 +15,8 @@ namespace MediaService.DAL.EF
 
         public virtual DbSet<UserProfile>    UserProfiles     { get; set; }
 
+        public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
+
         public DatabaseContext(string connectionString) : base(connectionString)
         {
             

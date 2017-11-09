@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -6,21 +7,17 @@ namespace MediaService.DAL.Entities
 {
     public class UserProfile
     {
-        public UserProfile() => ObjectEntries = new HashSet<ObjectEntry>();
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public UserProfile() => AppUsers = new HashSet<AspNetUser>();
 
         [Required]
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public string Id       { get; set; }
-
-        [Required]
-        [StringLength(128, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 2)]
-        [Display(Name = "Nickname")]
-        public string Nickname { get; set; }
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid Id { get; set; }
 
         [StringLength(60)]
-        public string Avatar   { get; set; }
+        public string Avatar { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public ICollection<ObjectEntry> ObjectEntries { get; set; }
+        public virtual ICollection<AspNetUser> AppUsers { get; set; }
     }
 }

@@ -7,8 +7,8 @@
     <Name>MediaService.Database</Name>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.1</ProjectVersion>
-    <ProjectGuid>{c9226ab6-253e-4d4e-b2dd-d2d7144f6c8b}</ProjectGuid>
-    <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureV12DatabaseSchemaProvider</DSP>
+    <ProjectGuid>{ecaedd68-c2b6-4fa4-89ef-dff030ca1ceb}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
     <RootPath>
     </RootPath>
@@ -63,15 +63,15 @@
     <Folder Include="dbo\Tables\" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="dbo\Tables\ObjectEntries.sql" />
-    <Build Include="dbo\Tables\UserProfiles.sql" />
+    <Build Include="dbo\Tables\AspNetRoles.sql" />
+    <Build Include="dbo\Tables\AspNetUserRoles.sql" />
     <Build Include="dbo\Tables\AspNetUsers.sql" />
     <Build Include="dbo\Tables\AspNetUserClaims.sql" />
     <Build Include="dbo\Tables\AspNetUserLogins.sql" />
-    <Build Include="dbo\Tables\AspNetUserRoles.sql" />
+    <Build Include="dbo\Tables\ObjectEntries.sql" />
     <Build Include="dbo\Tables\Tags.sql" />
-    <Build Include="dbo\Tables\AspNetRoles.sql" />
-    <Build Include="dbo\Tables\ObjectEntryUserProfiles.sql" />
+    <Build Include="dbo\Tables\UserProfiles.sql" />
+    <Build Include="dbo\Tables\ObjectEntryAspNetUsers.sql" />
     <Build Include="dbo\Tables\TagFileEntries.sql" />
     <Build Include="dbo\Tables\__MigrationHistory.sql" />
   </ItemGroup>

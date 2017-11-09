@@ -1,24 +1,23 @@
-﻿using System;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Web;
-using System.Web.Mvc;
-using System.Threading.Tasks;
-using System.Web.Routing;
-using AutoMapper;
-using Microsoft.Owin.Security;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-
-using MediaService.PL.Utils;
-
+﻿using AutoMapper;
 using MediaService.BLL.DTO;
 using MediaService.BLL.Interfaces;
 using MediaService.PL.Models.AccountViewModels;
 using MediaService.PL.Models.IdentityModels;
 using MediaService.PL.Models.IdentityModels.Managers;
-using Microsoft.Win32.SafeHandles;
+using MediaService.PL.Utils;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Security;
 using NLog;
+using System;
+using System.Collections.Generic;
+using System.Data.Entity.Validation;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Hosting;
+using System.Web.Mvc;
 
 namespace MediaService.PL.Controllers
 {
@@ -26,24 +25,39 @@ namespace MediaService.PL.Controllers
     public class AccountController : Controller
     {
         private ApplicationSignInManager _signInManager;
-        private ApplicationUserManager   _userManager;
-        private IUserService             _userService;
-        private IMapper                  _mapper;
+
+        private ApplicationUserManager _userManager;
+
+        private IUserProfileService _userProfileService;
+
+        private IApplicationUserService _applicationUserService;
+        
+        private IDirectoryService _directoryService;
+
+        private IMapper _mapper;
 
         public AccountController()
         {
         }
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager, IUserService userService)
+        public AccountController(
+            ApplicationUserManager userManager,
+            ApplicationSignInManager signInManager,
+            IUserProfileService userProfileService,
+            IApplicationUserService applicationUserService,
+            IDirectoryService directoryService
+            )
         {
             UserManager = userManager;
             SignInManager = signInManager;
-            UserService = userService;
+            UserProfileService = userProfileService;
+            ApplicationUserService = applicationUserService;
+            DirectoryService = directoryService;
         }
 
         protected static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
 
-        private IMapper DtoMapper => _mapper ?? (_mapper = MapperModule.GetMapper());
+        private IMapper Mapper => _mapper ?? (_mapper = MapperModule.GetMapper());
 
         private ApplicationSignInManager SignInManager
         {
@@ -57,10 +71,21 @@ namespace MediaService.PL.Controllers
             set => _userManager = value;
         }
 
-        private IUserService UserService
+        private IUserProfileService UserProfileService
         {
-            get => _userService ?? HttpContext.GetOwinContext().GetUserManager<IUserService>();
-            set => _userService = value;
+            get => _userProfileService ?? HttpContext.GetOwinContext().GetUserManager<IUserProfileService>();
+            set => _userProfileService = value;
+        }
+
+        private IApplicationUserService ApplicationUserService
+        {
+            get => _applicationUserService ?? HttpContext.GetOwinContext().GetUserManager<IApplicationUserService>();
+            set => _applicationUserService = value;
+        }
+        private IDirectoryService DirectoryService
+        {
+            get => _directoryService ?? HttpContext.GetOwinContext().GetUserManager<IDirectoryService>();
+            set => _directoryService = value;
         }
 
         //
@@ -86,7 +111,7 @@ namespace MediaService.PL.Controllers
 
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+            var result = await SignInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -157,39 +182,53 @@ namespace MediaService.PL.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
-            if (UserService.GetUserByNick(model.Nickname) != null)
-            {
-                ModelState.AddModelError("Nickname", "User with that Nickname is already exist");
-            }
-
             if (ModelState.IsValid)
             {
                 if (ValidateRequest)
                 {
-                    var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                    var user = Mapper.Map<RegisterViewModel, ApplicationUser>(model);
                     var result = await UserManager.CreateAsync(user, model.Password);
 
                     if (result.Succeeded)
                     {
-                        var userProfile = DtoMapper.Map<RegisterViewModel, UserDto>(model);
-                        userProfile.Id = user.Id;
-
-                        var addResult = await UserService.AddAsync(userProfile);
-
-                        if (addResult.Succeeded)
+                        await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                        var appUser = await ApplicationUserService.FindByIdAsync(user.Id);
+                        var rootDir = new DirectoryEntryDto
                         {
-                            await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-
-                            // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
-                            // Send an email with this link
-                            // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                            // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                            // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-
-                            return RedirectToAction("Index", "Home");
+                            NodeLevel = 0,
+                            Created = DateTime.Now,
+                            Downloaded = DateTime.Now,
+                            Modified = DateTime.Now,
+                            Size = 0,
+                            Thumbnail = HostingEnvironment.MapPath("~/fonts/icons-buttons/folder.svg"),
+                            Name = "root"
+                        };
+                        rootDir.Owners.Add(appUser);
+                        try
+                        {
+                            await DirectoryService.AddAsync(rootDir);
                         }
-                        await UserManager.DeleteAsync(user);
-                        return View("Error");
+                        catch (DbEntityValidationException e)
+                        {
+                            foreach (var eve in e.EntityValidationErrors)
+                            {
+                                Debug.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                    eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                                foreach (var ve in eve.ValidationErrors)
+                                {
+                                    Debug.WriteLine("- Property: \"{0}\", Error: \"{1}\"",
+                                        ve.PropertyName, ve.ErrorMessage);
+                                }
+                            }
+                            //throw;
+                        }
+                        // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
+                        // Send an email with this link
+                        // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                        // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                        // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+
+                        return RedirectToAction("Index", "Home");
                     }
 
                     AddErrors(result);
@@ -371,7 +410,6 @@ namespace MediaService.PL.Controllers
 
         //
         // POST: /Account/ExternalLoginConfirmation
-        //todo: Make exeption handling logic more practical
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -382,11 +420,6 @@ namespace MediaService.PL.Controllers
                 return RedirectToAction("Index", "Manage");
             }
 
-            if (UserService.GetUserByNick(model.Nickname) != null)
-            {
-                ModelState.AddModelError("Nickname", "User with that nickname is already exist");
-            }
-
             if (ModelState.IsValid)
             {
                 // Get the information about the user from the external login provider
@@ -395,24 +428,29 @@ namespace MediaService.PL.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                
-                var user = new ApplicationUser { UserName = model.Nickname, Email = model.Email };
+
+                var user = Mapper.Map<ExternalLoginConfirmationViewModel, ApplicationUser>(model);
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
-                    var userProfile = DtoMapper.Map<ApplicationUser, UserDto>(user);
-                    var addResult = await UserService.AddAsync(userProfile);
-                    if (addResult.Succeeded)
+                    var rootDir = new DirectoryEntryDto
                     {
-                        result = await UserManager.AddLoginAsync(user.Id, info.Login);
-                        if (result.Succeeded)
-                        {
-                            await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                            return RedirectToLocal(returnUrl);
-                        }
+                        NodeLevel = 0,
+                        Created = DateTime.Now,
+                        Downloaded = DateTime.Now,
+                        Modified = DateTime.Now,
+                        Size = 0,
+                        Thumbnail = HostingEnvironment.MapPath("~/fonts/icons-buttons/folder.svg"),
+                        Name = "root"
+                    };
+                    rootDir.Owners.Add(Mapper.Map<ApplicationUser, AspNetUserDto>(user));
+                    await DirectoryService.AddAsync(rootDir);
+                    result = await UserManager.AddLoginAsync(user.Id, info.Login);
+                    if (result.Succeeded)
+                    {
+                        await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                        return RedirectToLocal(returnUrl);
                     }
-                    await UserManager.DeleteAsync(user);
-                    return View("Error");
                 }
                 AddErrors(result);
             }
@@ -451,11 +489,17 @@ namespace MediaService.PL.Controllers
                     _signInManager.Dispose();
                     _signInManager = null;
                 }
-
-                if (_userService != null)
+                
+                if (_directoryService != null)
                 {
-                    _userService.Dispose();
-                    _userService = null;
+                    _directoryService.Dispose();
+                    _directoryService = null;
+                }
+
+                if (_userProfileService != null)
+                {
+                    _userProfileService.Dispose();
+                    _userProfileService = null;
                 }
             }
 

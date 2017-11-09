@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaService.PL", "MediaService.PL\MediaService.PL.csproj", "{0692C7A9-ADFA-4006-B242-0002FD228604}"
 EndProject
@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaService.BLL", "MediaSe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaService.DAL", "MediaService.DAL\MediaService.DAL.csproj", "{63D152E6-74DC-4778-87D9-EBC3CF7201B1}"
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "MediaService.Database", "MediaService.Database\MediaService.Database.sqlproj", "{C9226AB6-253E-4D4E-B2DD-D2D7144F6C8B}"
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "MediaService.Database", "MediaService.Database\MediaService.Database.sqlproj", "{ECAEDD68-C2B6-4FA4-89EF-DFF030CA1CEB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,12 +35,12 @@ Global
 		{63D152E6-74DC-4778-87D9-EBC3CF7201B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63D152E6-74DC-4778-87D9-EBC3CF7201B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63D152E6-74DC-4778-87D9-EBC3CF7201B1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C9226AB6-253E-4D4E-B2DD-D2D7144F6C8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C9226AB6-253E-4D4E-B2DD-D2D7144F6C8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C9226AB6-253E-4D4E-B2DD-D2D7144F6C8B}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{C9226AB6-253E-4D4E-B2DD-D2D7144F6C8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C9226AB6-253E-4D4E-B2DD-D2D7144F6C8B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C9226AB6-253E-4D4E-B2DD-D2D7144F6C8B}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{ECAEDD68-C2B6-4FA4-89EF-DFF030CA1CEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECAEDD68-C2B6-4FA4-89EF-DFF030CA1CEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECAEDD68-C2B6-4FA4-89EF-DFF030CA1CEB}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{ECAEDD68-C2B6-4FA4-89EF-DFF030CA1CEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECAEDD68-C2B6-4FA4-89EF-DFF030CA1CEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECAEDD68-C2B6-4FA4-89EF-DFF030CA1CEB}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

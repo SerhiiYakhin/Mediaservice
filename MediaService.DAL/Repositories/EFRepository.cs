@@ -1,6 +1,4 @@
-﻿#define OBJECT_METHODS_REALIZATION
-
-using MediaService.DAL.Interfaces;
+﻿using MediaService.DAL.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -68,42 +66,7 @@ namespace MediaService.DAL.Repositories
             return await Task.Run(() => _dbSet.AsNoTracking().Where(predicate).AsParallel());
         }
 
-#if OBJECT_METHODS_REALIZATION
 
-        public void Add(object item) => _dbSet.Add((TEntity)item);
-
-        public async Task AddAsync(object item) => await Task.Run(() => _dbSet.Add((TEntity)item));
-
-
-        public void AddRange(object items) => _dbSet.AddRange((IEnumerable<TEntity>)items);
-
-        public async Task AddRangeAsync(object items) => await Task.Run(() => _dbSet.AddRange((IEnumerable<TEntity>)items));
-
-
-        public void AddRangeParallel(object items) => _dbSet.AddRange((IEnumerable<TEntity>)items).AsParallel();
-
-        public async Task AddRangeAsyncParallel(object items) => await Task.Run(() => _dbSet.AddRange((IEnumerable<TEntity>)items).AsParallel());
-
-
-        public void Update(object item) => _context.Entry(item).State = EntityState.Modified;
-
-        public async Task UpdateAsync(object item) => await Task.Run(() => _context.Entry(item).State = EntityState.Modified);
-
-
-        public void Remove(object item) => _dbSet.Remove((TEntity)item);
-
-        public async Task RemoveAsync(object item) => await Task.Run(() => _dbSet.Remove((TEntity)item));
-
-
-        public void RemoveRange(object items) => _dbSet.RemoveRange((IEnumerable<TEntity>)items);
-
-        public async Task RemoveRangeAsync(object items) => await Task.Run(() => _dbSet.RemoveRange((IEnumerable<TEntity>)items));
-
-        public void RemoveRangeParallel(object items) => _dbSet.RemoveRange((IEnumerable<TEntity>)items).AsParallel();
-
-        public async Task RemoveRangeAsyncParallel(object items) => await Task.Run(() => _dbSet.RemoveRange((IEnumerable<TEntity>)items).AsParallel());
-#else
-        
         public void Add(TEntity item) => _dbSet.Add(item);
 
         public async Task AddAsync(TEntity item) => await Task.Run(() => _dbSet.Add(item));
@@ -112,6 +75,11 @@ namespace MediaService.DAL.Repositories
         public void AddRange(IEnumerable<TEntity> items) => _dbSet.AddRange(items);
 
         public async Task AddRangeAsync(IEnumerable<TEntity> items) => await Task.Run(() => _dbSet.AddRange(items));
+
+
+        public void AddRangeParallel(IEnumerable<TEntity> items) => _dbSet.AddRange((IEnumerable<TEntity>)items).AsParallel();
+
+        public async Task AddRangeAsyncParallel(IEnumerable<TEntity> items) => await Task.Run(() => _dbSet.AddRange((IEnumerable<TEntity>)items).AsParallel());
 
 
         public void Update(TEntity item) => _context.Entry(item).State = EntityState.Modified;
@@ -128,7 +96,10 @@ namespace MediaService.DAL.Repositories
 
         public async Task RemoveRangeAsync(IEnumerable<TEntity> items) => await Task.Run(() => _dbSet.RemoveRange(items));
 
-#endif
+
+        public void RemoveRangeParallel(IEnumerable<TEntity> items) => _dbSet.RemoveRange((IEnumerable<TEntity>)items).AsParallel();
+
+        public async Task RemoveRangeAsyncParallel(IEnumerable<TEntity> items) => await Task.Run(() => _dbSet.RemoveRange((IEnumerable<TEntity>)items).AsParallel());
 
     }
 }

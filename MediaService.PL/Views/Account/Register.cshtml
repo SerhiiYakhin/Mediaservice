@@ -21,8 +21,8 @@
                     <div class="col-xs-8 col-xs-offset-2">
                         <div class="form-group">
                             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                            @Html.TextBoxFor(m => m.Nickname, new { @class = "form-control", @placeholder = "Имя пользователя" })
-                            @Html.ValidationMessageFor(m => m.Nickname, "", new { @class = "text-danger" })
+                            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", @placeholder = "Имя пользователя" })
+                            @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
                         </div>
                         <div class="form-group">
                             @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = "E-mail" })

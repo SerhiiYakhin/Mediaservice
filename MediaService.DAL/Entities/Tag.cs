@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MediaService.DAL.Entities
 {
-    public sealed class Tag
+    public class Tag
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Tag() => FileEntries = new HashSet<FileEntry>();
@@ -19,6 +19,6 @@ namespace MediaService.DAL.Entities
         public string Name { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public ICollection<FileEntry> FileEntries { get; set; }
+        public virtual ICollection<FileEntry> FileEntries { get; set; }
     }
 }
