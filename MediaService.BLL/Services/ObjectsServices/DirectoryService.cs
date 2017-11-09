@@ -2,6 +2,8 @@
 using MediaService.BLL.Interfaces;
 using MediaService.DAL.Entities;
 using MediaService.DAL.Interfaces;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MediaService.BLL.Services.ObjectsServices
 {

@@ -15,6 +15,22 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public ObjectsCommonService(IUnitOfWork uow) : base(uow) { }
 
+        public override async Task AddAsync(TObjectDto item)
+        {
+            var objEntry = DtoMapper.Map<TObject>(item);
+            if (objEntry.Owners.Count > 0)
+            {
+                var owners = new List<AspNetUser>((List<AspNetUser>)objEntry.Owners);
+                objEntry.Owners.Clear();
+                foreach (var obj in owners)
+                {
+                    objEntry.Owners.Add(await Database.AspNetUsers.FindByKeyAsync(obj.Id));
+                }
+            }
+            await Repository.AddAsync(objEntry);
+            await Database.SaveChangesAsync();
+        }
+
         public IEnumerable<TObjectDto> GetByName(string name)
         {
             return DtoMapper.Map<IEnumerable<TObjectDto>>(Repository.GetDataParallel(o => o.Name.Equals(name)));
