@@ -5,7 +5,7 @@ namespace MediaService.BLL.DTO
 {
     public abstract class ObjectEntryDto
     {
-        public ObjectEntryDto() => Owners = new HashSet<UserDto>();
+        public ObjectEntryDto() => Owners = new HashSet<AspNetUserDto>();
 
         public Guid     Id            { get; set; }
 
@@ -13,7 +13,7 @@ namespace MediaService.BLL.DTO
 
         public string   Name          { get; set; }
 
-        public string   Discriminator { get; set; }
+        //public string   Discriminator { get; set; }
 
         public string   Thumbnail     { get; set; }
 
@@ -25,6 +25,6 @@ namespace MediaService.BLL.DTO
 
         public DateTime Modified      { get; set; }
 
-        public virtual ICollection<UserDto> Owners { get; set; }
+        public virtual ICollection<AspNetUserDto> Owners { get; set; }
     }
 }

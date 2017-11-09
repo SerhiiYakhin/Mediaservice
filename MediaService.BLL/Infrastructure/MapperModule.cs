@@ -13,9 +13,11 @@ namespace MediaService.BLL.Infrastructure
         static MapperModule()
         {
             Config = new MapperConfiguration(cfg => {
-                cfg.CreateMap<UserDto, UserProfile>().ReverseMap();
+                cfg.CreateMap<UserProfileDto, UserProfile>().ReverseMap();
 
                 cfg.CreateMap<ObjectEntryDto, ObjectEntry>().ReverseMap();
+
+                cfg.CreateMap<AspNetUserDto, AspNetUser>().ReverseMap();
 
                 cfg.CreateMap<ObjectEntryDto, ObjectEntry>()
                     .Include<FileEntryDto, FileEntry>()

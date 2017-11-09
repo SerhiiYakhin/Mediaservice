@@ -24,7 +24,7 @@ namespace MediaService.BLL.Interfaces
             DateTime? created = null,
             DateTime? downloaded = null,
             DateTime? modified = null,
-            ICollection<UserDto> owners = null
+            ICollection<AspNetUserDto> owners = null
             );
 
         Task<IEnumerable<TObjectDto>> GetByAsync(
@@ -34,7 +34,7 @@ namespace MediaService.BLL.Interfaces
             DateTime? created = null,
             DateTime? downloaded = null,
             DateTime? modified = null,
-            ICollection<UserDto> owners = null
+            ICollection<AspNetUserDto> owners = null
         );
     }
 }

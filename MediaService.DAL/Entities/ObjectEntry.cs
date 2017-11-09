@@ -8,7 +8,7 @@ namespace MediaService.DAL.Entities
     public abstract class ObjectEntry
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public ObjectEntry() => Owners = new HashSet<ApplicationUser>();
+        public ObjectEntry() => Owners = new HashSet<AspNetUser>();
 
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid  Id { get; set; }
@@ -19,8 +19,9 @@ namespace MediaService.DAL.Entities
         [StringLength(50)]
         public string Name { get; set; }
 
-        [StringLength(15)]
-        public string Discriminator { get; set; }
+        //[Required]
+        //[StringLength(128)]
+        //public string Discriminator { get; set; }
 
         [Required]
         public long Size { get; set; }
@@ -37,10 +38,10 @@ namespace MediaService.DAL.Entities
         [Column(TypeName = "datetime2")]
         public DateTime Modified { get; set; }
 
-        [StringLength(50)]
+        [StringLength(250)]
         public string Thumbnail { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ApplicationUser> Owners { get; set; }
+        public virtual ICollection<AspNetUser> Owners { get; set; }
     }
 }

@@ -15,7 +15,7 @@ namespace MediaService.BLL.Services
 
         protected IUnitOfWork Database { get; }
 
-        protected IRepository<TEntity, TId> Repository { get; set; }
+        protected virtual IRepository<TEntity, TId> Repository { get; set; }
 
         protected IMapper DtoMapper => _mapper ?? (_mapper = MapperModule.GetMapper());
 
@@ -31,6 +31,7 @@ namespace MediaService.BLL.Services
 
         public async Task<TDto> FindByIdAsync(TId key)
         {
+            var x = await Repository.FindByKeyAsync(key);
             return DtoMapper.Map<TDto>(await Repository.FindByKeyAsync(key));
         }
 
@@ -44,7 +45,6 @@ namespace MediaService.BLL.Services
         {
             return DtoMapper.Map<IEnumerable<TDto>>(await Repository.GetDataAsync());
         }
-
 
         public IEnumerable<TDto> GetDataParallel()
         {

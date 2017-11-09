@@ -10,9 +10,13 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using NLog;
 using System;
+using System.Collections.Generic;
+using System.Data.Entity.Validation;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Hosting;
 using System.Web.Mvc;
 
 namespace MediaService.PL.Controllers
@@ -24,8 +28,10 @@ namespace MediaService.PL.Controllers
 
         private ApplicationUserManager _userManager;
 
-        private IUserService _userService;
+        private IUserProfileService _userProfileService;
 
+        private IApplicationUserService _applicationUserService;
+        
         private IDirectoryService _directoryService;
 
         private IMapper _mapper;
@@ -34,11 +40,19 @@ namespace MediaService.PL.Controllers
         {
         }
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager, IUserService userService)
+        public AccountController(
+            ApplicationUserManager userManager,
+            ApplicationSignInManager signInManager,
+            IUserProfileService userProfileService,
+            IApplicationUserService applicationUserService,
+            IDirectoryService directoryService
+            )
         {
             UserManager = userManager;
             SignInManager = signInManager;
-            UserService = userService;
+            UserProfileService = userProfileService;
+            ApplicationUserService = applicationUserService;
+            DirectoryService = directoryService;
         }
 
         protected static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
@@ -57,12 +71,17 @@ namespace MediaService.PL.Controllers
             set => _userManager = value;
         }
 
-        private IUserService UserService
+        private IUserProfileService UserProfileService
         {
-            get => _userService ?? HttpContext.GetOwinContext().GetUserManager<IUserService>();
-            set => _userService = value;
+            get => _userProfileService ?? HttpContext.GetOwinContext().GetUserManager<IUserProfileService>();
+            set => _userProfileService = value;
         }
 
+        private IApplicationUserService ApplicationUserService
+        {
+            get => _applicationUserService ?? HttpContext.GetOwinContext().GetUserManager<IApplicationUserService>();
+            set => _applicationUserService = value;
+        }
         private IDirectoryService DirectoryService
         {
             get => _directoryService ?? HttpContext.GetOwinContext().GetUserManager<IDirectoryService>();
@@ -173,17 +192,36 @@ namespace MediaService.PL.Controllers
                     if (result.Succeeded)
                     {
                         await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                        await DirectoryService.AddAsync(new DirectoryEntryDto
+                        var appUser = await ApplicationUserService.FindByIdAsync(user.Id);
+                        var rootDir = new DirectoryEntryDto
+                        {
+                            NodeLevel = 0,
+                            Created = DateTime.Now,
+                            Downloaded = DateTime.Now,
+                            Modified = DateTime.Now,
+                            Size = 0,
+                            Thumbnail = HostingEnvironment.MapPath("~/fonts/icons-buttons/folder.svg"),
+                            Name = "root"
+                        };
+                        rootDir.Owners.Add(appUser);
+                        try
+                        {
+                            await DirectoryService.AddAsync(rootDir);
+                        }
+                        catch (DbEntityValidationException e)
+                        {
+                            foreach (var eve in e.EntityValidationErrors)
                             {
-                                NodeLevel = 0,
-                                Created = DateTime.Now,
-                                Downloaded = DateTime.Now,
-                                Modified = DateTime.Now,
-                                Size = 0,
-                                Thumbnail = "",
-                                Name = "root",
-                                Owners = null
-                            });
+                                Debug.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                    eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                                foreach (var ve in eve.ValidationErrors)
+                                {
+                                    Debug.WriteLine("- Property: \"{0}\", Error: \"{1}\"",
+                                        ve.PropertyName, ve.ErrorMessage);
+                                }
+                            }
+                            //throw;
+                        }
                         // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                         // Send an email with this link
                         // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
@@ -395,6 +433,18 @@ namespace MediaService.PL.Controllers
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
+                    var rootDir = new DirectoryEntryDto
+                    {
+                        NodeLevel = 0,
+                        Created = DateTime.Now,
+                        Downloaded = DateTime.Now,
+                        Modified = DateTime.Now,
+                        Size = 0,
+                        Thumbnail = HostingEnvironment.MapPath("~/fonts/icons-buttons/folder.svg"),
+                        Name = "root"
+                    };
+                    rootDir.Owners.Add(Mapper.Map<ApplicationUser, AspNetUserDto>(user));
+                    await DirectoryService.AddAsync(rootDir);
                     result = await UserManager.AddLoginAsync(user.Id, info.Login);
                     if (result.Succeeded)
                     {
@@ -446,10 +496,10 @@ namespace MediaService.PL.Controllers
                     _directoryService = null;
                 }
 
-                if (_userService != null)
+                if (_userProfileService != null)
                 {
-                    _userService.Dispose();
-                    _userService = null;
+                    _userProfileService.Dispose();
+                    _userProfileService = null;
                 }
             }
 

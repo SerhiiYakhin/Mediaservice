@@ -10,7 +10,10 @@ namespace MediaService.BLL.Services
 {
     public class TagService : Service<TagDto, Tag, Guid>,  ITagService
     {
-        public TagService(IUnitOfWork uow) : base(uow) { }
+        public TagService(IUnitOfWork uow) : base(uow)
+        {
+            Repository = uow.Tags;
+        }
 
         public TagDto GetTagByName(string name)
         {

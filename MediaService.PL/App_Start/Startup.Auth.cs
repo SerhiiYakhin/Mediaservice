@@ -19,8 +19,11 @@ namespace MediaService.PL
         private void ConfigureAuth(IAppBuilder app)
         {
             // Configure the db context, user manager and signin manager to use a single instance per request
+            
+            app.CreatePerOwinContext<IApplicationUserService>(() => (IApplicationUserService)DependencyResolver.Current.GetService(typeof(IApplicationUserService)));
+            app.CreatePerOwinContext<IFilesService>(() => (IFilesService)DependencyResolver.Current.GetService(typeof(IFilesService)));
             app.CreatePerOwinContext<IDirectoryService>(() => (IDirectoryService)DependencyResolver.Current.GetService(typeof(IDirectoryService)));
-            app.CreatePerOwinContext<IUserService>(() => (IUserService)DependencyResolver.Current.GetService(typeof(IUserService)));
+            app.CreatePerOwinContext<IUserProfileService>(() => (IUserProfileService)DependencyResolver.Current.GetService(typeof(IUserProfileService)));
             //app.CreatePerOwinContext<IUserService>(() => _userService);
 
             app.CreatePerOwinContext(ApplicationDbContext.Create);

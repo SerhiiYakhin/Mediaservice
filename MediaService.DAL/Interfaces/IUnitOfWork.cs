@@ -14,7 +14,9 @@ namespace MediaService.DAL.Interfaces
 
         IRepository<Tag, Guid>            Tags        { get; }
 
-        IRepository<UserProfile, string>  Users       { get; }
+        IRepository<UserProfile, Guid> UsersProfiles { get; }
+
+        IRepository<AspNetUser, string> AspNetUsers { get; }
 
         int SaveChanges();
 

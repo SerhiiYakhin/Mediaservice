@@ -42,7 +42,7 @@ namespace MediaService.BLL.Services.ObjectsServices
             DateTime? created = null,
             DateTime? downloaded = null,
             DateTime? modified = null,
-            ICollection<UserDto> owners = null
+            ICollection<AspNetUserDto> owners = null
             )
         {
             var objects = GetQuery(name, parentId, size, created, downloaded, modified, owners);
@@ -56,14 +56,22 @@ namespace MediaService.BLL.Services.ObjectsServices
             DateTime? created = null,
             DateTime? downloaded = null,
             DateTime? modified = null,
-            ICollection<UserDto> owners = null
+            ICollection<AspNetUserDto> owners = null
         )
         {
             var objects = GetQuery(name, parentId, size, created, downloaded, modified, owners);
             return await Task.Run(() => DtoMapper.Map<IEnumerable<TObjectDto>>(objects.AsParallel()));
         }
 
-        private IQueryable<TObject> GetQuery(string name, Guid? parentId, long? size, DateTime? created, DateTime? downloaded, DateTime? modified, ICollection<UserDto> owners)
+        private IQueryable<TObject> GetQuery(
+            string name,
+            Guid? parentId,
+            long? size,
+            DateTime? created,
+            DateTime? downloaded,
+            DateTime? modified,
+            ICollection<AspNetUserDto> owners
+            )
         {
             var objects = Repository.GetQuery();
             if (name != null)
@@ -92,9 +100,8 @@ namespace MediaService.BLL.Services.ObjectsServices
             }
             if (owners != null)
             {
-                var ownersCollection = DtoMapper.Map<ICollection<UserProfile>>(owners);
+                var ownersCollection = DtoMapper.Map<ICollection<AspNetUser>>(owners);
                 objects = objects.Intersect(Repository.GetQuery(o => o.Owners.Intersect(ownersCollection).Any()));
-
             }
 
             return objects;

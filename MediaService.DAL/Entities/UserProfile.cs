@@ -8,7 +8,7 @@ namespace MediaService.DAL.Entities
     public class UserProfile
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public UserProfile() => AppUsers = new HashSet<ApplicationUser>();
+        public UserProfile() => AppUsers = new HashSet<AspNetUser>();
 
         [Required]
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -18,6 +18,6 @@ namespace MediaService.DAL.Entities
         public string Avatar { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ApplicationUser> AppUsers { get; set; }
+        public virtual ICollection<AspNetUser> AppUsers { get; set; }
     }
 }

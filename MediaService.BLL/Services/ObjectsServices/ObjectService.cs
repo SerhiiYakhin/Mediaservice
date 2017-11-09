@@ -9,6 +9,7 @@ namespace MediaService.BLL.Services.ObjectsServices
     {
         public ObjectService(IUnitOfWork uow) : base(uow)
         {
+            Repository = uow.Objects;
         }
     }
 }

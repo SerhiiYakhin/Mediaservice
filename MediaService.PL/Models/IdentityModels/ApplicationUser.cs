@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
+using System.Collections.Generic;
 
 namespace MediaService.PL.Models.IdentityModels
 {
@@ -15,7 +16,7 @@ namespace MediaService.PL.Models.IdentityModels
         //public UserProfile UserProfile { get; set; }
 
         //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        //public virtual ICollection<ObjectEntry> AppUsers { get; set; }
+        //public virtual ICollection<ObjectEntry> Objects { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {

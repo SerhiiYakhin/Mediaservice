@@ -20,7 +20,9 @@ namespace MediaService.DAL.Repositories
 
         private IRepository<Tag, Guid>            _tags;
 
-        private IRepository<UserProfile, string>  _users;
+        private IRepository<UserProfile, Guid>  _usersProfiles;
+
+        private IRepository<AspNetUser, string> _aspNetUsers;
 
         public EFUnitOfWork(string connectionString)
         {
@@ -37,7 +39,9 @@ namespace MediaService.DAL.Repositories
 
         public IRepository<Tag, Guid>            Tags        => _tags        ?? (_tags        = new EFRepository<Tag, Guid>(_db));
 
-        public IRepository<UserProfile, string>  Users       => _users       ?? (_users       = new EFRepository<UserProfile, string>(_db));
+        public IRepository<UserProfile, Guid>  UsersProfiles       => _usersProfiles       ?? (_usersProfiles = new EFRepository<UserProfile, Guid>(_db));
+
+        public IRepository<AspNetUser, string> AspNetUsers => _aspNetUsers ?? (_aspNetUsers = new EFRepository<AspNetUser, string>(_db));
 
         #endregion
 
