@@ -15,6 +15,13 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public ObjectsCommonService(IUnitOfWork uow) : base(uow) { }
 
+        public override void Add(TObjectDto item)
+        {
+            var objEntry = DtoMapper.Map<TObject>(item);
+            Repository.Add(objEntry);
+            Database.SaveChanges();
+        }
+
         public override async Task AddAsync(TObjectDto item)
         {
             var objEntry = DtoMapper.Map<TObject>(item);
@@ -28,6 +35,50 @@ namespace MediaService.BLL.Services.ObjectsServices
                 }
             }
             await Repository.AddAsync(objEntry);
+            await Database.SaveChangesAsync();
+        }
+
+        public override void AddRange(IEnumerable<TObjectDto> items)
+        {
+            var objects = DtoMapper.Map<IEnumerable<TObject>>(items);
+            Repository.AddRange(objects);
+            Database.SaveChanges();
+        }
+
+        public override async Task AddRangeAsync(IEnumerable<TObjectDto> items)
+        {
+            var objects = DtoMapper.Map<IEnumerable<TObject>>(items);
+            await Repository.AddRangeAsync(objects);
+            await Database.SaveChangesAsync();
+        }
+
+
+        public override void AddRangeParallel(IEnumerable<TObjectDto> items)
+        {
+            var objects = DtoMapper.Map<IEnumerable<TObject>>(items);
+            Repository.AddRangeParallel(objects);
+            Database.SaveChanges();
+        }
+
+        public override async Task AddRangeAsyncParallel(IEnumerable<TObjectDto> items)
+        {
+            var objects = DtoMapper.Map<IEnumerable<TObject>>(items);
+            await Repository.AddRangeAsyncParallel(objects);
+            await Database.SaveChangesAsync();
+        }
+
+
+        public override void Update(TObjectDto item)
+        {
+            var obj = DtoMapper.Map<TObject>(item);
+            Repository.Update(obj);
+            Database.SaveChanges();
+        }
+
+        public override async Task UpdateAsync(TObjectDto item)
+        {
+            var obj = DtoMapper.Map<TObject>(item);
+            await Repository.UpdateAsync(obj);
             await Database.SaveChangesAsync();
         }
 
