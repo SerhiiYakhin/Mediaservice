@@ -178,7 +178,7 @@ namespace MediaService.PL.Controllers
                 {
                     var user = Mapper.Map<RegisterViewModel, ApplicationUser>(model);
                     var result = await UserManager.CreateAsync(user, model.Password);
-
+                    
                     if (result.Succeeded)
                     {
                         await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
