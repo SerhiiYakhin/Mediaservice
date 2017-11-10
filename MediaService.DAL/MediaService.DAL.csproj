@@ -49,8 +49,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entities\AspNetUser.cs" />
     <Compile Include="EF\DatabaseContext.cs" />
+    <Compile Include="Entities\AspNetUser.cs" />
     <Compile Include="Entities\DirectoryEntry.cs" />
     <Compile Include="Entities\FileEntry.cs" />
     <Compile Include="Entities\ObjectEntry.cs" />

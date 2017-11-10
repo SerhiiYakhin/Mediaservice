@@ -18,23 +18,25 @@ namespace MediaService.BLL.Interfaces
 
 
         IEnumerable<TObjectDto> GetBy(
+            Guid? id = null,
             string name = null,
             Guid? parentId = null,
             long? size = null,
             DateTime? created = null,
             DateTime? downloaded = null,
             DateTime? modified = null,
-            ICollection<AspNetUserDto> owners = null
+            AspNetUserDto owner = null
             );
 
         Task<IEnumerable<TObjectDto>> GetByAsync(
+            Guid? id = null,
             string name = null,
             Guid? parentId = null,
             long? size = null,
             DateTime? created = null,
             DateTime? downloaded = null,
             DateTime? modified = null,
-            ICollection<AspNetUserDto> owners = null
+            AspNetUserDto owner = null
         );
     }
 }

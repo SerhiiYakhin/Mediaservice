@@ -1,11 +1,17 @@
-﻿using System.Web;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using AutoMapper;
+using MediaService.BLL.DTO;
 using MediaService.BLL.Interfaces;
 using MediaService.PL.Models.IdentityModels.Managers;
 using MediaService.PL.Utils;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using NLog;
+using MediaService.PL.Models.IdentityModels;
 
 namespace MediaService.PL.Controllers
 {
@@ -58,7 +64,31 @@ namespace MediaService.PL.Controllers
             FilesService = filesService;
         }
 
-        public ActionResult Index() => View();
+        public async Task<ActionResult> Index(Guid? dirId)
+        {
+            var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+            DirectoryEntryDto rootDir;
+            if (dirId.HasValue)
+            {
+                rootDir = await DirectoryService.FindByIdAsync(dirId.Value);
+                return View(rootDir);
+            }
+
+            rootDir = (await DirectoryService.GetByAsync(name: "root", owner: Mapper.Map<ApplicationUser, AspNetUserDto>(user))).FirstOrDefault();
+            return View(rootDir);
+        }
+
+        public async Task<ActionResult> DirectoriesList(Guid parentId)
+        {
+            var directories = await DirectoryService.GetByParentIdAsync(parentId);
+            return PartialView("_DirectoriesList", directories);
+        }
+
+        public async Task<ActionResult> FilesList(Guid parentId)
+        {
+            var files = await FilesService.GetByParentIdAsync(parentId);
+            return PartialView("_FilesList", files);
+        }
 
         public ActionResult About()
         {

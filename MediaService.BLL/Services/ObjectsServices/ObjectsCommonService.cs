@@ -122,44 +122,51 @@ namespace MediaService.BLL.Services.ObjectsServices
         }
 
         public IEnumerable<TObjectDto> GetBy(
+            Guid? id = null,
             string name = null,
             Guid? parentId = null,
             long? size = null,
             DateTime? created = null,
             DateTime? downloaded = null,
             DateTime? modified = null,
-            ICollection<AspNetUserDto> owners = null
+            AspNetUserDto owner = null
             )
         {
-            var objects = GetQuery(name, parentId, size, created, downloaded, modified, owners);
+            var objects = GetQuery(id, name, parentId, size, created, downloaded, modified, owner);
             return DtoMapper.Map<IEnumerable<TObjectDto>>(objects.AsParallel());
         }
 
         public async Task<IEnumerable<TObjectDto>> GetByAsync(
+            Guid? id = null,
             string name = null,
             Guid? parentId = null,
             long? size = null,
             DateTime? created = null,
             DateTime? downloaded = null,
             DateTime? modified = null,
-            ICollection<AspNetUserDto> owners = null
+            AspNetUserDto owner = null
         )
         {
-            var objects = GetQuery(name, parentId, size, created, downloaded, modified, owners);
+            var objects = GetQuery(id, name, parentId, size, created, downloaded, modified, owner);
             return await Task.Run(() => DtoMapper.Map<IEnumerable<TObjectDto>>(objects.AsParallel()));
         }
 
         private IQueryable<TObject> GetQuery(
+            Guid? id,
             string name,
             Guid? parentId,
             long? size,
             DateTime? created,
             DateTime? downloaded,
             DateTime? modified,
-            ICollection<AspNetUserDto> owners
+            AspNetUserDto owner
             )
         {
             var objects = Repository.GetQuery();
+            if (id.HasValue)
+            {
+                objects = objects.Intersect(Repository.GetQuery(o => o.Id.Equals(id.Value)));
+            }
             if (name != null)
             {
                 objects = objects.Intersect(Repository.GetQuery(o => o.Name.Equals(name)));
@@ -184,10 +191,10 @@ namespace MediaService.BLL.Services.ObjectsServices
             {
                 objects = objects.Intersect(Repository.GetQuery(o => o.Modified.Equals(modified)));
             }
-            if (owners != null)
+            if (owner != null)
             {
-                var ownersCollection = DtoMapper.Map<ICollection<AspNetUser>>(owners);
-                objects = objects.Intersect(Repository.GetQuery(o => o.Owners.Intersect(ownersCollection).Any()));
+                var ownerDto = DtoMapper.Map<AspNetUser>(owner);
+                objects = objects.Intersect(Repository.GetQuery(o => o.Owners.Contains(ownerDto)));
             }
 
             return objects;

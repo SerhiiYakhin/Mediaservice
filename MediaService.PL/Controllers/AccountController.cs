@@ -182,7 +182,7 @@ namespace MediaService.PL.Controllers
                     if (result.Succeeded)
                     {
                         await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                        var appUser = await ApplicationUserService.FindByIdAsync(user.Id);
+                        //var appUser = await ApplicationUserService.FindByIdAsync(user.Id);
                         var rootDir = new DirectoryEntryDto
                         {
                             NodeLevel = 0,
@@ -190,10 +190,11 @@ namespace MediaService.PL.Controllers
                             Downloaded = DateTime.Now,
                             Modified = DateTime.Now,
                             Size = 0,
-                            Thumbnail = HostingEnvironment.MapPath("~/fonts/icons-buttons/folder.svg"),
+                            Thumbnail = "~/fonts/icons-buttons/folder.svg",
                             Name = "root"
                         };
-                        rootDir.Owners.Add(appUser);
+                        rootDir.Owners.Add(Mapper.Map<ApplicationUser, AspNetUserDto>(user));
+
                         try
                         {
                             await DirectoryService.AddAsync(rootDir);
@@ -210,8 +211,10 @@ namespace MediaService.PL.Controllers
                                         ve.PropertyName, ve.ErrorMessage);
                                 }
                             }
+
                             //throw;
                         }
+
                         // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                         // Send an email with this link
                         // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
