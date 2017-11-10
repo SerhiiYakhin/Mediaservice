@@ -14,6 +14,10 @@
     </div>
 </div>
 <hr />
+
+<div id='directories'></div>
+<div id='files'></div>
+
 @if (ViewBag.FirstTime == "true")
 {
     <section id="GeneralView">
@@ -28,4 +32,37 @@ else
 
 }
 
+@section scripts {
 
+    <script>
+        $.ajax({
+            url: '@Url.Action("DirectoriesList", "Home", new { parentId = })',
+            type: "POST",
+            contentType: "text/html; charset=utf-8",
+            success: function (data) {
+                $('#target').html(data);
+            }
+        });
+
+        $(function(){
+            $(document).ajaxStart(function () {
+            //show a progress modal of your choosing
+                window.showProgressModal('loading');
+            });
+            $(document).ajaxStop(function () {
+            //hide it
+                window.hideProgressModal();
+            });
+
+            $.ajax({
+                url: '/Home/DirectoriesList',
+                dataType: 'html',
+                success: function(data) {
+                    $('#directories').html(data);
+                }
+            });
+        });
+
+    </script>
+
+}
