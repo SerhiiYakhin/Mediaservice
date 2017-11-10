@@ -488,6 +488,12 @@ namespace MediaService.PL.Controllers
                     _directoryService.Dispose();
                     _directoryService = null;
                 }
+
+                if (_userProfileService != null)
+                {
+                    _userProfileService.Dispose();
+                    _userProfileService = null;
+                }
             }
 
             base.Dispose(disposing);
