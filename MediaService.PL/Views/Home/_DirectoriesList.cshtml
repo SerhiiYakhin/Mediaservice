@@ -1,6 +1,16 @@
 ﻿﻿@model IEnumerable<MediaService.BLL.DTO.DirectoryEntryDto>
 
+
 <p>
+    @Html.ActionLink("List folders", "DirectoriesList")
+</p>
+@foreach (var item in Model)
+{
+    <div class="row folderItems">
+        @Html.DisplayFor(modelItem => item.Name)
+    </div>
+}
+@*<p>
     @Html.ActionLink("Create New", "Create")
 </p>
 <table class="table">
@@ -67,4 +77,4 @@
         </tr>
     }
 
-</table>
+</table>*@

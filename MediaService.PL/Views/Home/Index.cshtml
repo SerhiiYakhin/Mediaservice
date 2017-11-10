@@ -11,6 +11,7 @@
         <h1>LuxStorage</h1>
     </div>
     <div class="col-xs-4">
+        @Html.Partial("_LoginPartial")
     </div>
 </div>
 <hr />
@@ -21,14 +22,16 @@
 @if (ViewBag.FirstTime == "true")
 {
     <section id="GeneralView">
-        @Html.Partial("_GeneralPartial")
+        @Html.Partial("_WelcomePartial")
     </section>
 }
 else
 {
     <section id="WelcomeView">
-        @Html.Partial("_WelcomePartial")
-    </section>
+        <div class="row folderList">
+            @Html.Partial("_DirectoriesList")
+        </div>
+</section>
 
 }
 

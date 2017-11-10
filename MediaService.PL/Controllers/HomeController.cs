@@ -51,6 +51,10 @@ namespace MediaService.PL.Controllers
             set => _filesService = value;
         }
 
+        public HomeController()
+        {
+        }
+
         public HomeController(
             ApplicationUserManager userManager,
             IApplicationUserService applicationUserService,

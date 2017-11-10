@@ -488,6 +488,11 @@ namespace MediaService.PL.Controllers
                     _directoryService.Dispose();
                     _directoryService = null;
                 }
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> hotfixes creating folders
             }
 
             base.Dispose(disposing);
