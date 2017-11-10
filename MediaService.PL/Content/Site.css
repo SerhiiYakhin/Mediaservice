@@ -96,7 +96,7 @@ textarea {
 
 
 .btn-primary.btn-outline {
-        color: #616161;
+        color: transparent;
         border-color: #616161;
     }
 .btn-outline:hover {
@@ -109,7 +109,6 @@ textarea {
     margin-left: 0;
 }
 .form-control {
-    color: #adadad;
     border-color: #999999;
 }
 .authForms {
@@ -142,3 +141,10 @@ textarea {
     background-image: url(/fonts/icons-buttons/google.svg);
 }
 
+.searchField {
+
+}
+
+.mainMenu {
+    background-color: white;
+}
