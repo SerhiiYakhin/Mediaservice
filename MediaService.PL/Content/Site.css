@@ -8,8 +8,8 @@ a:any-link {
 
 body {
     background-color: #e8e9f2;
-    padding-top: 50px;
-    padding-bottom: 20px;
+    padding-top: 40px;
+    padding-bottom: 80px;
 }
 
 /* Set padding to keep content from hitting the edges */
@@ -25,15 +25,18 @@ body {
     white-space: normal;
 }
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'Raleway', sans-serif;
+    font-family: 'Raleway';
     text-align: center;
+    letter-spacing: 1px;
 }
 h1 {
-    font-weight: 700;
+    font-weight: 900;
+    
 }
 
 h3 {
-    font-weight: 600;
+    font-weight: 900;
+    font-size: 24px;
 }
 h4 {
     font-weight: 400;
@@ -46,13 +49,15 @@ h4 {
 input,
 select,
 textarea {
-    max-width: 220px;
+    max-width: 280px;
 }
 
 .btn-primary {
     color: #fff;
     background-color: #d3095f;
     border-color: #d3095f;
+    max-width: 280px;
+    height: 40px;
 }
 
 .btn-primary:focus,
@@ -91,48 +96,49 @@ textarea {
 
 
 .btn-primary.btn-outline {
-    color: grey;
-    border-color: grey;
-
-}
+        color: #616161;
+        border-color: #616161;
+    }
 .btn-outline:hover {
     background-color: transparent;
-    border-color: grey;
+    border-color: #616161;
 }
 
-
-
+.form-horizontal .form-group {
+    margin-right: 0;
+    margin-left: 0;
+}
+.form-control {
+    color: #adadad;
+    border-color: #999999;
+}
 .authForms {
     background-color: #fff;
-    padding-top: 50px;
-    padding-bottom: 75px;
-   overflow-wrap: break-word;
+    overflow-wrap: break-word;
+    min-height: 420px;
+    min-width: 320px;
+    padding: 20px, 0, 10px, 0;
 }
 
-
+.socialBtn {
+    background-repeat: no-repeat;
+    background-position: 12px 12px;
+    background-size: 16px;
+    background-color: transparent;
+    color: #616161;
+    border-color: #616161;
+    font-size: 12px;
+    height: 40px;
+    padding: 10px 32px;
+    margin-left: 0;
+    margin-right: 0;
+    font-weight: bold;
+}
 #Facebook {
     background-image: url(/fonts/icons-buttons/facebook.svg);
-    background-repeat: no-repeat;
-    background-position: 0 0;
-    background-size: 32px;
-    background-color: transparent;
-    color: #B6B2B6;
-    border-color: #B6B2B6;
-    font-size: 14px;
-    height: 34px;
-    padding: 6px 32px;
 }
 
 #Google {
     background-image: url(/fonts/icons-buttons/google.svg);
-    background-repeat: no-repeat;
-    background-position: 0 0;
-    background-size: 32px;
-    background-color: transparent;
-    color: #B6B2B6;
-    border-color: #B6B2B6;
-    font-size: 14px;
-    height: 34px;
-    padding: 6px 32px;
 }
 
