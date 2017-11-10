@@ -12,17 +12,25 @@ namespace MediaService.BLL.Services.ObjectsServices
         where TObjectDto : ObjectEntryDto
         where TObject : ObjectEntry
     {
-
         public ObjectsCommonService(IUnitOfWork uow) : base(uow) { }
 
-        public override void Add(TObjectDto item)
+        private TObject RewriteOwners(TObjectDto item)
         {
             var objEntry = DtoMapper.Map<TObject>(item);
-            Repository.Add(objEntry);
-            Database.SaveChanges();
+            if (objEntry.Owners.Count > 0)
+            {
+                var owners = new List<AspNetUser>((List<AspNetUser>)objEntry.Owners);
+                objEntry.Owners.Clear();
+                foreach (var obj in owners)
+                {
+                    objEntry.Owners.Add(Database.AspNetUsers.FindByKey(obj.Id));
+                }
+            }
+
+            return objEntry;
         }
 
-        public override async Task AddAsync(TObjectDto item)
+        private async Task<TObject> RewriteOwnersAsync(TObjectDto item)
         {
             var objEntry = DtoMapper.Map<TObject>(item);
             if (objEntry.Owners.Count > 0)
@@ -34,9 +42,22 @@ namespace MediaService.BLL.Services.ObjectsServices
                     objEntry.Owners.Add(await Database.AspNetUsers.FindByKeyAsync(obj.Id));
                 }
             }
-            await Repository.AddAsync(objEntry);
+
+            return objEntry;
+        }
+
+        public override void Add(TObjectDto item)
+        {
+            Repository.Add(RewriteOwners(item));
+            Database.SaveChanges();
+        }
+
+        public override async Task AddAsync(TObjectDto item)
+        {
+            await Repository.AddAsync(await RewriteOwnersAsync(item));
             await Database.SaveChangesAsync();
         }
+
 
         public override void AddRange(IEnumerable<TObjectDto> items)
         {
@@ -70,15 +91,13 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public override void Update(TObjectDto item)
         {
-            var obj = DtoMapper.Map<TObject>(item);
-            Repository.Update(obj);
+            Repository.Update(RewriteOwners(item));
             Database.SaveChanges();
         }
 
         public override async Task UpdateAsync(TObjectDto item)
         {
-            var obj = DtoMapper.Map<TObject>(item);
-            await Repository.UpdateAsync(obj);
+            await Repository.UpdateAsync(await RewriteOwnersAsync(item));
             await Database.SaveChangesAsync();
         }
 

@@ -28,8 +28,6 @@ namespace MediaService.PL.Controllers
 
         private ApplicationUserManager _userManager;
 
-        private IUserProfileService _userProfileService;
-
         private IApplicationUserService _applicationUserService;
         
         private IDirectoryService _directoryService;
@@ -43,14 +41,12 @@ namespace MediaService.PL.Controllers
         public AccountController(
             ApplicationUserManager userManager,
             ApplicationSignInManager signInManager,
-            IUserProfileService userProfileService,
             IApplicationUserService applicationUserService,
             IDirectoryService directoryService
             )
         {
             UserManager = userManager;
             SignInManager = signInManager;
-            UserProfileService = userProfileService;
             ApplicationUserService = applicationUserService;
             DirectoryService = directoryService;
         }
@@ -69,12 +65,6 @@ namespace MediaService.PL.Controllers
         {
             get => _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
             set => _userManager = value;
-        }
-
-        private IUserProfileService UserProfileService
-        {
-            get => _userProfileService ?? HttpContext.GetOwinContext().GetUserManager<IUserProfileService>();
-            set => _userProfileService = value;
         }
 
         private IApplicationUserService ApplicationUserService
