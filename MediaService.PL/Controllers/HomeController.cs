@@ -78,7 +78,7 @@ namespace MediaService.PL.Controllers
                 return View(rootDir);
             }
 
-            rootDir = (await DirectoryService.GetByAsync(name: "root", owner: Mapper.Map<ApplicationUser, AspNetUserDto>(user))).FirstOrDefault();
+            rootDir = (DirectoryService.GetBy(name: "root", owner: Mapper.Map<ApplicationUser, AspNetUserDto>(user))).FirstOrDefault();
             return View(rootDir);
         }
 

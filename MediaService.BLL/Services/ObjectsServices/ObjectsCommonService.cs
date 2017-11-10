@@ -133,7 +133,9 @@ namespace MediaService.BLL.Services.ObjectsServices
             )
         {
             var objects = GetQuery(id, name, parentId, size, created, downloaded, modified, owner);
-            return DtoMapper.Map<IEnumerable<TObjectDto>>(objects.AsParallel());
+            var x = objects.ToList();
+            var y = DtoMapper.Map<IEnumerable<TObjectDto>>(x);
+            return y;
         }
 
         public async Task<IEnumerable<TObjectDto>> GetByAsync(
@@ -148,7 +150,8 @@ namespace MediaService.BLL.Services.ObjectsServices
         )
         {
             var objects = GetQuery(id, name, parentId, size, created, downloaded, modified, owner);
-            return await Task.Run(() => DtoMapper.Map<IEnumerable<TObjectDto>>(objects.AsParallel()));
+            var x = objects.AsParallel().AsEnumerable();
+            return await Task.Run(() => DtoMapper.Map<IEnumerable<TObjectDto>>(x));
         }
 
         private IQueryable<TObject> GetQuery(
@@ -193,8 +196,8 @@ namespace MediaService.BLL.Services.ObjectsServices
             }
             if (owner != null)
             {
-                var ownerDto = DtoMapper.Map<AspNetUser>(owner);
-                objects = objects.Intersect(Repository.GetQuery(o => o.Owners.Contains(ownerDto)));
+                var ownerEntity = Database.AspNetUsers.FindByKey(owner.Id);
+                objects = objects.Intersect(Repository.GetQuery(o => o.Owners.Any(ow => ow.Id == ownerEntity.Id)));
             }
 
             return objects;
