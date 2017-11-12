@@ -6,5 +6,7 @@ namespace MediaService.BLL.Interfaces
     public interface IDirectoryService : IObjectService<DirectoryEntryDto>
     {
         Task AddRootDirToUserAsync(string userId);
+
+        Task<DirectoryEntryDto> GetRootAsync(string ownerId);
     }
 }

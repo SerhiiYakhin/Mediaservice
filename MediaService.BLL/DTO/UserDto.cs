@@ -5,10 +5,13 @@ namespace MediaService.BLL.DTO
 {
     public class UserDto
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public UserDto()
         {
-            Objects = new HashSet<ObjectEntryDto>();
-            SharedObjects = new HashSet<ObjectViewersDto>();
+            Files = new HashSet<FileEntryDto>();
+            Directories = new HashSet<DirectoryEntryDto>();
+            SharedFiles = new HashSet<FileViewersDto>();
+            SharedDirectories = new HashSet<DirectoryViewersDto>();
         }
 
         public string Id { get; set; }
@@ -38,8 +41,12 @@ namespace MediaService.BLL.DTO
 
         public virtual UserProfileDto UserProfile { get; set; }
 
-        public virtual ICollection<ObjectViewersDto> SharedObjects { get; set; }
+        public virtual ICollection<FileViewersDto> SharedFiles { get; set; }
 
-        public virtual ICollection<ObjectEntryDto> Objects { get; set; }
+        public virtual ICollection<DirectoryViewersDto> SharedDirectories { get; set; }
+
+        public virtual ICollection<FileEntryDto> Files { get; set; }
+
+        public virtual ICollection<DirectoryEntryDto> Directories { get; set; }
     }
 }

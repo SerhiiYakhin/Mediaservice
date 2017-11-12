@@ -84,7 +84,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DTO\ObjectViewersDto.cs" />
+    <Compile Include="DTO\DirectoryViewersDto.cs" />
+    <Compile Include="DTO\FileViewersDto.cs" />
     <Compile Include="DTO\UserDto.cs" />
     <Compile Include="DTO\DirectoryEntryDto.cs" />
     <Compile Include="DTO\FileEntryDto.cs" />
@@ -106,8 +107,6 @@
     <Compile Include="Services\UserService.cs" />
     <Compile Include="Services\ObjectsServices\DirectoryService.cs" />
     <Compile Include="Services\ObjectsServices\FileService.cs" />
-    <Compile Include="Services\ObjectsServices\ObjectsCommonService.cs" />
-    <Compile Include="Services\ObjectsServices\ObjectService.cs" />
     <Compile Include="Services\Service.cs" />
     <Compile Include="Services\TagService.cs" />
     <Compile Include="Services\UserProfileService.cs" />

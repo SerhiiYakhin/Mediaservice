@@ -31,10 +31,8 @@ namespace MediaService.BLL.Services
 
         public virtual async Task<TDto> FindByIdAsync(TId key)
         {
-            var x = await Repository.FindByKeyAsync(key);
             return DtoMapper.Map<TDto>(await Repository.FindByKeyAsync(key));
         }
-
 
         public virtual IEnumerable<TDto> GetData()
         {
@@ -44,16 +42,6 @@ namespace MediaService.BLL.Services
         public virtual async Task<IEnumerable<TDto>> GetDataAsync()
         {
             return DtoMapper.Map<IEnumerable<TDto>>(await Repository.GetDataAsync());
-        }
-
-        public virtual IEnumerable<TDto> GetDataParallel()
-        {
-            return DtoMapper.Map<IEnumerable<TDto>>(Repository.GetDataParallel());
-        }
-
-        public virtual async Task<IEnumerable<TDto>> GetDataAsyncParallel()
-        {
-            return DtoMapper.Map<IEnumerable<TDto>>(await Repository.GetDataAsyncParallel());
         }
 
         public virtual void Add(TDto item)
@@ -80,20 +68,6 @@ namespace MediaService.BLL.Services
             await Repository.AddRangeAsync(DtoMapper.Map<IEnumerable<TEntity>>(items));
             await Database.SaveChangesAsync();
         }
-
-
-        public virtual void AddRangeParallel(IEnumerable<TDto> items)
-        {
-            Repository.AddRangeParallel(DtoMapper.Map<IEnumerable<TEntity>>(items));
-            Database.SaveChanges();
-        }
-
-        public virtual async Task AddRangeAsyncParallel(IEnumerable<TDto> items)
-        {
-            await Repository.AddRangeAsyncParallel(DtoMapper.Map<IEnumerable<TEntity>>(items));
-            await Database.SaveChangesAsync();
-        }
-
 
         public virtual void Update(TDto item)
         {
@@ -130,19 +104,6 @@ namespace MediaService.BLL.Services
         public virtual async Task RemoveRangeAsync(IEnumerable<TDto> items)
         {
             await Repository.RemoveRangeAsync(DtoMapper.Map<IEnumerable<TEntity>>(items));
-            await Database.SaveChangesAsync();
-        }
-
-
-        public virtual void RemoveRangeParallel(IEnumerable<TDto> items)
-        {
-            Repository.RemoveRangeParallel(DtoMapper.Map<IEnumerable<TEntity>>(items));
-            Database.SaveChanges();
-        }
-
-        public virtual async Task RemoveRangeAsyncParallel(IEnumerable<TDto> items)
-        {
-            await Repository.RemoveRangeAsyncParallel(DtoMapper.Map<IEnumerable<TEntity>>(items));
             await Database.SaveChangesAsync();
         }
     }

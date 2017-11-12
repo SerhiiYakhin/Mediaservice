@@ -1,31 +1,25 @@
-﻿CREATE TABLE [dbo].[FileEntries] (
-    [Id]   UNIQUEIDENTIFIER NOT NULL,
-    [Size] INT              NOT NULL,
+CREATE TABLE [dbo].[FileEntries] (
+    [Id]         UNIQUEIDENTIFIER DEFAULT (newsequentialid()) NOT NULL,
+    [Owner_Id]   NVARCHAR (128)   NULL,
+    [Name]       NVARCHAR (128)   NOT NULL,
+    [Created]    DATETIME2 (7)    NOT NULL,
+    [Downloaded] DATETIME2 (7)    NOT NULL,
+    [Modified]   DATETIME2 (7)    NOT NULL,
+    [Thumbnail]  NVARCHAR (250)   NULL,
+    [Parent_Id]  UNIQUEIDENTIFIER NULL,
+    [Size]       INT              NOT NULL,
+
     CONSTRAINT [PK_dbo.FileEntries] PRIMARY KEY CLUSTERED ([Id] ASC),
-    CONSTRAINT [FK_dbo.FileEntries_dbo.ObjectEntries_Id] FOREIGN KEY ([Id]) REFERENCES [dbo].[ObjectEntries] ([Id]) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT [FK_dbo.FileEntries_dbo.AspNetUsers_Owner_Id] FOREIGN KEY ([Owner_Id]) REFERENCES [dbo].[AspNetUsers] ([Id]) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT [FK_dbo.FileEntries_dbo.DirectoryEntries_Parent_Id] FOREIGN KEY ([Parent_Id]) REFERENCES [dbo].[DirectoryEntries] ([Id]),
+	CONSTRAINT [CK_FileEntries_Parent_Id] CHECK ([Id]<>[Parent_Id])
 );
 
 GO
-CREATE NONCLUSTERED INDEX [IX_Id]
-    ON [dbo].[FileEntries]([Id] ASC);
+CREATE NONCLUSTERED INDEX [IX_Parent_Id]
+    ON [dbo].[FileEntries]([Parent_Id] ASC);
 
 GO
--- =============================================
--- Author:		<Serhii Yakhin>
--- Create date: <12.11.17>
--- Description:	<For delition object entry of this file>
--- =============================================
-Create TRIGGER [dbo].[Trigger_FileEntries_Delete]
-   ON  [dbo].[FileEntries]
-   AFTER DELETE
-AS 
-BEGIN
-	-- SET NOCOUNT ON added to prevent extra result sets from
-	-- interfering with SELECT statements.
-	SET NOCOUNT ON;
+CREATE NONCLUSTERED INDEX [IX_Owner_Id]
+    ON [dbo].[FileEntries]([Owner_Id] ASC);
 
-    -- Insert statements for trigger here
-	DELETE [dbo].[ObjectEntries] 
-	WHERE Id IN (SELECT Id FROM deleted);
-END
-GO

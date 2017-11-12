@@ -11,8 +11,10 @@ namespace MediaService.DAL.Entities
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public User()
         {
-            Objects = new HashSet<ObjectEntry>();
-            SharedObjects = new HashSet<ObjectViewers>();
+            Files = new HashSet<FileEntry>();
+            Directories = new HashSet<DirectoryEntry>();
+            SharedFiles = new HashSet<FileViewers>();
+            SharedDirectories = new HashSet<DirectoryViewers>();
         }
 
         public string Id { get; set; }
@@ -46,9 +48,15 @@ namespace MediaService.DAL.Entities
         public virtual UserProfile UserProfile { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ObjectViewers> SharedObjects { get; set; }
+        public virtual ICollection<FileViewers> SharedFiles { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ObjectEntry> Objects { get; set; }
+        public virtual ICollection<DirectoryViewers> SharedDirectories { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<FileEntry> Files { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<DirectoryEntry> Directories { get; set; }
     }
 }

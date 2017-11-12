@@ -51,9 +51,7 @@ namespace MediaService.PL.Controllers
             set => _filesService = value;
         }
 
-        public HomeController()
-        {
-        }
+        public HomeController() { }
 
         public HomeController(
             ApplicationUserManager userManager,
@@ -78,7 +76,7 @@ namespace MediaService.PL.Controllers
                 return View(rootDir);
             }
 
-            rootDir = (DirectoryService.GetBy(name: "root", owner: Mapper.Map<ApplicationUser, UserDto>(user))).FirstOrDefault();
+            rootDir = await DirectoryService.GetRootAsync(user.Id);
             return View(rootDir);
         }
 

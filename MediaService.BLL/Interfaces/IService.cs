@@ -16,12 +16,6 @@ namespace MediaService.BLL.Interfaces
 
         Task<IEnumerable<TDto>> GetDataAsync();
 
-
-        IEnumerable<TDto> GetDataParallel();
-
-        Task<IEnumerable<TDto>> GetDataAsyncParallel();
-
-
         void Add(TDto item);
 
         Task AddAsync(TDto item);
@@ -30,12 +24,6 @@ namespace MediaService.BLL.Interfaces
         void AddRange(IEnumerable<TDto> items);
 
         Task AddRangeAsync(IEnumerable<TDto> items);
-
-
-        void AddRangeParallel(IEnumerable<TDto> items);
-
-        Task AddRangeAsyncParallel(IEnumerable<TDto> items);
-
 
         void Update(TDto item);
 
@@ -50,9 +38,5 @@ namespace MediaService.BLL.Interfaces
         void RemoveRange(IEnumerable<TDto> items);
 
         Task RemoveRangeAsync(IEnumerable<TDto> items);
-
-        void RemoveRangeParallel(IEnumerable<TDto> items);
-
-        Task RemoveRangeAsyncParallel(IEnumerable<TDto> items);
     }
 }

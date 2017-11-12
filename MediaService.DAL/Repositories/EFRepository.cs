@@ -51,19 +51,14 @@ namespace MediaService.DAL.Repositories
         }
 
 
-        public IEnumerable<TEntity> GetDataParallel() => _dbSet.AsNoTracking().AsParallel();
-
-        public async Task<IEnumerable<TEntity>> GetDataAsyncParallel() => await Task.Run(() => _dbSet.AsNoTracking().AsParallel());
-
-
-        public IEnumerable<TEntity> GetDataParallel(Expression<Func<TEntity, bool>> predicate)
+        public IEnumerable<TEntity> GetDataParallel(Func<TEntity, bool> predicate)
         {
-            return _dbSet.AsNoTracking().Where(predicate).AsParallel();
+            return _dbSet.AsNoTracking().AsParallel().Where(predicate);
         }
 
-        public async Task<IEnumerable<TEntity>> GetDataAsyncParallel(Expression<Func<TEntity, bool>> predicate)
+        public async Task<IEnumerable<TEntity>> GetDataAsyncParallel(Func<TEntity, bool> predicate)
         {
-            return await Task.Run(() => _dbSet.AsNoTracking().Where(predicate).AsParallel());
+            return await Task.Run(() => _dbSet.AsNoTracking().AsParallel().Where(predicate));
         }
 
 
@@ -75,11 +70,6 @@ namespace MediaService.DAL.Repositories
         public void AddRange(IEnumerable<TEntity> items) => _dbSet.AddRange(items);
 
         public async Task AddRangeAsync(IEnumerable<TEntity> items) => await Task.Run(() => _dbSet.AddRange(items));
-
-
-        public void AddRangeParallel(IEnumerable<TEntity> items) => _dbSet.AddRange(items).AsParallel();
-
-        public async Task AddRangeAsyncParallel(IEnumerable<TEntity> items) => await Task.Run(() => _dbSet.AddRange(items).AsParallel());
 
 
         public void Update(TEntity item) => _context.Entry(item).State = EntityState.Modified;
@@ -95,11 +85,5 @@ namespace MediaService.DAL.Repositories
         public void RemoveRange(IEnumerable<TEntity> items) => _dbSet.RemoveRange(items);
 
         public async Task RemoveRangeAsync(IEnumerable<TEntity> items) => await Task.Run(() => _dbSet.RemoveRange(items));
-
-
-        public void RemoveRangeParallel(IEnumerable<TEntity> items) => _dbSet.RemoveRange(items).AsParallel();
-
-        public async Task RemoveRangeAsyncParallel(IEnumerable<TEntity> items) => await Task.Run(() => _dbSet.RemoveRange(items).AsParallel());
-
     }
 }

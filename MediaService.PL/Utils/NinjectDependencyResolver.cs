@@ -26,7 +26,6 @@ namespace MediaService.PL.Utils
 
         private void AddBindings()
         {
-            _kernel.Bind<IObjectService<ObjectEntryDto>>().To<ObjectService>();
             _kernel.Bind<IFilesService>().To<FileService>();
             _kernel.Bind<IDirectoryService>().To<DirectoryService>();
 

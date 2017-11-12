@@ -4,19 +4,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MediaService.DAL.Entities
 {
-    public class ObjectViewers
+    public class FileViewers
     {
         [Required]
         [StringLength(250)]
         public string Link { get; set; }
 
-        [Key, Column(Order = 0)]
-        public Guid ObjectEntryId { get; set; }
+        [Key, Column("FileEntry_Id", Order = 0)]
+        public Guid FileEntryId { get; set; }
 
-        [Key, Column(Order = 1)]
+        [Key, Column("User_Id", Order = 1)]
         public string UserId { get; set; }
 
-        public virtual ObjectEntry ObjectEntry { get; set; }
+        public virtual FileEntry FileEntry { get; set; }
 
         public virtual User User { get; set; }
     }
