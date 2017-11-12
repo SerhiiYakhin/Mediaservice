@@ -156,5 +156,9 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
+    <Build Include="dbo\Tables\AspNetRoles.sql" />
+    <Build Include="dbo\Tables\AspNetUserClaims.sql" />
+    <Build Include="dbo\Tables\AspNetUserLogins.sql" />
+    <Build Include="dbo\Tables\AspNetUserRoles.sql" />
   </ItemGroup>
 </Project>

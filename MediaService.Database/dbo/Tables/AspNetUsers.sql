@@ -17,24 +17,3 @@
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [UserNameIndex]
     ON [dbo].[AspNetUsers]([UserName] ASC);
-
-GO
--- =============================================
--- Author:		<Serhii Yakhin>
--- Create date: <12.11.17>
--- Description:	<For cascade delition all users objects>
--- =============================================
-CREATE TRIGGER [dbo].[Trigger_AspNetUser_Delete]
-   ON  [dbo].[AspNetUsers]
-   AFTER DELETE
-AS 
-BEGIN
-	-- SET NOCOUNT ON added to prevent extra result sets from
-	-- interfering with SELECT statements.
-	SET NOCOUNT ON;
-
-    -- Insert statements for trigger here
-	DELETE [dbo].[ObjectEntries] 
-	WHERE Owner_Id IN (SELECT Id FROM deleted);
-END
-GO

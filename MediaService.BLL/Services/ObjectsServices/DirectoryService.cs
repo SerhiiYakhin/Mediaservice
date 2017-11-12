@@ -86,7 +86,8 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public async Task<DirectoryEntryDto> GetRootAsync(string ownerId)
         {
-            return await Task.Run(async () => DtoMapper.Map<DirectoryEntryDto>(await Repository.GetDataAsyncParallel(d => d.Owner.Id.Equals(ownerId))));
+            var root = await Repository.GetDataAsyncParallel(d => d.Owner.Id.Equals(ownerId));
+            return await Task.Run(() => DtoMapper.Map<DirectoryEntryDto>(root.SingleOrDefault()));
         }
 
         /// <exception cref="InvalidDataException">Thrown when user with given Id doesn't exist in the Database</exception>
