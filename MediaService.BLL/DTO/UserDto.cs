@@ -3,19 +3,19 @@ using System.Collections.Generic;
 
 namespace MediaService.BLL.DTO
 {
-    public class AspNetUserDto
+    public class UserDto
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public AspNetUserDto()
+        public UserDto()
         {
-            ObjectEntries = new HashSet<ObjectEntryDto>();
+            Objects = new HashSet<ObjectEntryDto>();
+            SharedObjects = new HashSet<ObjectViewersDto>();
         }
 
         public string Id { get; set; }
-        
-        public string UserName { get; set; }
 
         public string Email { get; set; }
+
+        public string UserName { get; set; }
 
         public bool EmailConfirmed { get; set; }
 
@@ -35,11 +35,11 @@ namespace MediaService.BLL.DTO
 
         public int AccessFailedCount { get; set; }
 
-        public Guid? UserProfileId { get; set; }
 
-        public virtual UserProfileDto UserProfiles { get; set; }
+        public virtual UserProfileDto UserProfile { get; set; }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ObjectEntryDto> ObjectEntries { get; set; }
+        public virtual ICollection<ObjectViewersDto> SharedObjects { get; set; }
+
+        public virtual ICollection<ObjectEntryDto> Objects { get; set; }
     }
 }

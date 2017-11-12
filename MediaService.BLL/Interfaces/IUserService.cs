@@ -2,7 +2,7 @@
 
 namespace MediaService.BLL.Interfaces
 {
-    public interface IApplicationUserService : IService<AspNetUserDto, string>
+    public interface IUserService : IService<UserDto, string>
     {
     }
 }

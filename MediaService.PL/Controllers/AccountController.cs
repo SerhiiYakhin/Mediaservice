@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using MediaService.BLL.DTO;
 using MediaService.BLL.Interfaces;
 using MediaService.PL.Models.AccountViewModels;
 using MediaService.PL.Models.IdentityModels;
@@ -9,14 +8,11 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using NLog;
-using System;
-using System.Collections.Generic;
 using System.Data.Entity.Validation;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Hosting;
 using System.Web.Mvc;
 
 namespace MediaService.PL.Controllers
@@ -28,7 +24,7 @@ namespace MediaService.PL.Controllers
 
         private ApplicationUserManager _userManager;
 
-        private IApplicationUserService _applicationUserService;
+        private IUserService _applicationUserService;
         
         private IDirectoryService _directoryService;
 
@@ -41,7 +37,7 @@ namespace MediaService.PL.Controllers
         public AccountController(
             ApplicationUserManager userManager,
             ApplicationSignInManager signInManager,
-            IApplicationUserService applicationUserService,
+            IUserService applicationUserService,
             IDirectoryService directoryService
             )
         {
@@ -67,9 +63,9 @@ namespace MediaService.PL.Controllers
             set => _userManager = value;
         }
 
-        private IApplicationUserService ApplicationUserService
+        private IUserService ApplicationUserService
         {
-            get => _applicationUserService ?? HttpContext.GetOwinContext().GetUserManager<IApplicationUserService>();
+            get => _applicationUserService ?? HttpContext.GetOwinContext().GetUserManager<IUserService>();
             set => _applicationUserService = value;
         }
         private IDirectoryService DirectoryService
@@ -182,22 +178,10 @@ namespace MediaService.PL.Controllers
                     if (result.Succeeded)
                     {
                         await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                        //var appUser = await ApplicationUserService.FindByIdAsync(user.Id);
-                        var rootDir = new DirectoryEntryDto
-                        {
-                            NodeLevel = 0,
-                            Created = DateTime.Now,
-                            Downloaded = DateTime.Now,
-                            Modified = DateTime.Now,
-                            Size = 0,
-                            Thumbnail = "~/fonts/icons-buttons/folder.svg",
-                            Name = "root"
-                        };
-                        rootDir.Owners.Add(Mapper.Map<ApplicationUser, AspNetUserDto>(user));
 
                         try
                         {
-                            await DirectoryService.AddAsync(rootDir);
+                            await DirectoryService.AddRootDirToUserAsync(user.Id);
                         }
                         catch (DbEntityValidationException e)
                         {
@@ -426,18 +410,7 @@ namespace MediaService.PL.Controllers
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
-                    var rootDir = new DirectoryEntryDto
-                    {
-                        NodeLevel = 0,
-                        Created = DateTime.Now,
-                        Downloaded = DateTime.Now,
-                        Modified = DateTime.Now,
-                        Size = 0,
-                        Thumbnail = HostingEnvironment.MapPath("~/fonts/icons-buttons/folder.svg"),
-                        Name = "root"
-                    };
-                    rootDir.Owners.Add(Mapper.Map<ApplicationUser, AspNetUserDto>(user));
-                    await DirectoryService.AddAsync(rootDir);
+                    await DirectoryService.AddRootDirToUserAsync(user.Id);
                     result = await UserManager.AddLoginAsync(user.Id, info.Login);
                     if (result.Succeeded)
                     {

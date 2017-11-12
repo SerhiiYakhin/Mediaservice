@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="015fdf40-931f-4142-8afb-3a0d509f7e70" ChangeDateTime="11/12/2017 15:41:24">
+    <Property Name="ElementName" Value="[dbo].[Create_Insert_DirectoryEntry]" />
+    <Property Name="ElementType" Value="SqlDmlTrigger" />
+    <Property Name="ParentElementName" Value="[dbo].[ObjectEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DirectoryEntry_Create_Insert]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c14714f9-97aa-4af9-b39d-bc138694ec0d" ChangeDateTime="11/12/2017 15:50:15">
+    <Property Name="ElementName" Value="[dbo].[DirectoryEntry_Delete]" />
+    <Property Name="ElementType" Value="SqlDmlTrigger" />
+    <Property Name="ParentElementName" Value="[dbo].[DirectoryEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Trigger_DirectoryEntries_Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="42d3403c-65f7-431c-b6ac-03b5b64dddfd" ChangeDateTime="11/12/2017 15:50:55">
+    <Property Name="ElementName" Value="[dbo].[AspNetUser_Delete]" />
+    <Property Name="ElementType" Value="SqlDmlTrigger" />
+    <Property Name="ParentElementName" Value="[dbo].[AspNetUsers]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Trigger_AspNetUser_Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="19e68d48-6166-4c95-a02d-4dea034e99e0" ChangeDateTime="11/12/2017 15:51:17">
+    <Property Name="ElementName" Value="[dbo].[FileEntry_Delete]" />
+    <Property Name="ElementType" Value="SqlDmlTrigger" />
+    <Property Name="ParentElementName" Value="[dbo].[FileEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Trigger_FileEntries_Delete]" />
+  </Operation>
+</Operations>

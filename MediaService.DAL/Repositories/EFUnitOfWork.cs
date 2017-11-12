@@ -22,7 +22,7 @@ namespace MediaService.DAL.Repositories
 
         private IRepository<UserProfile, Guid>  _usersProfiles;
 
-        private IRepository<AspNetUser, string> _aspNetUsers;
+        private IRepository<User, string> _users;
 
         public EFUnitOfWork(string connectionString)
         {
@@ -41,7 +41,7 @@ namespace MediaService.DAL.Repositories
 
         public IRepository<UserProfile, Guid>  UsersProfiles       => _usersProfiles       ?? (_usersProfiles = new EFRepository<UserProfile, Guid>(_db));
 
-        public IRepository<AspNetUser, string> AspNetUsers => _aspNetUsers ?? (_aspNetUsers = new EFRepository<AspNetUser, string>(_db));
+        public IRepository<User, string> Users => _users ?? (_users = new EFRepository<User, string>(_db));
 
         #endregion
 

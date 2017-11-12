@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MediaService.DAL.Entities
 {
-    public class AspNetUser
+    [Table("AspNetUsers")]
+    public class User
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public AspNetUser()
+        public User()
         {
-            ObjectEntries = new HashSet<ObjectEntry>();
+            Objects = new HashSet<ObjectEntry>();
+            SharedObjects = new HashSet<ObjectViewers>();
         }
 
         public string Id { get; set; }
@@ -39,11 +42,13 @@ namespace MediaService.DAL.Entities
 
         public int AccessFailedCount { get; set; }
 
-        public Guid? UserProfileId { get; set; }
 
         public virtual UserProfile UserProfile { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ObjectEntry> ObjectEntries { get; set; }
+        public virtual ICollection<ObjectViewers> SharedObjects { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ObjectEntry> Objects { get; set; }
     }
 }

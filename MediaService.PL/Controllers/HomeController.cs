@@ -18,7 +18,7 @@ namespace MediaService.PL.Controllers
     public class HomeController : Controller
     {
         private ApplicationUserManager _userManager;
-        private IApplicationUserService _applicationUserService;
+        private IUserService _applicationUserService;
         private IDirectoryService _directoryService;
         private IFilesService _filesService;
         private IMapper _mapper;
@@ -33,9 +33,9 @@ namespace MediaService.PL.Controllers
             set => _userManager = value;
         }
 
-        private IApplicationUserService ApplicationUserService
+        private IUserService ApplicationUserService
         {
-            get => _applicationUserService ?? HttpContext.GetOwinContext().GetUserManager<IApplicationUserService>();
+            get => _applicationUserService ?? HttpContext.GetOwinContext().GetUserManager<IUserService>();
             set => _applicationUserService = value;
         }
 
@@ -57,7 +57,7 @@ namespace MediaService.PL.Controllers
 
         public HomeController(
             ApplicationUserManager userManager,
-            IApplicationUserService applicationUserService,
+            IUserService applicationUserService,
             IDirectoryService directoryService,
             IFilesService filesService
             )
@@ -78,7 +78,7 @@ namespace MediaService.PL.Controllers
                 return View(rootDir);
             }
 
-            rootDir = (DirectoryService.GetBy(name: "root", owner: Mapper.Map<ApplicationUser, AspNetUserDto>(user))).FirstOrDefault();
+            rootDir = (DirectoryService.GetBy(name: "root", owner: Mapper.Map<ApplicationUser, UserDto>(user))).FirstOrDefault();
             return View(rootDir);
         }
 

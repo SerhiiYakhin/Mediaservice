@@ -17,7 +17,9 @@ namespace MediaService.BLL.Infrastructure
 
                 cfg.CreateMap<ObjectEntryDto, ObjectEntry>().ReverseMap();
 
-                cfg.CreateMap<AspNetUserDto, AspNetUser>().ReverseMap();
+                cfg.CreateMap<UserDto, User>().ReverseMap();
+
+                cfg.CreateMap<ObjectViewersDto, ObjectViewers>().ReverseMap();
 
                 cfg.CreateMap<ObjectEntryDto, ObjectEntry>()
                     .Include<FileEntryDto, FileEntry>()

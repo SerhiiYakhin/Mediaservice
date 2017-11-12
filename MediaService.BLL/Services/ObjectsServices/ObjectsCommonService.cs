@@ -14,47 +14,17 @@ namespace MediaService.BLL.Services.ObjectsServices
     {
         public ObjectsCommonService(IUnitOfWork uow) : base(uow) { }
 
-        private TObject RewriteOwners(TObjectDto item)
-        {
-            var objEntry = DtoMapper.Map<TObject>(item);
-            if (objEntry.Owners.Count > 0)
-            {
-                var owners = new List<AspNetUser>((List<AspNetUser>)objEntry.Owners);
-                objEntry.Owners.Clear();
-                foreach (var obj in owners)
-                {
-                    objEntry.Owners.Add(Database.AspNetUsers.FindByKey(obj.Id));
-                }
-            }
-
-            return objEntry;
-        }
-
-        private async Task<TObject> RewriteOwnersAsync(TObjectDto item)
-        {
-            var objEntry = DtoMapper.Map<TObject>(item);
-            if (objEntry.Owners.Count > 0)
-            {
-                var owners = new List<AspNetUser>((List<AspNetUser>)objEntry.Owners);
-                objEntry.Owners.Clear();
-                foreach (var obj in owners)
-                {
-                    objEntry.Owners.Add(await Database.AspNetUsers.FindByKeyAsync(obj.Id));
-                }
-            }
-
-            return objEntry;
-        }
-
         public override void Add(TObjectDto item)
         {
-            Repository.Add(RewriteOwners(item));
+            var obj = DtoMapper.Map<TObject>(item);
+            Repository.Add(obj);
             Database.SaveChanges();
         }
 
         public override async Task AddAsync(TObjectDto item)
         {
-            await Repository.AddAsync(await RewriteOwnersAsync(item));
+            var obj = DtoMapper.Map<TObject>(item);
+            await Repository.AddAsync(obj);
             await Database.SaveChangesAsync();
         }
 
@@ -91,13 +61,15 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public override void Update(TObjectDto item)
         {
-            Repository.Update(RewriteOwners(item));
+            var obj = DtoMapper.Map<TObject>(item);
+            Repository.Update(obj);
             Database.SaveChanges();
         }
 
         public override async Task UpdateAsync(TObjectDto item)
         {
-            await Repository.UpdateAsync(await RewriteOwnersAsync(item));
+            var obj = DtoMapper.Map<TObject>(item);
+            await Repository.UpdateAsync(obj);
             await Database.SaveChangesAsync();
         }
 
@@ -125,14 +97,13 @@ namespace MediaService.BLL.Services.ObjectsServices
             Guid? id = null,
             string name = null,
             Guid? parentId = null,
-            long? size = null,
             DateTime? created = null,
             DateTime? downloaded = null,
             DateTime? modified = null,
-            AspNetUserDto owner = null
+            UserDto owner = null
             )
         {
-            var objects = GetQuery(id, name, parentId, size, created, downloaded, modified, owner);
+            var objects = GetQuery(id, name, parentId, created, downloaded, modified, owner);
             var x = objects.ToList();
             var y = DtoMapper.Map<IEnumerable<TObjectDto>>(x);
             return y;
@@ -142,14 +113,13 @@ namespace MediaService.BLL.Services.ObjectsServices
             Guid? id = null,
             string name = null,
             Guid? parentId = null,
-            long? size = null,
             DateTime? created = null,
             DateTime? downloaded = null,
             DateTime? modified = null,
-            AspNetUserDto owner = null
+            UserDto owner = null
         )
         {
-            var objects = GetQuery(id, name, parentId, size, created, downloaded, modified, owner);
+            var objects = GetQuery(id, name, parentId, created, downloaded, modified, owner);
             var x = objects.AsParallel().AsEnumerable();
             return await Task.Run(() => DtoMapper.Map<IEnumerable<TObjectDto>>(x));
         }
@@ -158,11 +128,10 @@ namespace MediaService.BLL.Services.ObjectsServices
             Guid? id,
             string name,
             Guid? parentId,
-            long? size,
             DateTime? created,
             DateTime? downloaded,
             DateTime? modified,
-            AspNetUserDto owner
+            UserDto owner
             )
         {
             var objects = Repository.GetQuery();
@@ -178,10 +147,6 @@ namespace MediaService.BLL.Services.ObjectsServices
             {
                 objects = objects.Intersect(Repository.GetQuery(o => o.ParentId.Equals(parentId)));
             }
-            if (size.HasValue)
-            {
-                objects = objects.Intersect(Repository.GetQuery(o => o.Size.Equals(size)));
-            }
             if (created.HasValue)
             {
                 objects = objects.Intersect(Repository.GetQuery(o => o.Created.Equals(created)));
@@ -196,8 +161,8 @@ namespace MediaService.BLL.Services.ObjectsServices
             }
             if (owner != null)
             {
-                var ownerEntity = Database.AspNetUsers.FindByKey(owner.Id);
-                objects = objects.Intersect(Repository.GetQuery(o => o.Owners.Any(ow => ow.Id == ownerEntity.Id)));
+                var ownerEntity = Database.Users.FindByKey(owner.Id);
+                objects = objects.Intersect(Repository.GetQuery(o => o.Owner.Id == ownerEntity.Id));
             }
 
             return objects;

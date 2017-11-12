@@ -16,7 +16,7 @@ namespace MediaService.PL.Utils
             Config = new MapperConfiguration(cfg => {
                 cfg.CreateMap<ExternalLoginConfirmationViewModel, ApplicationUser>();
                 cfg.CreateMap<RegisterViewModel, ApplicationUser>();
-                cfg.CreateMap<ApplicationUser, AspNetUserDto>();
+                cfg.CreateMap<ApplicationUser, UserDto>();
             });
         }
     }

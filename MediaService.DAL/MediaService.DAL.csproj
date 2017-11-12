@@ -50,7 +50,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EF\DatabaseContext.cs" />
-    <Compile Include="Entities\AspNetUser.cs" />
+    <Compile Include="Entities\ObjectViewers.cs" />
+    <Compile Include="Entities\User.cs" />
     <Compile Include="Entities\DirectoryEntry.cs" />
     <Compile Include="Entities\FileEntry.cs" />
     <Compile Include="Entities\ObjectEntry.cs" />
@@ -58,6 +59,7 @@
     <Compile Include="Entities\UserProfile.cs" />
     <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Interfaces\IUnitOfWork.cs" />
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\EFRepository.cs" />
     <Compile Include="Repositories\EFUnitOfWork.cs" />

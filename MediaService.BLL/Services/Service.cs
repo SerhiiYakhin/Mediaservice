@@ -15,7 +15,7 @@ namespace MediaService.BLL.Services
 
         protected IUnitOfWork Database { get; }
 
-        protected virtual IRepository<TEntity, TId> Repository { get; set; }
+        protected IRepository<TEntity, TId> Repository { get; set; }
 
         protected IMapper DtoMapper => _mapper ?? (_mapper = MapperModule.GetMapper());
 

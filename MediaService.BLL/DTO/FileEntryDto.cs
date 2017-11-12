@@ -2,10 +2,12 @@
 
 namespace MediaService.BLL.DTO
 {
-    public sealed class FileEntryDto : ObjectEntryDto
+    public class FileEntryDto : ObjectEntryDto
     {
         public FileEntryDto() => Tags = new HashSet<TagDto>();
 
-        public ICollection<TagDto> Tags { get; set; }
+        public int Size { get; set; }
+
+        public virtual ICollection<TagDto> Tags { get; set; }
     }
 }

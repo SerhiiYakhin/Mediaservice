@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace MediaService.BLL.DTO
 {
-    public sealed class TagDto
+    public class TagDto
     {
         public TagDto() => FileEntries = new HashSet<FileEntryDto>();
 
@@ -11,6 +11,6 @@ namespace MediaService.BLL.DTO
 
         public string Name { get; set; }
 
-        public ICollection<FileEntryDto> FileEntries { get; set; }
+        public virtual ICollection<FileEntryDto> FileEntries { get; set; }
     }
 }

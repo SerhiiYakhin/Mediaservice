@@ -32,7 +32,7 @@ namespace MediaService.PL.Utils
 
             _kernel.Bind<ITagService>().To<TagService>();
             _kernel.Bind<IUserProfileService>().To<UserProfileService>();
-            _kernel.Bind<IApplicationUserService>().To<ApplicationUserService>();
+            _kernel.Bind<IUserService>().To<UserService>();
         }
     }
 }

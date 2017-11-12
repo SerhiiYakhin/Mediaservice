@@ -16,7 +16,7 @@ namespace MediaService.DAL.Interfaces
 
         IRepository<UserProfile, Guid> UsersProfiles { get; }
 
-        IRepository<AspNetUser, string> AspNetUsers { get; }
+        IRepository<User, string> Users { get; }
 
         int SaveChanges();
 
