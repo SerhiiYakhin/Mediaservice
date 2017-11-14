@@ -5,7 +5,7 @@
 
 <div class="row">
     <div class="col-xs-4">
-        <input type="search" value="Поиск файлов" class="searchField" />
+        <input type="search" value="Поиск файлов" class="searchField"/>
     </div>
     <div class="col-xs-4">
         <h1>LuxStorage</h1>
@@ -14,10 +14,10 @@
         @Html.Partial("_LoginPartial")
     </div>
 </div>
-<hr />
+<hr/>
 
-<div id='directories'></div>
-<div id='files'></div>
+<div id="directories"></div>
+<div id="files"></div>
 
 @if (ViewBag.FirstTime == "true")
 {
@@ -41,7 +41,7 @@ else
             url: '@Url.Action("DirectoriesList", "Home", new {parentId = Model.Id})',
             type: "POST",
             contentType: "text/html; charset=utf-8",
-            success: function (data) {
+            success: function(data) {
                 $('#directories').html(data);
             }
         });

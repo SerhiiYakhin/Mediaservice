@@ -1,18 +1,15 @@
-﻿a {
-    color: #d3095f;
-}
+﻿a { color: #d3095f; }
 
-a:any-link {
-    color: #d3095f;
-}
+a:any-link { color: #d3095f; }
 
 body {
     background-color: #e8e9f2;
-    padding-top: 40px;
     padding-bottom: 80px;
+    padding-top: 40px;
 }
 
 /* Set padding to keep content from hitting the edges */
+
 .body-content {
     padding-left: 10px;
     padding-right: 10px;
@@ -21,135 +18,124 @@ body {
 /* Override the default bootstrap behavior where horizontal description lists 
    will truncate terms that are too long to fit in the left column 
 */
-.dl-horizontal dt {
-    white-space: normal;
-}
+
+.dl-horizontal dt { white-space: normal; }
+
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Raleway';
-    text-align: center;
     letter-spacing: 1px;
-}
-h1 {
-    font-weight: 900;
-    
+    text-align: center;
 }
 
+h1 { font-weight: 900; }
+
 h3 {
-    font-weight: 900;
     font-size: 24px;
+    font-weight: 900;
 }
+
 h4 {
-    font-weight: 400;
     color: #999999;
+    font-weight: 400;
 }
 
 
 
 /* Set width on the form input elements since they're 100% wide by default */
+
 input,
 select,
-textarea {
-    max-width: 280px;
-}
+textarea { max-width: 280px; }
 
 .btn-primary {
-    color: #fff;
     background-color: #d3095f;
     border-color: #d3095f;
-    max-width: 280px;
+    color: #fff;
     height: 40px;
+    max-width: 280px;
 }
 
 .btn-primary:focus,
 .btn-primary.focus {
-    color: #fff;
     background-color: #d3095f;
     border-color: #d3095f;
+    color: #fff;
 }
 
 .btn-primary:hover {
-    color: #fff;
     background-color: #d3095f;
     border-color: #d3095f;
+    color: #fff;
 }
 
 .btn-primary:active,
 .btn-primary.active,
 .open > .dropdown-toggle.btn-primary {
-    color: #fff;
     background-color: #d3095f;
     border-color: #d3095f;
+    color: #fff;
 }
 
        
 .open > .dropdown-toggle.btn-primary.focus {
-    color: #fff;
     background-color: #d3095f;
     border-color: #d3095f;
+    color: #fff;
 }
 
 .btn-primary:active,
 .btn-primary.active,
-.open > .dropdown-toggle.btn-primary {
-    background-image: none;
-}
+.open > .dropdown-toggle.btn-primary { background-image: none; }
 
 
 .btn-primary.btn-outline {
-        color: transparent;
-        border-color: #616161;
-    }
+    border-color: #616161;
+    color: transparent;
+}
+
 .btn-outline:hover {
     background-color: transparent;
     border-color: #616161;
 }
 
 .form-horizontal .form-group {
-    margin-right: 0;
     margin-left: 0;
+    margin-right: 0;
 }
-.form-control {
-    border-color: #999999;
-}
+
+.form-control { border-color: #999999; }
+
 .authForms {
     background-color: #fff;
-    overflow-wrap: break-word;
     min-height: 420px;
     min-width: 320px;
-    padding-top: 20px;
+    overflow-wrap: break-word;
     padding-bottom: 10px;
+    padding-top: 20px;
 }
 
 .socialBtn {
-    background-repeat: no-repeat;
-    background-position: 12px 12px;
-    background-size: 16px;
     background-color: transparent;
-    color: #616161;
+    background-position: 12px 12px;
+    background-repeat: no-repeat;
+    background-size: 16px;
     border-color: #616161;
+    color: #616161;
     font-size: 12px;
+    font-weight: bold;
     height: 40px;
-    padding: 10px 32px;
     margin-left: 0;
     margin-right: 0;
-    font-weight: bold;
-}
-#Facebook {
-    background-image: url(/fonts/icons-buttons/facebook.svg);
+    padding: 10px 32px;
 }
 
-#Google {
-    background-image: url(/fonts/icons-buttons/google.svg);
-}
+#Facebook { background-image: url(/fonts/icons-buttons/facebook.svg); }
 
-.searchField {
+#Google { background-image: url(/fonts/icons-buttons/google.svg); }
 
-}
+.searchField { }
 
-.mainMenu {
-    background-color: white;
-    
-}
+.mainMenu { background-color: white; }
 
 .folderList {
     background-color: white;

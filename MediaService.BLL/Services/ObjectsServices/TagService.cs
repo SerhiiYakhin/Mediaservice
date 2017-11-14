@@ -6,7 +6,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MediaService.BLL.Services
+namespace MediaService.BLL.Services.ObjectsServices
 {
     public class TagService : Service<TagDto, Tag, Guid>,  ITagService
     {
@@ -17,12 +17,12 @@ namespace MediaService.BLL.Services
 
         public TagDto GetTagByName(string name)
         {
-            return DtoMapper.Map<TagDto>(Database.Tags.GetDataParallel(t => t.Name.Equals(name)).SingleOrDefault());
+            return DtoMapper.Map<TagDto>(Context.Tags.GetDataParallel(t => t.Name.Equals(name)).SingleOrDefault());
         }
 
         public async Task<TagDto> GetTagByNameAsync(string name)
         {
-            return DtoMapper.Map<TagDto>((await Database.Tags.GetDataAsyncParallel(t => t.Name.Equals(name)))
+            return DtoMapper.Map<TagDto>((await Context.Tags.GetDataAsyncParallel(t => t.Name.Equals(name)))
                 .SingleOrDefault());
         }
     }

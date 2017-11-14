@@ -11,6 +11,7 @@ namespace MediaService.DAL.Entities
 
         [Required]
         [StringLength(128)]
+        //[ConcurrencyCheck]
         public string Name { get; set; }
 
         //[Required]

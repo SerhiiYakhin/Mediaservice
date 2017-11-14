@@ -2,10 +2,9 @@
 using System.Web;
 using System.Web.Mvc;
 using MediaService.BLL.Infrastructure;
-using Ninject;
-//using Ninject.Web.Common;
-
 using MediaService.PL.Utils;
+using Ninject;
+using Ninject.Web.Common;
 
 namespace MediaService.PL
 {
@@ -13,23 +12,20 @@ namespace MediaService.PL
     {
         private void ConfigureNinject()
         {
-            //todo: Make correct variant for try..catch dependency injection
-            //var kernel = new StandardKernel(new ServiceModule("DefaultConnection"));
-            //try
-            //{
-            //    //kernel.Bind<Func<IKernel>>().ToMethod(ctx => () => new Bootstrapper().Kernel);
-            //    //kernel.Bind<IHttpModule>().To<HttpApplicationInitializationHttpModule>();
-
-            //    DependencyResolver.SetResolver(new NinjectDependencyResolver(kernel));
-            //}
-            //catch
-            //{
-            //    kernel.Dispose();
-            //    DependencyResolver.SetResolver(new DependencyResolver());
-            //    throw;
-            //}
             var kernel = new StandardKernel(new ServiceModule("DefaultConnection"));
-            DependencyResolver.SetResolver(new NinjectDependencyResolver(kernel));
+            try
+            {
+                kernel.Bind<Func<IKernel>>().ToMethod(ctx => () => new Bootstrapper().Kernel);
+                kernel.Bind<IHttpModule>().To<HttpApplicationInitializationHttpModule>();
+
+                DependencyResolver.SetResolver(new NinjectDependencyResolver(kernel));
+            }
+            catch (Exception ex)
+            {
+                kernel.Dispose();
+                DependencyResolver.SetResolver(new DependencyResolver());
+                throw new Exception("Error while setting NinjectDependencyResolver", ex);
+            }
         }
     }
 }

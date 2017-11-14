@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
-using MediaService.BLL.DTO;
 using MediaService.BLL.Interfaces;
-using MediaService.BLL.Services;
 using MediaService.BLL.Services.ObjectsServices;
+using MediaService.BLL.Services.UserServices;
 using Ninject;
 
 namespace MediaService.PL.Utils
@@ -20,9 +19,15 @@ namespace MediaService.PL.Utils
             AddBindings();
         }
 
-        public object GetService(Type serviceType) => _kernel.TryGet(serviceType);
+        public object GetService(Type serviceType)
+        {
+            return _kernel.TryGet(serviceType);
+        }
 
-        public IEnumerable<object> GetServices(Type serviceType) => _kernel.GetAll(serviceType);
+        public IEnumerable<object> GetServices(Type serviceType)
+        {
+            return _kernel.GetAll(serviceType);
+        }
 
         private void AddBindings()
         {

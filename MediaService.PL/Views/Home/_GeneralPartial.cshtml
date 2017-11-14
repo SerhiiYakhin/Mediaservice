@@ -1,6 +1,6 @@
 ﻿﻿@model MediaService.BLL.DTO.DirectoryEntryDto
 
-<div id='directories'></div>
+<div id="directories"></div>
 
 @section scripts {
 
@@ -9,7 +9,7 @@
             url: '@Url.Action("DirectoriesList", "Home", new {parentId = Model.Id})',
             type: "POST",
             contentType: "text/html; charset=utf-8",
-            success: function (data) {
+            success: function(data) {
                 $('#directories').html(data);
             }
         });

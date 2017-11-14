@@ -1,20 +1,20 @@
-﻿using Microsoft.AspNet.Identity;
+﻿//using Microsoft.AspNet.Identity;
 
 namespace MediaService.BLL.Infrastructure
 {
-    public class OperationDetails : IdentityResult
+    public class OperationDetails //: IdentityResult
     {
-        public OperationDetails(bool succedeed, string message, string prop) : base(succedeed)
+        public OperationDetails(bool succeeded, string message, string prop) //: base(succedeed)
         {
-            Succedeed = succedeed;
+            Succeeded = succeeded;
             Message = message;
             Property = prop;
         }
 
-        public bool   Succedeed { get; }
+        public bool Succeeded { get; }
 
-        public string Message   { get; }
+        public string Message { get; }
 
-        public string Property  { get; }
+        public string Property { get; }
     }
 }

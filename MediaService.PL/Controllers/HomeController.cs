@@ -1,8 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+﻿#region usings
+
 using AutoMapper;
 using MediaService.BLL.DTO;
 using MediaService.BLL.Interfaces;
@@ -10,20 +7,55 @@ using MediaService.PL.Models.IdentityModels.Managers;
 using MediaService.PL.Utils;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
-using NLog;
-using MediaService.PL.Models.IdentityModels;
+using System;
+using System.Data.Entity.Infrastructure;
+using System.Data.SqlTypes;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+using MediaService.PL.Utils.Attributes.ErrorHandler;
+
+#endregion
 
 namespace MediaService.PL.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
-        private ApplicationUserManager _userManager;
+        #region MyRegion
+
         private IUserService _applicationUserService;
+
         private IDirectoryService _directoryService;
+
         private IFilesService _filesService;
+
         private IMapper _mapper;
 
-        protected static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
+        private ApplicationUserManager _userManager;
+
+        #endregion
+
+        #region Constructors
+
+        public HomeController() { }
+
+        public HomeController(
+            ApplicationUserManager userManager,
+            IUserService applicationUserService,
+            IDirectoryService directoryService,
+            IFilesService filesService
+        )
+        {
+            UserManager = userManager;
+            ApplicationUserService = applicationUserService;
+            DirectoryService = directoryService;
+            FilesService = filesService;
+        }
+
+        #endregion
+
+        #region Services Properties
 
         private IMapper Mapper => _mapper ?? (_mapper = MapperModule.GetMapper());
 
@@ -51,32 +83,28 @@ namespace MediaService.PL.Controllers
             set => _filesService = value;
         }
 
-        public HomeController() { }
+        #endregion
 
-        public HomeController(
-            ApplicationUserManager userManager,
-            IUserService applicationUserService,
-            IDirectoryService directoryService,
-            IFilesService filesService
-            )
-        {
-            UserManager = userManager;
-            ApplicationUserService = applicationUserService;
-            DirectoryService = directoryService;
-            FilesService = filesService;
-        }
-
+        #region Actions
+        [ErrorHandle(ExceptionType = typeof(SqlNullValueException), View = "Error")]
+        //[HandleErrorAttribute(ExceptionType = typeof(SqlNullValueException), View = "Error")]
         public async Task<ActionResult> Index(Guid? dirId)
         {
-            var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
             DirectoryEntryDto rootDir;
-            if (dirId.HasValue)
+            try
             {
-                rootDir = await DirectoryService.FindByIdAsync(dirId.Value);
-                return View(rootDir);
+                if (dirId.HasValue)
+                {
+                    rootDir = await DirectoryService.FindByIdAsync(dirId.Value);
+                    return View(rootDir);
+                }
+                var x = User.Identity.GetUserId();
+                rootDir = await DirectoryService.GetRootAsync(x);
             }
-
-            rootDir = await DirectoryService.GetRootAsync(user.Id);
+            catch (Exception ex)
+            {
+                throw new SqlNullValueException("We are sorry, but we can't get your data from our's servers at this moment, try again later", ex);
+            }
             return View(rootDir);
         }
 
@@ -92,18 +120,52 @@ namespace MediaService.PL.Controllers
             return PartialView("_FilesList", files);
         }
 
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
+        #endregion
 
-            return View();
+        #region Overrided Methods
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_userManager != null)
+                {
+                    _userManager.Dispose();
+                    _userManager = null;
+                }
+
+                if (_directoryService != null)
+                {
+                    _directoryService.Dispose();
+                    _directoryService = null;
+                }
+
+                if (_applicationUserService != null)
+                {
+                    _applicationUserService.Dispose();
+                    _applicationUserService = null;
+                }
+
+                if (_filesService != null)
+                {
+                    _filesService.Dispose();
+                    _filesService = null;
+                }
+            }
+
+            base.Dispose(disposing);
         }
 
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
+        //protected override void OnException(ExceptionContext filterContext)
+        //{
+        //    filterContext.ExceptionHandled = true;
 
-            return View();
-        }
+        //    var handleErrorInfo = new HandleErrorInfo(filterContext.Exception,
+        //        filterContext.RouteData.Values["controller"].ToString(),
+        //        filterContext.RouteData.Values["action"].ToString());
+        //    filterContext.Result = RedirectToAction("Index", "ErrorHandler", handleErrorInfo);
+        //}
+
+        #endregion
     }
 }

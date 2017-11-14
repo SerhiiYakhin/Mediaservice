@@ -1,5 +1,5 @@
 ﻿@using MediaService.PL.Models.AccountViewModels
-@model RegisterViewModel
+@model MediaService.PL.Models.AccountViewModels.RegisterViewModel
 @{
     ViewBag.Title = "LuxStorage";
 }
@@ -13,8 +13,8 @@
     <div class="container">
         <div class="col-xs-4 authForms">
             <div class="col-xs-10 col-xs-offset-1">
-                @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-            {
+                @using (Html.BeginForm("Register", "Account", FormMethod.Post, new {@class = "form-horizontal", role = "form"}))
+                {
                     <h3>Зарегистрируйтесь</h3>
                     <p class="text-center">
                         или @Html.ActionLink("Войдите в свой аккаунт", "Login")
@@ -23,29 +23,28 @@
 
 
                     <div class="form-group">
-                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", @placeholder = "Имя пользователя" })
-                        @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+                        @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+                        @Html.TextBoxFor(m => m.UserName, new {@class = "form-control", placeholder = "Имя пользователя"})
+                        @Html.ValidationMessageFor(m => m.UserName, "", new {@class = "text-danger"})
                     </div>
-                        <div class="form-group">
-                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = "E-mail" })
-                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-                        </div>
-                        <div class="form-group">
-                            @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Пароль" })
-                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-                        </div>
-                        <div class="form-group">
-                            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", @placeholder = "Подтвердите пароль" })
-                            @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
-                        </div>
-                        <div class="form-group">
-                            <input type="submit" class="btn btn-primary btn-block" value="Зарегистрироваться" />
-                        </div>
-
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.Email, new {@class = "form-control", placeholder = "E-mail"})
+                        @Html.ValidationMessageFor(m => m.Email, "", new {@class = "text-danger"})
+                    </div>
+                    <div class="form-group">
+                        @Html.PasswordFor(m => m.Password, new {@class = "form-control", placeholder = "Пароль"})
+                        @Html.ValidationMessageFor(m => m.Password, "", new {@class = "text-danger"})
+                    </div>
+                    <div class="form-group">
+                        @Html.PasswordFor(m => m.ConfirmPassword, new {@class = "form-control", placeholder = "Подтвердите пароль"})
+                        @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new {@class = "text-danger"})
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary btn-block" value="Зарегистрироваться"/>
+                    </div>
                 }
                 <section id="socialLoginForm">
-                    @Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel { ReturnUrl = ViewBag.ReturnUrl })
+                    @Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel {ReturnUrl = ViewBag.ReturnUrl})
                 </section>
             </div>
         </div>

@@ -3,7 +3,7 @@ using MediaService.BLL.Interfaces;
 using MediaService.DAL.Entities;
 using MediaService.DAL.Interfaces;
 
-namespace MediaService.BLL.Services
+namespace MediaService.BLL.Services.UserServices
 {
     public class UserService : Service<UserDto, User, string>, IUserService
     {

@@ -3,7 +3,6 @@
 @{
     ViewBag.Title = "Error";
 }
-
 @if (Model == null)
 {
     <h1 class="text-danger">Internal server error</h1>
@@ -15,9 +14,9 @@
 }
 else
 {
-    <h1 class="text-danger">An error occurred while processing your request.</h1>
+    <h1 class="text-danger">Error - @Model.Exception.Message</h1>
 
-    <h2 class="text-danger">@Model.Exception.Message</h2>
+    <h2 class="text-danger">An error occurred while processing your request.</h2>
 
     @Html.ActionLink("Back", Model.ActionName, Model.ControllerName)
 }

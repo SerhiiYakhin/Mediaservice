@@ -4,7 +4,7 @@ namespace MediaService.PL.Models.IdentityModels
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        public ApplicationDbContext() : base("DefaultConnection", throwIfV1Schema: false)
+        public ApplicationDbContext() : base("DefaultConnection", false)
         {
         }
 
@@ -20,6 +20,9 @@ namespace MediaService.PL.Models.IdentityModels
 
         //public virtual DbSet<ObjectViewers> ObjectViewers { get; set; }
 
-        public static ApplicationDbContext Create() => new ApplicationDbContext();
+        public static ApplicationDbContext Create()
+        {
+            return new ApplicationDbContext();
+        }
     }
 }

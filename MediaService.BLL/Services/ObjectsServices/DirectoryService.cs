@@ -14,17 +14,17 @@ namespace MediaService.BLL.Services.ObjectsServices
     {
         public DirectoryService(IUnitOfWork uow) : base(uow)
         {
-            Repository = uow.Directories;
+            Repository = Context.Directories;
         }
-        
+
         public async Task<IEnumerable<DirectoryEntryDto>> GetByNameAsync(string name)
         {
-            return DtoMapper.Map<IEnumerable<DirectoryEntryDto>>(await Repository.GetDataAsyncParallel(d => d.Name.Equals(name)));
+            return DtoMapper.Map<IEnumerable<DirectoryEntryDto>>(await Context.Directories.GetDataAsyncParallel(d => d.Name.Equals(name)));
         }
 
         public async Task<IEnumerable<DirectoryEntryDto>> GetByParentIdAsync(Guid id)
         {
-            return DtoMapper.Map<IEnumerable<DirectoryEntryDto>>(await Repository.GetDataAsyncParallel(d => d.ParentId.Equals(id)));
+            return DtoMapper.Map<IEnumerable<DirectoryEntryDto>>(await Context.Directories.GetDataAsyncParallel(d => d.ParentId.Equals(id)));
         }
 
         public async Task<IEnumerable<DirectoryEntryDto>> GetByAsync(
@@ -51,43 +51,54 @@ namespace MediaService.BLL.Services.ObjectsServices
             string ownerId
             )
         {
-            var dirs = Repository.GetQuery();
+            var dirs = Context.Directories.GetQuery();
             if (id.HasValue)
             {
-                dirs = dirs.Intersect(Repository.GetQuery(d => d.Id.Equals(id.Value)));
+                dirs = dirs.Intersect(Context.Directories.GetQuery(d => d.Id.Equals(id.Value)));
             }
             if (name != null)
             {
-                dirs = dirs.Intersect(Repository.GetQuery(d => d.Name.Equals(name)));
+                dirs = dirs.Intersect(Context.Directories.GetQuery(d => d.Name.Equals(name)));
             }
             if (parentId.HasValue)
             {
-                dirs = dirs.Intersect(Repository.GetQuery(d => d.ParentId.Equals(parentId)));
+                dirs = dirs.Intersect(Context.Directories.GetQuery(d => d.ParentId.Equals(parentId)));
             }
             if (created.HasValue)
             {
-                dirs = dirs.Intersect(Repository.GetQuery(d => d.Created.Equals(created)));
+                dirs = dirs.Intersect(Context.Directories.GetQuery(d => d.Created.Equals(created)));
             }
             if (downloaded.HasValue)
             {
-                dirs = dirs.Intersect(Repository.GetQuery(d => d.Downloaded.Equals(downloaded)));
+                dirs = dirs.Intersect(Context.Directories.GetQuery(d => d.Downloaded.Equals(downloaded)));
             }
             if (modified.HasValue)
             {
-                dirs = dirs.Intersect(Repository.GetQuery(d => d.Modified.Equals(modified)));
+                dirs = dirs.Intersect(Context.Directories.GetQuery(d => d.Modified.Equals(modified)));
             }
             if (ownerId != null)
             {
-                dirs = dirs.Intersect(Repository.GetQuery(d => d.Owner.Id == ownerId));
+                dirs = dirs.Intersect(Context.Directories.GetQuery(d => d.Owner.Id == ownerId));
             }
 
             return dirs;
         }
 
+        /// <exception cref="InvalidDataException">Thrown when user with given Id or his root folder doesn't exist in the Database</exception>
         public async Task<DirectoryEntryDto> GetRootAsync(string ownerId)
         {
-            var root = await Repository.GetDataAsyncParallel(d => d.Owner.Id.Equals(ownerId));
-            return await Task.Run(() => DtoMapper.Map<DirectoryEntryDto>(root.SingleOrDefault()));
+            var x = await Context.Directories.GetDataAsync(d => d.Owner.Id.Equals(ownerId));
+            var root = x.SingleOrDefault();
+            //var x2 = Context.Directories.GetDataParallel(d => d.Owner.Id.Equals(ownerId));
+            //var root2 = x2.SingleOrDefault();
+            //var root = (await Context.Directories.GetDataAsyncParallel(d => d.Owner.Id.Equals(ownerId))).SingleOrDefault();
+
+            if (root == null)
+            {
+                throw new InvalidDataException("Can't find root folder user with this Id in database");
+            }
+
+            return await Task.Run(() => DtoMapper.Map<DirectoryEntryDto>(root));
         }
 
         /// <exception cref="InvalidDataException">Thrown when user with given Id doesn't exist in the Database</exception>
@@ -102,11 +113,11 @@ namespace MediaService.BLL.Services.ObjectsServices
                 Thumbnail = "~/fonts/icons-buttons/folder.svg",
                 Name = "root"
             };
-            var user = await Database.Users.FindByKeyAsync(userId);
+            var user = await Context.Users.FindByKeyAsync(userId);
             rootDir.Owner = user ?? throw new InvalidDataException("Can't find user with this Id in database");
 
-            await Repository.AddAsync(rootDir);
-            await Database.SaveChangesAsync();
+            await Context.Directories.AddAsync(rootDir);
+            await Context.SaveChangesAsync();
         }
     }
 }

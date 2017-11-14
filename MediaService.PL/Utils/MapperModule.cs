@@ -9,15 +9,19 @@ namespace MediaService.PL.Utils
     {
         private static readonly MapperConfiguration Config;
 
-        public static IMapper GetMapper() => Config.CreateMapper();
-
         static MapperModule()
         {
-            Config = new MapperConfiguration(cfg => {
+            Config = new MapperConfiguration(cfg =>
+            {
                 cfg.CreateMap<ExternalLoginConfirmationViewModel, ApplicationUser>();
                 cfg.CreateMap<RegisterViewModel, ApplicationUser>();
                 cfg.CreateMap<ApplicationUser, UserDto>();
             });
+        }
+
+        public static IMapper GetMapper()
+        {
+            return Config.CreateMapper();
         }
     }
 }

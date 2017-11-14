@@ -13,15 +13,15 @@ namespace MediaService.BLL.Services
     {
         private IMapper _mapper;
 
-        protected IUnitOfWork Database { get; }
+        protected IUnitOfWork Context { get; }
 
         protected IRepository<TEntity, TId> Repository { get; set; }
 
         protected IMapper DtoMapper => _mapper ?? (_mapper = MapperModule.GetMapper());
 
-        protected Service(IUnitOfWork uow) => Database = uow;
+        protected Service(IUnitOfWork uow) => Context = uow;
 
-        public void Dispose() => Database.Dispose();
+        public void Dispose() => Context.Dispose();
 
 
         public virtual TDto FindById(TId key)
@@ -47,64 +47,64 @@ namespace MediaService.BLL.Services
         public virtual void Add(TDto item)
         {
             Repository.Add(DtoMapper.Map<TEntity>(item));
-            Database.SaveChanges();
+            Context.SaveChanges();
         }
 
         public virtual async Task AddAsync(TDto item)
         {
             await Repository.AddAsync(DtoMapper.Map<TEntity>(item));
-            await Database.SaveChangesAsync();
+            await Context.SaveChangesAsync();
         }
 
 
         public virtual void AddRange(IEnumerable<TDto> items)
         {
             Repository.AddRange(DtoMapper.Map< IEnumerable<TEntity>>(items));
-            Database.SaveChanges();
+            Context.SaveChanges();
         }
 
         public virtual async Task AddRangeAsync(IEnumerable<TDto> items)
         {
             await Repository.AddRangeAsync(DtoMapper.Map<IEnumerable<TEntity>>(items));
-            await Database.SaveChangesAsync();
+            await Context.SaveChangesAsync();
         }
 
         public virtual void Update(TDto item)
         {
             Repository.Update(DtoMapper.Map<TEntity>(item));
-            Database.SaveChanges();
+            Context.SaveChanges();
         }
 
         public virtual async Task UpdateAsync(TDto item)
         {
             await Repository.UpdateAsync(DtoMapper.Map<TEntity>(item));
-            await Database.SaveChangesAsync();
+            await Context.SaveChangesAsync();
         }
 
 
         public virtual void Remove(TDto item)
         {
             Repository.Remove(DtoMapper.Map<TEntity>(item));
-            Database.SaveChanges();
+            Context.SaveChanges();
         }
 
         public virtual async Task RemoveAsync(TDto item)
         {
             await Repository.RemoveAsync(DtoMapper.Map<TEntity>(item));
-            await Database.SaveChangesAsync();
+            await Context.SaveChangesAsync();
         }
 
 
         public virtual void RemoveRange(IEnumerable<TDto> items)
         {
             Repository.RemoveRange(DtoMapper.Map<IEnumerable<TEntity>>(items));
-            Database.SaveChanges();
+            Context.SaveChanges();
         }
 
         public virtual async Task RemoveRangeAsync(IEnumerable<TDto> items)
         {
             await Repository.RemoveRangeAsync(DtoMapper.Map<IEnumerable<TEntity>>(items));
-            await Database.SaveChangesAsync();
+            await Context.SaveChangesAsync();
         }
     }
 }

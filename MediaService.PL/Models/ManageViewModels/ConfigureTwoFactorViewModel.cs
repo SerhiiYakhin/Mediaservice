@@ -5,7 +5,7 @@ namespace MediaService.PL.Models.ManageViewModels
 {
     public class ConfigureTwoFactorViewModel
     {
-        public string                      SelectedProvider { get; set; }
-        public ICollection<SelectListItem> Providers        { get; set; }
+        public string SelectedProvider { get; set; }
+        public ICollection<SelectListItem> Providers { get; set; }
     }
 }
