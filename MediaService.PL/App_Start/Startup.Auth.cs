@@ -1,5 +1,5 @@
-﻿using System;
-using System.Web.Mvc;
+﻿#region usings
+
 using MediaService.BLL.Interfaces;
 using MediaService.PL.Models.IdentityModels;
 using MediaService.PL.Models.IdentityModels.Managers;
@@ -9,6 +9,10 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
 using Owin;
+using System;
+using System.Web.Mvc;
+
+#endregion
 
 namespace MediaService.PL
 {

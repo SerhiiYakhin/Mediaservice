@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using MediaService.DAL.Interfaces;
+using Microsoft.Azure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
@@ -18,6 +19,7 @@ namespace MediaService.DAL.Accessors
 
         public AzureStorageAccessor(string connectionString)
         {
+            _connectionString = connectionString;
         }
 
         #endregion
@@ -35,8 +37,9 @@ namespace MediaService.DAL.Accessors
         //2 * 1024 * 1024 bytes or 2 MB
         private const int BlockSize = 2_097_152;
 
-        private static readonly string ConnectionString = "UseDevelopmentStorage=true;";
-        //private static readonly string ConnectionString = CloudConfigurationManager.GetSetting(ConnectionStringSettingName);
+        //private static readonly string ConnectionString = "UseDevelopmentStorage=true;";
+        //private static string _connectionString = CloudConfigurationManager.GetSetting(ConnectionStringSettingName);
+        private static string _connectionString;
 
         #endregion
 
@@ -120,7 +123,7 @@ namespace MediaService.DAL.Accessors
 
         private static CloudBlobContainer GetContainerReference()
         {
-            var storageAccount = CloudStorageAccount.Parse(ConnectionString);
+            var storageAccount = CloudStorageAccount.Parse(_connectionString);
             var blobClient = storageAccount.CreateCloudBlobClient();
             var container = blobClient.GetContainerReference(ContainerName);
 

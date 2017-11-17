@@ -211,7 +211,7 @@ namespace MediaService.PL.Controllers
         {
             try
             {
-                if (DirectoryService.GetByAsync(name: model.Name, parentId: model.ParentId) == null)
+                if (!await DirectoryService.IsDirectoryExistAsync(model.Name, model.ParentId))
                 {
                     var newFolder = GetNewDirectoryEntryDto(model);
                     await DirectoryService.AddAsync(newFolder);

@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using MediaService.BLL.Infrastructure;
 using MediaService.PL.Utils;
+using Microsoft.Azure;
 using Ninject;
 using Ninject.Web.Common;
 
@@ -16,7 +17,7 @@ namespace MediaService.PL
     {
         private void ConfigureNinject()
         {
-            var kernel = new StandardKernel(new ServiceModule("DefaultConnection", null));
+            var kernel = new StandardKernel(new ServiceModule("DefaultConnection", CloudConfigurationManager.GetSetting("StorageConnectionString")));
             try
             {
                 kernel.Bind<Func<IKernel>>().ToMethod(ctx => () => new Bootstrapper().Kernel);
