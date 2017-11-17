@@ -1,5 +1,9 @@
-﻿using System.IO;
+﻿#region usings
+
+using System.IO;
 using System.Threading.Tasks;
+
+#endregion
 
 namespace MediaService.DAL.Interfaces
 {

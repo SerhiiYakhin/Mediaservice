@@ -1,16 +1,27 @@
-﻿using System;
+﻿#region usings
+
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using MediaService.DAL.Interfaces;
-using Microsoft.Azure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
+
+#endregion
 
 namespace MediaService.DAL.Accessors
 {
     public class AzureStorageAccessor : IStorage
     {
+        #region Constructors
+
+        public AzureStorageAccessor(string connectionString)
+        {
+        }
+
+        #endregion
+
         #region Fields
 
         private const string ConnectionStringSettingName = "StorageConnectionString";
@@ -29,40 +40,31 @@ namespace MediaService.DAL.Accessors
 
         #endregion
 
-        #region Constructors
-
-        public AzureStorageAccessor(string connectionString)
-        {
-                
-        }
-
-        #endregion
-
         #region Methods
 
         public void Upload(Stream file, string fileName)
         {
-            CloudBlockBlob blob = GetBlob(fileName);
+            var blob = GetBlob(fileName);
             blob.UploadFromStream(file);
         }
 
         public async Task UploadAsync(Stream file, string fileName)
         {
-            CloudBlockBlob blob = GetBlob(fileName);
+            var blob = GetBlob(fileName);
             await blob.UploadFromStreamAsync(file);
         }
 
         public async Task UploadAsync(byte[] file, string fileName)
         {
-            CloudBlockBlob blob = GetBlob(fileName);
+            var blob = GetBlob(fileName);
             await blob.UploadFromByteArrayAsync(file, 0, file.Length);
         }
 
         public void UploadFileInBlocks(byte[] file, string fileName)
         {
-            CloudBlockBlob blob = GetBlob(fileName);
+            var blob = GetBlob(fileName);
 
-            BlobRequestOptions requestOptions = new BlobRequestOptions
+            var requestOptions = new BlobRequestOptions
             {
                 ParallelOperationThreadCount = 2,
                 RetryPolicy = new ExponentialRetry(TimeSpan.FromSeconds(2), 1)
@@ -76,9 +78,9 @@ namespace MediaService.DAL.Accessors
         //todo: Check if it works
         public async Task UploadFileInBlocksAsync(byte[] file, string fileName)
         {
-            CloudBlockBlob blob = GetBlob(fileName);
+            var blob = GetBlob(fileName);
 
-            BlobRequestOptions requestOptions = new BlobRequestOptions
+            var requestOptions = new BlobRequestOptions
             {
                 ParallelOperationThreadCount = 2,
                 RetryPolicy = new ExponentialRetry(TimeSpan.FromSeconds(2), 1)
@@ -92,9 +94,9 @@ namespace MediaService.DAL.Accessors
         //todo: Check if it works
         public async Task UploadFileInBlocksAsync(Stream file, string fileName)
         {
-            CloudBlockBlob blob = GetBlob(fileName);
+            var blob = GetBlob(fileName);
 
-            BlobRequestOptions requestOptions = new BlobRequestOptions
+            var requestOptions = new BlobRequestOptions
             {
                 ParallelOperationThreadCount = 2,
                 RetryPolicy = new ExponentialRetry(TimeSpan.FromSeconds(2), 1)
@@ -111,16 +113,16 @@ namespace MediaService.DAL.Accessors
 
         private static CloudBlockBlob GetBlob(string fileName)
         {
-            CloudBlobContainer container = GetContainerReference();
-            CloudBlockBlob blob = container.GetBlockBlobReference(fileName);
+            var container = GetContainerReference();
+            var blob = container.GetBlockBlobReference(fileName);
             return blob;
         }
 
         private static CloudBlobContainer GetContainerReference()
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConnectionString);
-            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
-            CloudBlobContainer container = blobClient.GetContainerReference(ContainerName);
+            var storageAccount = CloudStorageAccount.Parse(ConnectionString);
+            var blobClient = storageAccount.CreateCloudBlobClient();
+            var container = blobClient.GetContainerReference(ContainerName);
 
             container.CreateIfNotExists();
 
@@ -128,6 +130,5 @@ namespace MediaService.DAL.Accessors
         }
 
         #endregion
-
     }
 }

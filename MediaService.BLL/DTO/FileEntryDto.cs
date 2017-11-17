@@ -1,6 +1,9 @@
-﻿using System;
+﻿#region usings
+
 using System.Collections.Generic;
 using System.IO;
+
+#endregion
 
 namespace MediaService.BLL.DTO
 {

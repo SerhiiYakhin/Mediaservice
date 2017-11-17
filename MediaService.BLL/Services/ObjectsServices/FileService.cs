@@ -1,25 +1,28 @@
-﻿using MediaService.BLL.DTO;
-using MediaService.BLL.Interfaces;
-using MediaService.DAL.Entities;
-using MediaService.DAL.Interfaces;
+﻿#region usings
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
+using MediaService.BLL.DTO;
+using MediaService.BLL.Interfaces;
+using MediaService.DAL.Entities;
+using MediaService.DAL.Interfaces;
+
+#endregion
 
 namespace MediaService.BLL.Services.ObjectsServices
 {
     public class FileService : Service<FileEntryDto, FileEntry, Guid>, IFilesService
     {
-        private IStorage Storage { get; }
-
         public FileService(IUnitOfWork uow, IStorage storage) : base(uow)
         {
             Storage = storage;
             Repository = uow.Files;
         }
+
+        private IStorage Storage { get; }
 
         public async Task<IEnumerable<FileEntryDto>> GetByNameAsync(string name)
         {
@@ -55,7 +58,7 @@ namespace MediaService.BLL.Services.ObjectsServices
             }
 
             parentDir.Modified = DateTime.Now;
-            
+
 
             foreach (var fileDto in filesDto)
             {
@@ -76,7 +79,7 @@ namespace MediaService.BLL.Services.ObjectsServices
             DateTime? downloaded,
             DateTime? modified,
             string ownerId
-            )
+        )
         {
             var dirs = Context.Files.GetQuery();
             if (id.HasValue)

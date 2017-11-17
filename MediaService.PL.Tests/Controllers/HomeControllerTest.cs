@@ -1,6 +1,9 @@
-﻿using System.Web.Mvc;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿#region usings
+
 using MediaService.PL.Controllers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+#endregion
 
 namespace MediaService.PL.Tests.Controllers
 {
@@ -11,10 +14,10 @@ namespace MediaService.PL.Tests.Controllers
         public async void Index()
         {
             // Arrange
-            HomeController controller = new HomeController();
+            var controller = new HomeController();
 
             // Act
-            ActionResult result = await controller.Index(null);
+            var result = await controller.Index(null);
 
             // Assert
             Assert.IsNotNull(result);

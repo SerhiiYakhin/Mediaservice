@@ -1,26 +1,21 @@
 ﻿#region usings
 
+using System;
+using System.Data.Entity.Infrastructure;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
 using AutoMapper;
 using MediaService.BLL.Interfaces;
 using MediaService.PL.Models.AccountViewModels;
 using MediaService.PL.Models.IdentityModels;
 using MediaService.PL.Models.IdentityModels.Managers;
 using MediaService.PL.Utils;
+using MediaService.PL.Utils.Attributes.ErrorHandler;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
-using System;
-using System.Data.Common;
-using System.Data.Entity.Infrastructure;
-using System.Data.Entity.Validation;
-using System.Data.Services.Client;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
-using MediaService.PL.Utils.Attributes.ErrorHandler;
 
 #endregion
 
@@ -29,6 +24,46 @@ namespace MediaService.PL.Controllers
     [Authorize]
     public class AccountController : Controller
     {
+        #region Overrided Methods
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_userManager != null)
+                {
+                    _userManager.Dispose();
+                    _userManager = null;
+                }
+
+                if (_signInManager != null)
+                {
+                    _signInManager.Dispose();
+                    _signInManager = null;
+                }
+
+                if (_directoryService != null)
+                {
+                    _directoryService.Dispose();
+                    _directoryService = null;
+                }
+            }
+
+            base.Dispose(disposing);
+        }
+
+        //protected override void OnException(ExceptionContext filterContext)
+        //{
+        //    filterContext.ExceptionHandled = true;
+
+        //    var handleErrorInfo = new HandleErrorInfo(filterContext.Exception,
+        //        filterContext.RouteData.Values["controller"].ToString(),
+        //        filterContext.RouteData.Values["action"].ToString());
+        //    filterContext.Result = RedirectToAction("Index", "ErrorHandler", handleErrorInfo);
+        //}
+
+        #endregion
+
         #region Services
 
         private IUserService _applicationUserService;
@@ -45,7 +80,9 @@ namespace MediaService.PL.Controllers
 
         #region Constructors
 
-        public AccountController() { }
+        public AccountController()
+        {
+        }
 
         public AccountController(
             ApplicationUserManager userManager,
@@ -112,7 +149,7 @@ namespace MediaService.PL.Controllers
                 return View(model);
 
             var result =
-                await SignInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, shouldLockout: true);
+                await SignInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, true);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -120,7 +157,7 @@ namespace MediaService.PL.Controllers
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
-                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, model.RememberMe });
+                    return RedirectToAction("SendCode", new {ReturnUrl = returnUrl, model.RememberMe});
                 default:
                     ModelState.AddModelError("", "Invalid login attempt.");
                     return View(model);
@@ -135,7 +172,7 @@ namespace MediaService.PL.Controllers
             if (!await SignInManager.HasBeenVerifiedAsync())
                 return View("Error");
 
-            return View(new VerifyCodeViewModel { Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe });
+            return View(new VerifyCodeViewModel {Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe});
         }
 
         // POST: /Account/VerifyCode
@@ -189,7 +226,7 @@ namespace MediaService.PL.Controllers
                     if (result.Succeeded)
                     {
                         await SignInManager.SignInAsync(user, false, false);
-                        
+
                         try
                         {
                             await DirectoryService.AddRootDirToUserAsync(user.Id);
@@ -197,7 +234,8 @@ namespace MediaService.PL.Controllers
                         catch (Exception ex)
                         {
                             await UserManager.DeleteAsync(user);
-                            throw new DbUpdateException("We can't create disk space for you at this moment, we're sorry, try again later", ex);
+                            throw new DbUpdateException(
+                                "We can't create disk space for you at this moment, we're sorry, try again later", ex);
                         }
 
                         // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
@@ -303,7 +341,7 @@ namespace MediaService.PL.Controllers
         {
             // Request a redirect to the external login provider
             return new ChallengeResult(provider,
-                Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl }));
+                Url.Action("ExternalLoginCallback", "Account", new {ReturnUrl = returnUrl}));
         }
 
         // GET: /Account/SendCode
@@ -316,7 +354,7 @@ namespace MediaService.PL.Controllers
                 return View("Error");
 
             var userFactors = await UserManager.GetValidTwoFactorProvidersAsync(userId);
-            var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose })
+            var factorOptions = userFactors.Select(purpose => new SelectListItem {Text = purpose, Value = purpose})
                 .ToList();
 
             return View(new SendCodeViewModel
@@ -341,7 +379,7 @@ namespace MediaService.PL.Controllers
                 return View("Error");
 
             return RedirectToAction("VerifyCode",
-                new { Provider = model.SelectedProvider, model.ReturnUrl, model.RememberMe });
+                new {Provider = model.SelectedProvider, model.ReturnUrl, model.RememberMe});
         }
 
         // GET: /Account/ExternalLoginCallback
@@ -363,14 +401,14 @@ namespace MediaService.PL.Controllers
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
-                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = false });
+                    return RedirectToAction("SendCode", new {ReturnUrl = returnUrl, RememberMe = false});
                 default:
                     // If the user does not have an account, then prompt the user to create an account
                     ViewBag.ReturnUrl = returnUrl;
                     ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
 
                     return View("ExternalLoginConfirmation",
-                        new ExternalLoginConfirmationViewModel { Email = loginInfo.Email });
+                        new ExternalLoginConfirmationViewModel {Email = loginInfo.Email});
             }
         }
 
@@ -403,7 +441,8 @@ namespace MediaService.PL.Controllers
                     catch (Exception ex)
                     {
                         await UserManager.DeleteAsync(user);
-                        throw new DbUpdateException("We can't create disk space for you at this moment, we're sorry, try again later", ex);
+                        throw new DbUpdateException(
+                            "We can't create disk space for you at this moment, we're sorry, try again later", ex);
                     }
                     result = await UserManager.AddLoginAsync(user.Id, info.Login);
                     if (result.Succeeded)
@@ -434,46 +473,6 @@ namespace MediaService.PL.Controllers
         {
             return View();
         }
-
-        #endregion
-
-        #region Overrided Methods
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (_userManager != null)
-                {
-                    _userManager.Dispose();
-                    _userManager = null;
-                }
-
-                if (_signInManager != null)
-                {
-                    _signInManager.Dispose();
-                    _signInManager = null;
-                }
-
-                if (_directoryService != null)
-                {
-                    _directoryService.Dispose();
-                    _directoryService = null;
-                }
-            }
-
-            base.Dispose(disposing);
-        }
-
-        //protected override void OnException(ExceptionContext filterContext)
-        //{
-        //    filterContext.ExceptionHandled = true;
-
-        //    var handleErrorInfo = new HandleErrorInfo(filterContext.Exception,
-        //        filterContext.RouteData.Values["controller"].ToString(),
-        //        filterContext.RouteData.Values["action"].ToString());
-        //    filterContext.Result = RedirectToAction("Index", "ErrorHandler", handleErrorInfo);
-        //}
 
         #endregion
 
@@ -512,9 +511,9 @@ namespace MediaService.PL.Controllers
                 UserId = userId;
             }
 
-            private string LoginProvider { get; set; }
-            private string RedirectUri { get; set; }
-            private string UserId { get; set; }
+            private string LoginProvider { get; }
+            private string RedirectUri { get; }
+            private string UserId { get; }
 
             public override void ExecuteResult(ControllerContext context)
             {

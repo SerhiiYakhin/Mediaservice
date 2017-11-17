@@ -1,4 +1,8 @@
-﻿using System.Web.Optimization;
+﻿#region usings
+
+using System.Web.Optimization;
+
+#endregion
 
 namespace MediaService.PL
 {

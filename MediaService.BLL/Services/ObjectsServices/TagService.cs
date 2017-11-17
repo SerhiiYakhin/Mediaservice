@@ -1,14 +1,18 @@
-﻿using MediaService.BLL.DTO;
-using MediaService.BLL.Interfaces;
-using MediaService.DAL.Entities;
-using MediaService.DAL.Interfaces;
+﻿#region usings
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using MediaService.BLL.DTO;
+using MediaService.BLL.Interfaces;
+using MediaService.DAL.Entities;
+using MediaService.DAL.Interfaces;
+
+#endregion
 
 namespace MediaService.BLL.Services.ObjectsServices
 {
-    public class TagService : Service<TagDto, Tag, Guid>,  ITagService
+    public class TagService : Service<TagDto, Tag, Guid>, ITagService
     {
         public TagService(IUnitOfWork uow) : base(uow)
         {

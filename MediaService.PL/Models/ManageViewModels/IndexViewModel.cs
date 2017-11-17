@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿#region usings
+
+using System.Collections.Generic;
 using Microsoft.AspNet.Identity;
+
+#endregion
 
 namespace MediaService.PL.Models.ManageViewModels
 {

@@ -1,6 +1,10 @@
-﻿using MediaService.DAL.Accessors;
+﻿#region usings
+
+using MediaService.DAL.Accessors;
 using MediaService.DAL.Interfaces;
 using Ninject.Modules;
+
+#endregion
 
 namespace MediaService.BLL.Infrastructure
 {

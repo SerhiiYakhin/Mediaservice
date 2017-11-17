@@ -1,9 +1,12 @@
-﻿using System;
+﻿#region usings
+
+using System;
 using MediaService.PL;
-using MediaService.PL.Utils.Attributes.ErrorHandler;
 using Microsoft.Owin;
 using NLog;
 using Owin;
+
+#endregion
 
 [assembly: OwinStartup(typeof(Startup))]
 

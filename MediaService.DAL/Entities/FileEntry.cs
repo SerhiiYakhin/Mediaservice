@@ -1,7 +1,10 @@
-﻿using System;
+﻿#region usings
+
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
+#endregion
 
 namespace MediaService.DAL.Entities
 {
@@ -21,7 +24,7 @@ namespace MediaService.DAL.Entities
         public string OwnerId { get; set; }
 
         public virtual User Owner { get; set; }
-        
+
         public virtual ICollection<FileViewers> Viewers { get; set; }
 
         public virtual ICollection<Tag> Tags { get; set; }

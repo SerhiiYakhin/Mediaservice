@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
-using MediaService.DAL.Entities;
+﻿#region usings
+
+using System.Collections.Generic;
+
+#endregion
 
 namespace MediaService.BLL.DTO
 {

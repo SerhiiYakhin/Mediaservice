@@ -1,11 +1,18 @@
-﻿using System;
+﻿#region usings
+
+using System;
 using System.Collections.Generic;
+
+#endregion
 
 namespace MediaService.BLL.DTO
 {
     public class TagDto
     {
-        public TagDto() => FileEntries = new HashSet<FileEntryDto>();
+        public TagDto()
+        {
+            FileEntries = new HashSet<FileEntryDto>();
+        }
 
         public Guid Id { get; set; }
 

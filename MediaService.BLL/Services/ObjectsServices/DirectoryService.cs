@@ -1,12 +1,16 @@
-﻿using MediaService.BLL.DTO;
-using MediaService.BLL.Interfaces;
-using MediaService.DAL.Entities;
-using MediaService.DAL.Interfaces;
+﻿#region usings
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using MediaService.BLL.DTO;
+using MediaService.BLL.Interfaces;
+using MediaService.DAL.Entities;
+using MediaService.DAL.Interfaces;
+
+#endregion
 
 namespace MediaService.BLL.Services.ObjectsServices
 {
@@ -19,12 +23,14 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public async Task<IEnumerable<DirectoryEntryDto>> GetByNameAsync(string name)
         {
-            return DtoMapper.Map<IEnumerable<DirectoryEntryDto>>(await Context.Directories.GetDataAsync(d => d.Name == name));
+            return DtoMapper.Map<IEnumerable<DirectoryEntryDto>>(
+                await Context.Directories.GetDataAsync(d => d.Name == name));
         }
 
         public async Task<IEnumerable<DirectoryEntryDto>> GetByParentIdAsync(Guid id)
         {
-            return DtoMapper.Map<IEnumerable<DirectoryEntryDto>>(await Context.Directories.GetDataAsync(d => d.ParentId == id));
+            return DtoMapper.Map<IEnumerable<DirectoryEntryDto>>(
+                await Context.Directories.GetDataAsync(d => d.ParentId == id));
         }
 
         public async Task<IEnumerable<DirectoryEntryDto>> GetByAsync(
@@ -60,6 +66,7 @@ namespace MediaService.BLL.Services.ObjectsServices
             await Repository.AddAsync(dir);
             await Context.SaveChangesAsync();
         }
+
         /// <exception cref="InvalidDataException">Thrown when user with given Id or his root folder doesn't exist in the Database</exception>
         public async Task AddAsync(string name, Guid parentId)
         {

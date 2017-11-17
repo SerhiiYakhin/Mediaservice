@@ -1,10 +1,14 @@
-﻿using System;
+﻿#region usings
+
+using System;
 using System.Web;
 using System.Web.Mvc;
 using MediaService.BLL.Infrastructure;
 using MediaService.PL.Utils;
 using Ninject;
 using Ninject.Web.Common;
+
+#endregion
 
 namespace MediaService.PL
 {

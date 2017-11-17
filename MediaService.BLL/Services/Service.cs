@@ -1,9 +1,13 @@
-﻿using AutoMapper;
+﻿#region usings
+
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using AutoMapper;
 using MediaService.BLL.Infrastructure;
 using MediaService.BLL.Interfaces;
 using MediaService.DAL.Interfaces;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+
+#endregion
 
 namespace MediaService.BLL.Services
 {
@@ -13,15 +17,21 @@ namespace MediaService.BLL.Services
     {
         private IMapper _mapper;
 
+        protected Service(IUnitOfWork uow)
+        {
+            Context = uow;
+        }
+
         protected IUnitOfWork Context { get; }
 
         protected IRepository<TEntity, TId> Repository { get; set; }
 
         protected IMapper DtoMapper => _mapper ?? (_mapper = MapperModule.GetMapper());
 
-        protected Service(IUnitOfWork uow) => Context = uow;
-
-        public void Dispose() => Context.Dispose();
+        public void Dispose()
+        {
+            Context.Dispose();
+        }
 
 
         public virtual TDto FindById(TId key)
@@ -59,7 +69,7 @@ namespace MediaService.BLL.Services
 
         public virtual void AddRange(IEnumerable<TDto> items)
         {
-            Repository.AddRange(DtoMapper.Map< IEnumerable<TEntity>>(items));
+            Repository.AddRange(DtoMapper.Map<IEnumerable<TEntity>>(items));
             Context.SaveChanges();
         }
 

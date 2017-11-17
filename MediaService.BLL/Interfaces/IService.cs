@@ -1,10 +1,14 @@
-﻿using System;
+﻿#region usings
+
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+#endregion
+
 namespace MediaService.BLL.Interfaces
 {
-    public interface IService<TDto, in TId>: IDisposable where TDto : class
+    public interface IService<TDto, in TId> : IDisposable where TDto : class
     {
         TDto FindById(TId id);
 

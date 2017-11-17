@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
+﻿#region usings
+
+using Microsoft.AspNet.Identity.EntityFramework;
+
+#endregion
 
 namespace MediaService.PL.Models.IdentityModels
 {

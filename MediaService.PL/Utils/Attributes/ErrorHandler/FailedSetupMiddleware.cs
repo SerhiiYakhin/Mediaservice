@@ -1,6 +1,10 @@
-﻿using System;
+﻿#region usings
+
+using System;
 using System.Threading.Tasks;
 using Microsoft.Owin;
+
+#endregion
 
 namespace MediaService.PL.Utils.Attributes.ErrorHandler
 {

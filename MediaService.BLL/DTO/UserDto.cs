@@ -1,11 +1,16 @@
-﻿using System;
+﻿#region usings
+
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+
+#endregion
 
 namespace MediaService.BLL.DTO
 {
     public class UserDto
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        [SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public UserDto()
         {
             Files = new HashSet<FileEntryDto>();
