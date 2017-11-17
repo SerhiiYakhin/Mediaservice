@@ -1,23 +1,25 @@
-﻿@model MediaService.PL.Models.AccountViewModels.ExternalLoginListViewModel
-@using Microsoft.Owin.Security
+﻿@using Microsoft.Owin.Security
+@model MediaService.PL.Models.AccountViewModels.ExternalLoginListViewModel
 
 
 @{
     var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
     var authenticationDescriptions = loginProviders as IList<AuthenticationDescription> ?? loginProviders.ToList();
-    if (!authenticationDescriptions.Any()) {
-
+    if (!authenticationDescriptions.Any())
+    {
     }
-    else {
-        using (Html.BeginForm("ExternalLogin", "Account", new {Model.ReturnUrl })) {
+    else
+    {
+        using (Html.BeginForm("ExternalLogin", "Account", new {Model.ReturnUrl}))
+        {
             @Html.AntiForgeryToken()
             <div id="socialLoginList">
-                <p>
-                    @foreach (AuthenticationDescription p in authenticationDescriptions) {
 
-                        <button type="submit"  class="btn btn-primary btn-block" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType">Через @p.AuthenticationType</button>
-                    }
-                </p>
+                @foreach (var p in authenticationDescriptions)
+                {
+                    <button type="submit" class="btn btn-primary btn-block socialBtn" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType">Регистрация через @p.AuthenticationType</button>
+                }
+
             </div>
         }
     }

@@ -1,5 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿#region usings
+
+using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
+
+#endregion
 
 namespace MediaService.PL.Models.IdentityModels.Services
 {

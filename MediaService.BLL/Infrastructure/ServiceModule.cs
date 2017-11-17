@@ -1,21 +1,28 @@
-﻿using MediaService.DAL.Interfaces;
-using MediaService.DAL.Repositories;
+﻿#region usings
+
+using MediaService.DAL.Accessors;
+using MediaService.DAL.Interfaces;
 using Ninject.Modules;
+
+#endregion
 
 namespace MediaService.BLL.Infrastructure
 {
     public class ServiceModule : NinjectModule
     {
-        private readonly string _connectionString;
+        private readonly string _dbConnectionString;
+        private readonly string _storageConnection;
 
-        public ServiceModule(string connection)
+        public ServiceModule(string dbConnection, string storageConnection)
         {
-            _connectionString = connection;
+            _dbConnectionString = dbConnection;
+            _storageConnection = storageConnection;
         }
 
         public override void Load()
         {
-            Bind<IUnitOfWork>().To<EFUnitOfWork>().WithConstructorArgument(_connectionString);
+            Bind<IUnitOfWork>().To<EFUnitOfWork>().WithConstructorArgument(_dbConnectionString);
+            Bind<IStorage>().To<AzureStorageAccessor>().WithConstructorArgument(_storageConnection);
         }
     }
 }

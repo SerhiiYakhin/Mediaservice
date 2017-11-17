@@ -1,11 +1,30 @@
-﻿using System.Collections.Generic;
+﻿#region usings
+
+using System.Collections.Generic;
+using System.IO;
+
+#endregion
 
 namespace MediaService.BLL.DTO
 {
-    public sealed class FileEntryDto : ObjectEntryDto
+    public class FileEntryDto : ObjectEntryDto
     {
-        public FileEntryDto() => Tags = new HashSet<TagDto>();
+        public FileEntryDto()
+        {
+            Viewers = new HashSet<FileViewersDto>();
+            Tags = new HashSet<TagDto>();
+        }
 
-        public ICollection<TagDto> Tags { get; set; }
+        public int Size { get; set; }
+
+        public Stream FileStream { get; set; }
+
+        public string OwnerId { get; set; }
+
+        public virtual UserDto Owner { get; set; }
+
+        public virtual ICollection<FileViewersDto> Viewers { get; set; }
+
+        public virtual ICollection<TagDto> Tags { get; set; }
     }
 }

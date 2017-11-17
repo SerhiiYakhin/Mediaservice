@@ -1,0 +1,38 @@
+﻿﻿@model MediaService.BLL.DTO.DirectoryEntryDto
+
+<div id="directories"></div>
+
+@section scripts {
+
+    <script>
+        $.ajax({
+            url: '@Url.Action("DirectoriesList", "Home", new {parentId = Model.Id})',
+            type: "POST",
+            contentType: "text/html; charset=utf-8",
+            success: function(data) {
+                $('#directories').html(data);
+            }
+        });
+
+        //$(function(){
+        //    $(document).ajaxStart(function () {
+        //    //show a progress modal of your choosing
+        //        window.showProgressModal('loading');
+        //    });
+        //    $(document).ajaxStop(function () {
+        //    //hide it
+        //        window.hideProgressModal();
+        //    });
+
+        //    $.ajax({
+        //        url: '/Home/DirectoriesList',
+        //        dataType: 'html',
+        //        success: function(data) {
+        //            $('#directories').html(data);
+        //        }
+        //    });
+        //});
+
+    </script>
+
+}

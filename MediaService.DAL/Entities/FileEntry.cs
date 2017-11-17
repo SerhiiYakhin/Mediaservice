@@ -1,13 +1,32 @@
-﻿using System.Collections.Generic;
+﻿#region usings
+
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+#endregion
 
 namespace MediaService.DAL.Entities
 {
+    [Table("FileEntries")]
     public class FileEntry : ObjectEntry
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public FileEntry() => Tags = new HashSet<Tag>();
+        public FileEntry()
+        {
+            Viewers = new HashSet<FileViewers>();
+            Tags = new HashSet<Tag>();
+        }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        [Required]
+        public int Size { get; set; }
+
+        [Column("Owner_Id")]
+        public string OwnerId { get; set; }
+
+        public virtual User Owner { get; set; }
+
+        public virtual ICollection<FileViewers> Viewers { get; set; }
+
         public virtual ICollection<Tag> Tags { get; set; }
     }
 }

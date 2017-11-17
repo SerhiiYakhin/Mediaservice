@@ -1,31 +1,119 @@
-﻿@{
+﻿﻿@model MediaService.BLL.DTO.DirectoryEntryDto
+@{
     ViewBag.Title = "Home Page";
 }
 
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
-
 <div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
+    <div class="col-xs-4">
+        <input type="search" value="Поиск файлов" class="searchField"/>
     </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
+    <div class="col-xs-4">
+        <h1>LuxStorage</h1>
     </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+    <div class="col-xs-4">
+        @Html.Partial("_LoginPartial")
     </div>
 </div>
+<hr/>
+
+@if (ViewBag.FirstTime == "true")
+{
+    <section id="GeneralView">
+        @Html.Partial("_WelcomePartial")
+    </section>
+}
+else
+{
+    <section id="WelcomeView">
+        <div class="row folderList">
+            <div id='directories'></div>
+        </div>
+        <div class="row filesList">
+            <div id='files'></div>
+        </div>
+        <input type="file" id="FileUpload" multiple/>
+        <input type="button" id="btnUpload" value="Upload Files"/>
+    </section>
+}
+
+@section scripts {
+
+    <script>
+        $.ajax({
+            url: '@Url.Action("DirectoriesList", "Home", new {parentId = Model.Id})',
+            type: "POST",
+            contentType: "text/html; charset=utf-8",
+            success: function(data) {
+                $('#directories').html(data);
+            }
+        });
+
+        $.ajax({
+            url: '@Url.Action("FilesList", "Home", new {parentId = Model.Id})',
+            type: "POST",
+            contentType: "text/html; charset=utf-8",
+            success: function(data) {
+                $('#files').html(data);
+            }
+        });
+        //$(function(){
+        //    $(document).ajaxStart(function () {
+        //    //show a progress modal of your choosing
+        //        window.showProgressModal('loading');
+        //    });
+        //    $(document).ajaxStop(function () {
+        //    //hide it
+        //        window.hideProgressModal();
+        //    });
+
+        //    $.ajax({
+        //        url: '/Home/DirectoriesList',
+        //        dataType: 'html',
+        //        success: function(data) {
+        //            $('#directories').html(data);
+        //        }
+        //    });
+        //});
+
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#btnUpload').click(function() {
+
+                // Checking whether FormData is available in browser  
+                if (window.FormData !== undefined) {
+
+                    var fileUpload = $("#FileUpload").get(0);
+                    var files = fileUpload.files;
+                    // Create FormData object  
+                    var fileData = new FormData();
+
+                    // Looping over all files and add it to FormData object  
+                    for (var i = 0; i < files.length; i++) {
+                        fileData.append(files[i].name, files[i]);
+                    }
+                    //files[1].creationTime
+                    // Adding one more key to FormData object
+                    //fileData.append('folderId', @Model.Id);
+
+                    $.ajax({
+                        url: '/Home/UploadFiles?parentId=@Model.Id',
+                        type: "POST",
+                        contentType: false, // Not to set any content header  
+                        processData: false, // Not to process data  
+                        data: fileData,
+                        success: function(data) {
+                            //todo: Think about what to do after upload
+                            $('#files').html(data);
+                        },
+                        error: function(err) {
+                            alert(err.statusText + "BadLuck");
+                        }
+                    });
+                } else {
+                    alert("FormData is not supported.");
+                }
+            });
+        });
+    </script>
+}

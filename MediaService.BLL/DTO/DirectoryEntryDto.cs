@@ -1,12 +1,24 @@
-﻿namespace MediaService.BLL.DTO
+﻿#region usings
+
+using System.Collections.Generic;
+
+#endregion
+
+namespace MediaService.BLL.DTO
 {
-    public sealed class DirectoryEntryDto : ObjectEntryDto
+    public class DirectoryEntryDto : ObjectEntryDto
     {
-        //public DirectoryEntryDto()
-        //{
-        //    Discriminator = "DirectoryEntry";
-        //}
+        public DirectoryEntryDto()
+        {
+            Viewers = new HashSet<DirectoryViewersDto>();
+        }
+
+        public virtual ICollection<DirectoryViewersDto> Viewers { get; set; }
 
         public short NodeLevel { get; set; }
+
+        public string OwnerId { get; set; }
+
+        public virtual UserDto Owner { get; set; }
     }
 }

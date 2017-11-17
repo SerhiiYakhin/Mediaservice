@@ -4,5 +4,20 @@
     ViewBag.Title = "Error";
 }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+@if (Model == null)
+{
+    <h1 class="text-danger">Internal server error</h1>
+
+    <h2 class="text-danger">An error occurred while processing your request.</h2>
+    <h2 class="text-danger">We are sorry, try again later.</h2>
+
+    @Html.ActionLink("Back to Home page", "Index", "Home")
+}
+else
+{
+    <h1 class="text-danger">An error occurred while processing your request.</h1>
+
+    <h2 class="text-danger">@Model.Exception.Message</h2>
+
+    @Html.ActionLink("Back", Model.ActionName, Model.ControllerName)
+}

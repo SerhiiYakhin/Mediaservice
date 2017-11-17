@@ -1,8 +1,12 @@
-﻿using System;
+﻿#region usings
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+
+#endregion
 
 namespace MediaService.DAL.Interfaces
 {
@@ -23,19 +27,10 @@ namespace MediaService.DAL.Interfaces
         Task<IEnumerable<TEntity>> GetDataAsync();
 
 
-        IEnumerable<TEntity> GetDataParallel();
-
-        Task<IEnumerable<TEntity>> GetDataAsyncParallel();
-
-
         IEnumerable<TEntity> GetData(Expression<Func<TEntity, bool>> predicate);
 
         Task<IEnumerable<TEntity>> GetDataAsync(Expression<Func<TEntity, bool>> predicate);
 
-
-        IEnumerable<TEntity> GetDataParallel(Expression<Func<TEntity, bool>> predicate);
-
-        Task<IEnumerable<TEntity>> GetDataAsyncParallel(Expression<Func<TEntity, bool>> predicate);
 
         void Add(TEntity item);
 
@@ -45,11 +40,6 @@ namespace MediaService.DAL.Interfaces
         void AddRange(IEnumerable<TEntity> items);
 
         Task AddRangeAsync(IEnumerable<TEntity> items);
-
-        void AddRangeParallel(IEnumerable<TEntity> items);
-
-        Task AddRangeAsyncParallel(IEnumerable<TEntity> items);
-
 
         void Update(TEntity item);
 
@@ -64,10 +54,5 @@ namespace MediaService.DAL.Interfaces
         void RemoveRange(IEnumerable<TEntity> items);
 
         Task RemoveRangeAsync(IEnumerable<TEntity> items);
-
-        void RemoveRangeParallel(IEnumerable<TEntity> items);
-
-        Task RemoveRangeAsyncParallel(IEnumerable<TEntity> items);
-
     }
 }

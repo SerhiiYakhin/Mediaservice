@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Web.Mvc;
 using MediaService.BLL.Interfaces;
+using MediaService.PL.Models.IdentityModels;
+using MediaService.PL.Models.IdentityModels.Managers;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
 using Owin;
-
-using MediaService.PL.Models.IdentityModels;
-using MediaService.PL.Models.IdentityModels.Managers;
 
 namespace MediaService.PL
 {
@@ -19,11 +18,14 @@ namespace MediaService.PL
         private void ConfigureAuth(IAppBuilder app)
         {
             // Configure the db context, user manager and signin manager to use a single instance per request
-            
-            app.CreatePerOwinContext<IApplicationUserService>(() => (IApplicationUserService)DependencyResolver.Current.GetService(typeof(IApplicationUserService)));
-            app.CreatePerOwinContext<IFilesService>(() => (IFilesService)DependencyResolver.Current.GetService(typeof(IFilesService)));
-            app.CreatePerOwinContext<IDirectoryService>(() => (IDirectoryService)DependencyResolver.Current.GetService(typeof(IDirectoryService)));
-            app.CreatePerOwinContext<IUserProfileService>(() => (IUserProfileService)DependencyResolver.Current.GetService(typeof(IUserProfileService)));
+
+            app.CreatePerOwinContext(() => (IUserService) DependencyResolver.Current.GetService(typeof(IUserService)));
+            app.CreatePerOwinContext(() =>
+                (IFilesService) DependencyResolver.Current.GetService(typeof(IFilesService)));
+            app.CreatePerOwinContext(() =>
+                (IDirectoryService) DependencyResolver.Current.GetService(typeof(IDirectoryService)));
+            app.CreatePerOwinContext(() =>
+                (IUserProfileService) DependencyResolver.Current.GetService(typeof(IUserProfileService)));
             //app.CreatePerOwinContext<IUserService>(() => _userService);
 
             app.CreatePerOwinContext(ApplicationDbContext.Create);
@@ -41,11 +43,12 @@ namespace MediaService.PL
                 {
                     // Enables the application to validate the security stamp when the user logs in.
                     // This is a security feature which is used when you change a password or add an external login to your account.  
-                    OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<ApplicationUserManager, ApplicationUser>(
-                        validateInterval: TimeSpan.FromMinutes(30),
-                        regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager))
+                    OnValidateIdentity =
+                        SecurityStampValidator.OnValidateIdentity<ApplicationUserManager, ApplicationUser>(
+                            TimeSpan.FromMinutes(30),
+                            (manager, user) => user.GenerateUserIdentityAsync(manager))
                 }
-            });            
+            });
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
             // Enables the application to temporarily store user information when they are verifying the second factor in the two-factor authentication process.
@@ -66,14 +69,14 @@ namespace MediaService.PL
             //   consumerSecret: "");
 
             app.UseFacebookAuthentication(
-               appId: "1956709024594856",
-               appSecret: "4fd4b9b1f37c56db5ca44d8318d48ffa");
+                "1956709024594856",
+                "4fd4b9b1f37c56db5ca44d8318d48ffa");
 
-            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-             {
-                 ClientId = "399844496480-amechr0p04vqj11hv17qvfocs2lf9428.apps.googleusercontent.com",
-                 ClientSecret = "4XJTMEEOSvWoTli2X2tZ8Cq3"
-             });
+            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions
+            {
+                ClientId = "399844496480-amechr0p04vqj11hv17qvfocs2lf9428.apps.googleusercontent.com",
+                ClientSecret = "4XJTMEEOSvWoTli2X2tZ8Cq3"
+            });
         }
     }
 }

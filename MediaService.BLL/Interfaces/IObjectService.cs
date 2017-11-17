@@ -1,40 +1,28 @@
-﻿using System;
+﻿#region usings
+
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MediaService.BLL.DTO;
+
+#endregion
 
 namespace MediaService.BLL.Interfaces
 {
     public interface IObjectService<TObjectDto> : IService<TObjectDto, Guid> where TObjectDto : ObjectEntryDto
     {
-        IEnumerable<TObjectDto> GetByName(string name);
-
         Task<IEnumerable<TObjectDto>> GetByNameAsync(string name);
-
-
-        IEnumerable<TObjectDto> GetByParentId(Guid id);
 
         Task<IEnumerable<TObjectDto>> GetByParentIdAsync(Guid id);
 
-
-        IEnumerable<TObjectDto> GetBy(
-            string name = null,
-            Guid? parentId = null,
-            long? size = null,
-            DateTime? created = null,
-            DateTime? downloaded = null,
-            DateTime? modified = null,
-            ICollection<AspNetUserDto> owners = null
-            );
-
         Task<IEnumerable<TObjectDto>> GetByAsync(
+            Guid? id = null,
             string name = null,
             Guid? parentId = null,
-            long? size = null,
             DateTime? created = null,
             DateTime? downloaded = null,
             DateTime? modified = null,
-            ICollection<AspNetUserDto> owners = null
+            string ownerId = null
         );
     }
 }
