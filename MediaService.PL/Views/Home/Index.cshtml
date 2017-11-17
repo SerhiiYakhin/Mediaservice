@@ -1,4 +1,5 @@
-﻿﻿@model MediaService.BLL.DTO.DirectoryEntryDto
+﻿@using MediaService.PL.Models.ObjectViewModels
+﻿@model MediaService.BLL.DTO.DirectoryEntryDto
 @{
     ViewBag.Title = "Home Page";
 }
@@ -25,6 +26,7 @@
 else
 {
     <section id="WelcomeView">
+        @Html.Partial("_CreateFolder", new CreateFolderViewModel { Name = "", ParentId = Model.Id })
         <div class="row folderList">
             <div id='directories'></div>
         </div>

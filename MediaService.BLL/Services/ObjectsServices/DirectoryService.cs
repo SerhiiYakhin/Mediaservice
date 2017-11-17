@@ -16,9 +16,20 @@ namespace MediaService.BLL.Services.ObjectsServices
 {
     public class DirectoryService : Service<DirectoryEntryDto, DirectoryEntry, Guid>, IDirectoryService
     {
+        #region Constructor
+
         public DirectoryService(IUnitOfWork uow) : base(uow)
         {
             Repository = Context.Directories;
+        }
+
+        #endregion
+
+        #region Methods
+
+        public async Task<bool> IsDirectoryExistAsync(string name, Guid parentId)
+        {
+            return (await GetByAsync(name: name, parentId: parentId)).Any();
         }
 
         public async Task<IEnumerable<DirectoryEntryDto>> GetByNameAsync(string name)
@@ -50,6 +61,11 @@ namespace MediaService.BLL.Services.ObjectsServices
         /// <exception cref="InvalidDataException">Thrown when user with given Id or his root folder doesn't exist in the Database</exception>
         public override async Task AddAsync(DirectoryEntryDto directoryEntryDto)
         {
+            if (!directoryEntryDto.ParentId.HasValue)
+            {
+                throw new InvalidDataException("Can't find parent folder: there is no parentId");
+            }
+
             var parentDir = await Context.Directories.FindByKeyAsync(directoryEntryDto.ParentId.Value);
 
             if (parentDir == null)
@@ -61,7 +77,7 @@ namespace MediaService.BLL.Services.ObjectsServices
             var dir = DtoMapper.Map<DirectoryEntry>(directoryEntryDto);
             dir.Owner = parentDir.Owner;
             dir.Parent = parentDir;
-            dir.NodeLevel = (short) (parentDir.NodeLevel + 1);
+            dir.NodeLevel = (short)(parentDir.NodeLevel + 1);
 
             await Repository.AddAsync(dir);
             await Context.SaveChangesAsync();
@@ -85,7 +101,7 @@ namespace MediaService.BLL.Services.ObjectsServices
                 Created = DateTime.Now,
                 Downloaded = DateTime.Now,
                 Modified = DateTime.Now,
-                NodeLevel = (short) (parentDir.NodeLevel + 1),
+                NodeLevel = (short)(parentDir.NodeLevel + 1),
                 Parent = parentDir,
                 Thumbnail = parentDir.Thumbnail,
                 Owner = parentDir.Owner,
@@ -99,7 +115,7 @@ namespace MediaService.BLL.Services.ObjectsServices
         /// <exception cref="InvalidDataException">Thrown when user with given Id or his root folder doesn't exist in the Database</exception>
         public async Task<DirectoryEntryDto> GetRootAsync(string ownerId)
         {
-            var root = (await Context.Directories.GetDataAsync(d => d.Owner.Id == ownerId)).SingleOrDefault();
+            var root = (await Context.Directories.GetDataAsync(d => d.Owner.Id == ownerId && d.Name == "root")).SingleOrDefault();
 
             if (root == null)
             {
@@ -127,6 +143,10 @@ namespace MediaService.BLL.Services.ObjectsServices
             await Context.Directories.AddAsync(rootDir);
             await Context.SaveChangesAsync();
         }
+
+        #endregion
+
+        #region Helper Methods
 
         private IQueryable<DirectoryEntry> GetQuery(
             Guid? id,
@@ -170,5 +190,7 @@ namespace MediaService.BLL.Services.ObjectsServices
 
             return dirs;
         }
+
+        #endregion
     }
 }

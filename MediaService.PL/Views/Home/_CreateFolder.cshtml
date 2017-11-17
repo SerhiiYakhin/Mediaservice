@@ -1,6 +1,6 @@
 ﻿@model MediaService.PL.Models.ObjectViewModels.CreateFolderViewModel
 
-@using (Html.BeginForm())
+@using (Html.BeginForm("CreateFolder", "Home", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
 
@@ -29,7 +29,3 @@
         </div>
     </div>
 }
-
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>

@@ -26,8 +26,8 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <ApplicationInsightsResourceId>/subscriptions/49c2fc07-cb85-4c45-87bc-0b753d4345c4/resourcegroups/LuxTeam/providers/microsoft.insights/components/LuxStorageContainer</ApplicationInsightsResourceId>
-    <ApplicationInsightsAnnotationResourceId>/subscriptions/49c2fc07-cb85-4c45-87bc-0b753d4345c4/resourcegroups/LuxTeam/providers/microsoft.insights/components/LuxStorageContainer</ApplicationInsightsAnnotationResourceId>
+    <ApplicationInsightsResourceId>/subscriptions/f4797825-e486-423c-b3a6-56af29b7320d/resourcegroups/InternshipTeam2/providers/microsoft.insights/components/LuxGate</ApplicationInsightsResourceId>
+    <ApplicationInsightsAnnotationResourceId>/subscriptions/f4797825-e486-423c-b3a6-56af29b7320d/resourcegroups/LuxTeam/providers/microsoft.insights/components/LuxStorageContainer</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -145,6 +145,9 @@
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Configuration, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.3.2.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.WindowsAzure.Storage, Version=8.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\WindowsAzure.Storage.8.6.0\lib\net45\Microsoft.WindowsAzure.Storage.dll</HintPath>
     </Reference>
@@ -210,7 +213,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\Startup.Ninject.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="App_Start\Startup.cs" />
+    <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ErrorHandlerController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -329,7 +332,6 @@
     <Content Include="fonts\Raleway\Raleway-Thin.ttf" />
     <Content Include="fonts\Raleway\Raleway-ThinItalic.ttf" />
     <Content Include="Connected Services\Application Insights\ConnectedService.json" />
-    <Content Include="Connected Services\atluxAzureStorage\ConnectedService.json" />
     <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\LuxStorage - Web Deploy.pubxml" />
     <Content Include="Web.config">
