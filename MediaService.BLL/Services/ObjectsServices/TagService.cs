@@ -17,12 +17,12 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public TagDto GetTagByName(string name)
         {
-            return DtoMapper.Map<TagDto>(Context.Tags.GetDataParallel(t => t.Name.Equals(name)).SingleOrDefault());
+            return DtoMapper.Map<TagDto>(Context.Tags.GetData(t => t.Name.Equals(name)).SingleOrDefault());
         }
 
         public async Task<TagDto> GetTagByNameAsync(string name)
         {
-            return DtoMapper.Map<TagDto>((await Context.Tags.GetDataAsyncParallel(t => t.Name.Equals(name)))
+            return DtoMapper.Map<TagDto>((await Context.Tags.GetDataAsync(t => t.Name.Equals(name)))
                 .SingleOrDefault());
         }
     }

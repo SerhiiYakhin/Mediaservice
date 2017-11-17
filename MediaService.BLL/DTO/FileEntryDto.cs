@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace MediaService.BLL.DTO
 {
@@ -11,6 +13,10 @@ namespace MediaService.BLL.DTO
         }
 
         public int Size { get; set; }
+
+        public Stream FileStream { get; set; }
+
+        public string OwnerId { get; set; }
 
         public virtual UserDto Owner { get; set; }
 

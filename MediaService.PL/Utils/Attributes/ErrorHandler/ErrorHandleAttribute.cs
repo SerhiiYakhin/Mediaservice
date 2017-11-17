@@ -15,7 +15,7 @@ namespace MediaService.PL.Utils.Attributes.ErrorHandler
         {
             if (filterContext?.Exception == null
                 || filterContext.ExceptionHandled
-                //|| !filterContext.HttpContext.IsCustomErrorEnabled
+                || !filterContext.HttpContext.IsCustomErrorEnabled
                 )
             {
                 return;

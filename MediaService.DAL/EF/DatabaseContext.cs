@@ -23,7 +23,7 @@ namespace MediaService.DAL.EF
 
         public DatabaseContext(string connectionString) : base(connectionString)
         {
-            
+            //Configuration.ProxyCreationEnabled = false;
         }
 
         public DatabaseContext() : base("DefaultConnection")

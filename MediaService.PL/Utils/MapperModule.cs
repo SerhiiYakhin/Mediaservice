@@ -2,6 +2,7 @@
 using MediaService.BLL.DTO;
 using MediaService.PL.Models.AccountViewModels;
 using MediaService.PL.Models.IdentityModels;
+using MediaService.PL.Models.ObjectViewModels;
 
 namespace MediaService.PL.Utils
 {
@@ -16,6 +17,7 @@ namespace MediaService.PL.Utils
                 cfg.CreateMap<ExternalLoginConfirmationViewModel, ApplicationUser>();
                 cfg.CreateMap<RegisterViewModel, ApplicationUser>();
                 cfg.CreateMap<ApplicationUser, UserDto>();
+                cfg.CreateMap<CreateFolderViewModel, DirectoryEntryDto>();
             });
         }
 

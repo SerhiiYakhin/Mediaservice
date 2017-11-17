@@ -28,10 +28,6 @@ namespace MediaService.DAL.Interfaces
         Task<IEnumerable<TEntity>> GetDataAsync(Expression<Func<TEntity, bool>> predicate);
 
 
-        IEnumerable<TEntity> GetDataParallel(Func<TEntity, bool> predicate);
-
-        Task<IEnumerable<TEntity>> GetDataAsyncParallel(Func<TEntity, bool> predicate);
-
         void Add(TEntity item);
 
         Task AddAsync(TEntity item);

@@ -20,6 +20,9 @@ namespace MediaService.DAL.Entities
         [Range(0, 10)]
         public short NodeLevel { get; set; }
 
+        [Column("Owner_Id")]
+        public string OwnerId { get; set; }
+
         public virtual User Owner { get; set; }
     }
 }

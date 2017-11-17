@@ -1,12 +1,12 @@
-﻿using MediaService.DAL.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using MediaService.DAL.Interfaces;
 
-namespace MediaService.DAL.Repositories
+namespace MediaService.DAL.Accessors
 {
     public class EFRepository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntity : class
     {
@@ -26,39 +26,28 @@ namespace MediaService.DAL.Repositories
 
         public IQueryable<TEntity> GetQuery()
         {
-            return _dbSet.AsNoTracking().AsQueryable();
+            return _dbSet.AsQueryable();
         }
 
         public IQueryable<TEntity> GetQuery(Expression<Func<TEntity, bool>> predicate)
         {
-            return _dbSet.AsNoTracking().Where(predicate);
+            return _dbSet.Where(predicate);
         }
 
 
-        public IEnumerable<TEntity> GetData() => _dbSet.AsNoTracking();
+        public IEnumerable<TEntity> GetData() => _dbSet;
 
-        public async Task<IEnumerable<TEntity>> GetDataAsync() => await Task.Run(() => _dbSet.AsNoTracking());
+        public async Task<IEnumerable<TEntity>> GetDataAsync() => await Task.Run(() => _dbSet);
 
 
         public IEnumerable<TEntity> GetData(Expression<Func<TEntity, bool>> predicate)
         {
-            return _dbSet.AsNoTracking().Where(predicate);
+            return _dbSet.Where(predicate);
         }
 
         public async Task<IEnumerable<TEntity>> GetDataAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return await Task.Run(() => _dbSet.AsNoTracking().Where(predicate));
-        }
-
-
-        public IEnumerable<TEntity> GetDataParallel(Func<TEntity, bool> predicate)
-        {
-            return _dbSet.AsNoTracking().AsParallel().Where(predicate);
-        }
-
-        public async Task<IEnumerable<TEntity>> GetDataAsyncParallel(Func<TEntity, bool> predicate)
-        {
-            return await Task.Run(() => _dbSet.AsNoTracking().AsParallel().Where(predicate));
+            return await Task.Run(() => _dbSet.Where(predicate));
         }
 
 

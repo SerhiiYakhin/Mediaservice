@@ -16,9 +16,6 @@
 </div>
 <hr/>
 
-<div id="directories"></div>
-<div id="files"></div>
-
 @if (ViewBag.FirstTime == "true")
 {
     <section id="GeneralView">
@@ -31,6 +28,11 @@ else
         <div class="row folderList">
             <div id='directories'></div>
         </div>
+        <div class="row filesList">
+            <div id='files'></div>
+        </div>
+        <input type="file" id="FileUpload" multiple/>
+        <input type="button" id="btnUpload" value="Upload Files" />
     </section>
 }
 
@@ -46,6 +48,14 @@ else
             }
         });
 
+        $.ajax({
+            url: '@Url.Action("FilesList", "Home", new {parentId = Model.Id})',
+            type: "POST",
+            contentType: "text/html; charset=utf-8",
+            success: function(data) {
+                $('#files').html(data);
+            }
+        });
         //$(function(){
         //    $(document).ajaxStart(function () {
         //    //show a progress modal of your choosing
@@ -66,5 +76,45 @@ else
         //});
 
     </script>
-
+    <script>  
+        $(document).ready(function(){  
+            $('#btnUpload').click(function () {  
+  
+                // Checking whether FormData is available in browser  
+                if (window.FormData !== undefined) {  
+  
+                    var fileUpload = $("#FileUpload").get(0);  
+                    var files = fileUpload.files;
+                    // Create FormData object  
+                    var fileData = new FormData();  
+  
+                    // Looping over all files and add it to FormData object  
+                    for (var i = 0; i < files.length; i++) {  
+                        fileData.append(files[i].name, files[i]);  
+                    }  
+                    //files[1].creationTime
+                    // Adding one more key to FormData object
+                    //fileData.append('folderId', @Model.Id);
+  
+                    $.ajax({  
+                        url: '/Home/UploadFiles?parentId=@Model.Id',  
+                        type: "POST",  
+                        contentType: false, // Not to set any content header  
+                        processData: false, // Not to process data  
+                        data: fileData,  
+                        success: function (data) {
+                            //todo: Think about what to do after upload
+                            $('#files').html(data);
+                        },  
+                        error: function (err) {  
+                            alert(err.statusText + "BadLuck");  
+                        }  
+                    });  
+                }
+                else {  
+                    alert("FormData is not supported.");  
+                }  
+            });  
+        });  
+    </script> 
 }

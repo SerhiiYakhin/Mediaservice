@@ -1,10 +1,10 @@
-﻿using MediaService.DAL.EF;
+﻿using System;
+using System.Threading.Tasks;
+using MediaService.DAL.EF;
 using MediaService.DAL.Entities;
 using MediaService.DAL.Interfaces;
-using System;
-using System.Threading.Tasks;
 
-namespace MediaService.DAL.Repositories
+namespace MediaService.DAL.Accessors
 {
     public class EFUnitOfWork : IUnitOfWork
     {

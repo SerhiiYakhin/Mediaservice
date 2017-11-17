@@ -14,6 +14,8 @@ namespace MediaService.BLL.DTO
 
         public short NodeLevel { get; set; }
 
-        public virtual User Owner { get; set; }
+        public string OwnerId { get; set; }
+
+        public virtual UserDto Owner { get; set; }
     }
 }

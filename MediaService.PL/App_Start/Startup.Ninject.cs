@@ -12,7 +12,7 @@ namespace MediaService.PL
     {
         private void ConfigureNinject()
         {
-            var kernel = new StandardKernel(new ServiceModule("DefaultConnection"));
+            var kernel = new StandardKernel(new ServiceModule("DefaultConnection", null));
             try
             {
                 kernel.Bind<Func<IKernel>>().ToMethod(ctx => () => new Bootstrapper().Kernel);
