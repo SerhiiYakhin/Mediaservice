@@ -114,6 +114,7 @@ namespace MediaService.PL.Controllers
             {
                 throw new SqlNullValueException("We are sorry, but we can't get your data from our's servers at this moment, try again later", ex);
             }
+            ViewBag.rootDir = rootDir.Id;
             return View(rootDir);
         }
 
@@ -156,6 +157,16 @@ namespace MediaService.PL.Controllers
             return PartialView("_FilesList", files);
         }
 
+        // GET: /Home/CreateFolder
+        //[HttpGet] // this action result returns the partial containing the modal
+        //[HandleErrorAttribute(ExceptionType = typeof(SqlNullValueException), View = "Error")]
+        //public async Task<ActionResult> CreateFolder(Guid parentId)
+        //{
+
+        //    var viewModel = new CreateFolderViewModel();
+        //    viewModel.ParentId = parentId;
+        //    return PartialView("_CreateFolder", viewModel);
+        //}
         // POST: /Home/CreateFolder
         [HttpPost]
         [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Error")]
@@ -163,7 +174,7 @@ namespace MediaService.PL.Controllers
         {
             try
             {
-                if (DirectoryService.GetByAsync(name: model.Name, parentId: model.ParentId) == null)
+                if (DirectoryService.GetByNameAsync(model.Name) == null)
                 {
                     DirectoryEntryDto newFolder = GetNewDirectoryEntryDto(model);
                     await DirectoryService.AddAsync(newFolder);
@@ -177,7 +188,7 @@ namespace MediaService.PL.Controllers
             }
 
             //We get here if were some model validation errors
-            return PartialView("_CreateFolder", model);
+            return PartialView("Index", model);
         }
 
         // POST: /Home/DeleteFile

@@ -3,7 +3,7 @@
 }
 @if (Request.IsAuthenticated)
 {
-    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new {id = "logoutForm", @class = "navbar-right"}))
+    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new {id = "logoutForm", @class = "navbar-right" }))
     {
         @Html.AntiForgeryToken()
 
@@ -12,8 +12,8 @@
                 @Html.ActionLink(userName + User.Identity.Name, "Index", "Manage", null, new {title = "Manage"})
             </li>
             <li>
-                <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
+                <a href="javascript:document.getElementById('logoutForm').submit()" id="userImg"></a>
             </li>
-        </ul>
+</ul>
     }
 }

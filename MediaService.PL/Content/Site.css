@@ -1,12 +1,27 @@
-﻿a { color: #d3095f; }
+﻿a {
+    color: #d3095f;
+}
 
-a:any-link { color: #d3095f; }
+    a:any-link {
+        color: #d3095f;
+    }
 
 body {
     background-color: #e8e9f2;
     padding-bottom: 80px;
     padding-top: 40px;
 }
+
+body#Index {
+        background-color: #fff;
+        padding-bottom: 40px;
+        padding-top: 0px;
+}
+
+.row {
+    margin: 0, 0, 0, 0;
+}
+
 
 /* Set padding to keep content from hitting the edges */
 
@@ -19,7 +34,9 @@ body {
    will truncate terms that are too long to fit in the left column 
 */
 
-.dl-horizontal dt { white-space: normal; }
+.dl-horizontal dt {
+    white-space: normal;
+}
 
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Raleway';
@@ -27,7 +44,9 @@ h1, h2, h3, h4, h5, h6 {
     text-align: center;
 }
 
-h1 { font-weight: 900; }
+h1 {
+    font-weight: 900;
+}
 
 h3 {
     font-size: 24px;
@@ -45,7 +64,9 @@ h4 {
 
 input,
 select,
-textarea { max-width: 280px; }
+textarea {
+    max-width: 280px;
+}
 
 .btn-primary {
     background-color: #d3095f;
@@ -55,43 +76,45 @@ textarea { max-width: 280px; }
     max-width: 280px;
 }
 
-.btn-primary:focus,
-.btn-primary.focus {
-    background-color: #d3095f;
-    border-color: #d3095f;
-    color: #fff;
-}
+    .btn-primary:focus,
+    .btn-primary.focus {
+        background-color: #d3095f;
+        border-color: #d3095f;
+        color: #fff;
+    }
 
-.btn-primary:hover {
-    background-color: #d3095f;
-    border-color: #d3095f;
-    color: #fff;
-}
+    .btn-primary:hover {
+        background-color: #d3095f;
+        border-color: #d3095f;
+        color: #fff;
+    }
 
-.btn-primary:active,
-.btn-primary.active,
-.open > .dropdown-toggle.btn-primary {
-    background-color: #d3095f;
-    border-color: #d3095f;
-    color: #fff;
-}
-
-       
-.open > .dropdown-toggle.btn-primary.focus {
-    background-color: #d3095f;
-    border-color: #d3095f;
-    color: #fff;
-}
-
-.btn-primary:active,
-.btn-primary.active,
-.open > .dropdown-toggle.btn-primary { background-image: none; }
+    .btn-primary:active,
+    .btn-primary.active,
+    .open > .dropdown-toggle.btn-primary {
+        background-color: #d3095f;
+        border-color: #d3095f;
+        color: #fff;
+    }
 
 
-.btn-primary.btn-outline {
-    border-color: #616161;
-    color: transparent;
-}
+        .open > .dropdown-toggle.btn-primary.focus {
+            background-color: #d3095f;
+            border-color: #d3095f;
+            color: #fff;
+        }
+
+    .btn-primary:active,
+    .btn-primary.active,
+    .open > .dropdown-toggle.btn-primary {
+        background-image: none;
+    }
+
+
+    .btn-primary.btn-outline {
+        border-color: #616161;
+        color: transparent;
+    }
 
 .btn-outline:hover {
     background-color: transparent;
@@ -103,7 +126,9 @@ textarea { max-width: 280px; }
     margin-right: 0;
 }
 
-.form-control { border-color: #999999; }
+.form-control {
+    border-color: #999999;
+}
 
 .authForms {
     background-color: #fff;
@@ -129,16 +154,53 @@ textarea { max-width: 280px; }
     padding: 10px 32px;
 }
 
-#Facebook { background-image: url(/fonts/icons-buttons/facebook.svg); }
+#Facebook {
+    background-image: url(/fonts/icons-buttons/facebook.svg);
+}
 
-#Google { background-image: url(/fonts/icons-buttons/google.svg); }
+#Google {
+    background-image: url(/fonts/icons-buttons/google.svg);
+}
+input[type="search"], textarea {
+    background-color: #e9eaf2;
+    border: none;
+    border-radius: 0;
+    outline: none;
+}
+.indexTitle {
+    margin-top: 0;
+}
+#custom-search-input {
+    color: #919192;
+   
+    background: url(/fonts/icons-buttons/search.svg) no-repeat;
+    background-size: 16px;
+    background-position: 4px, 4px;
+    background-color: #e9eaf2;
+    padding-left: 24px;
+}
 
-.searchField { }
-
-.mainMenu { background-color: white; }
+.mainMenu {
+    background-color: white;
+}
 
 .folderList {
-    background-color: white;
+    background-color: #fff;
     margin-bottom: 3px;
     margin-top: 3px;
+}
+
+#userImg {
+    background-image: url(/fonts/icons-buttons/user.svg);
+    background-repeat: no-repeat;
+    height: 8px;
+    width: 8px;
+    border-radius: 50px;
+    border-color:#fff;
+    -webkit-filter: invert(40%);
+    filter: invert(40%);
+    
+}
+li:hover#userImg {
+   background-color:#fff;
 }

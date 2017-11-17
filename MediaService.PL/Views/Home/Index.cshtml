@@ -1,21 +1,35 @@
-﻿﻿@model MediaService.BLL.DTO.DirectoryEntryDto
+﻿@using MediaService.PL.Models.ObjectViewModels
+@model MediaService.BLL.DTO.DirectoryEntryDto
 @{
     ViewBag.Title = "Home Page";
+    ViewData["PageId"] = "Index";
+    
 }
 
 <div class="row">
     <div class="col-xs-4">
-        <input type="search" value="Поиск файлов" class="searchField"/>
+        <div id="custom-search-input">
+        <input type="search" placeholder="Поиск файлов" class="input-sm"/>
+            </div>
     </div>
     <div class="col-xs-4">
-        <h1>LuxStorage</h1>
+        <h2 class="indexTitle">LuxStorage</h2>
     </div>
     <div class="col-xs-4">
         @Html.Partial("_LoginPartial")
     </div>
 </div>
 <hr/>
+<p>
+    <a href="#regModal" class="btn btn_b" rel="modal:open">Add New Folder</a>
+</p>
 
+<div>
+    <div id="regModal" style="display:none">
+        @{Html.RenderPartial("_CreateFolder", new CreateFolderViewModel { ParentId = Model.Id, Name = "nonroot" });}
+
+    </div>
+</div>
 @if (ViewBag.FirstTime == "true")
 {
     <section id="GeneralView">
@@ -33,7 +47,11 @@ else
         </div>
         <input type="file" id="FileUpload" multiple/>
         <input type="button" id="btnUpload" value="Upload Files" />
+
+
+
     </section>
+  
 }
 
 @section scripts {
