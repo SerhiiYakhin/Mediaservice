@@ -8,12 +8,12 @@ using Ninject.Modules;
 
 namespace MediaService.BLL.Infrastructure
 {
-    public class ServiceModule : NinjectModule
+    public class DIServiceModule : NinjectModule
     {
         private readonly string _dbConnectionString;
         private readonly string _storageConnection;
 
-        public ServiceModule(string dbConnection, string storageConnection)
+        public DIServiceModule(string dbConnection, string storageConnection)
         {
             _dbConnectionString = dbConnection;
             _storageConnection = storageConnection;

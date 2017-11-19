@@ -29,5 +29,15 @@ namespace MediaService.BLL.Services.ObjectsServices
             return DtoMapper.Map<TagDto>((await Context.Tags.GetDataAsync(t => t.Name.Equals(name)))
                 .SingleOrDefault());
         }
+
+        public override void Add(TagDto item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task AddAsync(TagDto item)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

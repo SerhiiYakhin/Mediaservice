@@ -35,10 +35,6 @@ namespace MediaService.DAL.Entities
         [Column(TypeName = "datetime2")]
         public DateTime Modified { get; set; }
 
-        [StringLength(250)]
-        public string Thumbnail { get; set; }
-
-
         public DirectoryEntry Parent { get; set; }
 
         [Column("Parent_Id")]

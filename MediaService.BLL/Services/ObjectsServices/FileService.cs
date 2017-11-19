@@ -16,18 +16,36 @@ namespace MediaService.BLL.Services.ObjectsServices
 {
     public class FileService : Service<FileEntryDto, FileEntry, Guid>, IFilesService
     {
+        #region Fields
+
+
+
+        #endregion
+
+        #region Properties
+
+        private IStorage Storage { get; }
+
+        #endregion
+
+        #region Constructor
+
         public FileService(IUnitOfWork uow, IStorage storage) : base(uow)
         {
             Storage = storage;
             Repository = uow.Files;
         }
 
-        private IStorage Storage { get; }
+        #endregion
 
-        public async Task<IEnumerable<FileEntryDto>> GetByNameAsync(string name)
+        #region Methods
+
+        public Task<bool> ExistAsync(string name, Guid parentId)
         {
-            return DtoMapper.Map<IEnumerable<FileEntryDto>>(await Context.Files.GetDataAsync(f => f.Name == name));
+            throw new NotImplementedException();
         }
+
+        #region Select Methods
 
         public async Task<IEnumerable<FileEntryDto>> GetByParentIdAsync(Guid id)
         {
@@ -48,7 +66,12 @@ namespace MediaService.BLL.Services.ObjectsServices
             return await Task.Run(() => DtoMapper.Map<IEnumerable<FileEntryDto>>(dirs.AsParallel().ToList()));
         }
 
-        public async Task AddFilesAsync(List<FileEntryDto> filesDto, Guid folderId)
+
+        #endregion
+
+        #region Create Methods
+
+        public async Task AddRangeAsync(IEnumerable<FileEntryDto> filesDto, Guid folderId)
         {
             var parentDir = await Context.Directories.FindByKeyAsync(folderId);
 
@@ -70,6 +93,40 @@ namespace MediaService.BLL.Services.ObjectsServices
                 await Storage.UploadAsync(fileDto.FileStream, fileEntry.Id.ToString());
             }
         }
+
+        public override void Add(FileEntryDto item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task AddAsync(FileEntryDto item)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Update Methods
+
+        public void Update(FileEntryDto item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateAsync(FileEntryDto item)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Delete Methods
+
+
+
+        #endregion
+
+        #region Help Methods
 
         private IQueryable<FileEntry> GetQuery(
             Guid? id,
@@ -113,5 +170,9 @@ namespace MediaService.BLL.Services.ObjectsServices
 
             return dirs;
         }
+
+        #endregion
+
+        #endregion
     }
 }

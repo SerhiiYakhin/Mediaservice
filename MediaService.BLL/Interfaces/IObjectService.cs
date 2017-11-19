@@ -11,10 +11,8 @@ namespace MediaService.BLL.Interfaces
 {
     public interface IObjectService<TObjectDto> : IService<TObjectDto, Guid> where TObjectDto : ObjectEntryDto
     {
-        Task<IEnumerable<TObjectDto>> GetByNameAsync(string name);
-
         Task<IEnumerable<TObjectDto>> GetByParentIdAsync(Guid id);
-
+        
         Task<IEnumerable<TObjectDto>> GetByAsync(
             Guid? id = null,
             string name = null,
@@ -24,5 +22,7 @@ namespace MediaService.BLL.Interfaces
             DateTime? modified = null,
             string ownerId = null
         );
+
+        Task<bool> ExistAsync(string name, Guid parentId);
     }
 }

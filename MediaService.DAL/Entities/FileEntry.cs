@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using MediaService.DAL.Entities.Enums;
 
 #endregion
 
@@ -16,6 +17,9 @@ namespace MediaService.DAL.Entities
             Viewers = new HashSet<FileViewers>();
             Tags = new HashSet<Tag>();
         }
+
+        [Required]
+        public FileType FileType { get; set; }
 
         [Required]
         public int Size { get; set; }

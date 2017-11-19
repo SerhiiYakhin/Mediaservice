@@ -33,12 +33,18 @@ else
         <div class="row filesList">
             <div id='files'></div>
         </div>
+        @using (Ajax.BeginForm("UploadFiles", "Home", new AjaxOptions { UpdateTargetId = "files", HttpMethod = "POST"}, new { enctype = "multipart/form-data" }))
+        {
+            <input type="file" id="FileUpload" multiple/>
+            <input type="button" id="btnUpload" value="Upload Files"/>
+        }
+
         <input type="file" id="FileUpload" multiple/>
         <input type="button" id="btnUpload" value="Upload Files"/>
     </section>
 }
 
-@section scripts {
+@section Scripts {
 
     <script>
         $.ajax({

@@ -1,13 +1,13 @@
 CREATE TABLE [dbo].[FileEntries] (
     [Id]         UNIQUEIDENTIFIER DEFAULT (newsequentialid()) NOT NULL,
-    [Owner_Id]   NVARCHAR (128)   NULL,
     [Name]       NVARCHAR (128)   NOT NULL,
+    [Size]       INT              NOT NULL,
+    [FileType]   TINYINT          NOT NULL,
     [Created]    DATETIME2 (7)    NOT NULL,
     [Downloaded] DATETIME2 (7)    NOT NULL,
     [Modified]   DATETIME2 (7)    NOT NULL,
-    [Thumbnail]  NVARCHAR (250)   NULL,
     [Parent_Id]  UNIQUEIDENTIFIER NULL,
-    [Size]       INT              NOT NULL,
+    [Owner_Id]   NVARCHAR (128)   NULL,
 
     CONSTRAINT [PK_dbo.FileEntries] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_dbo.FileEntries_dbo.AspNetUsers_Owner_Id] FOREIGN KEY ([Owner_Id]) REFERENCES [dbo].[AspNetUsers] ([Id]) ON DELETE CASCADE ON UPDATE CASCADE,

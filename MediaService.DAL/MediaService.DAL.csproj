@@ -79,6 +79,7 @@
     <Compile Include="Accessors\AzureStorageAccessor.cs" />
     <Compile Include="EF\DatabaseContext.cs" />
     <Compile Include="Entities\DirectoryViewers.cs" />
+    <Compile Include="Entities\Enums\FileType.cs" />
     <Compile Include="Entities\FileViewers.cs" />
     <Compile Include="Entities\User.cs" />
     <Compile Include="Entities\DirectoryEntry.cs" />

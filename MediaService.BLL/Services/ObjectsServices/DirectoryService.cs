@@ -27,16 +27,12 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         #region Methods
 
-        public async Task<bool> IsDirectoryExistAsync(string name, Guid parentId)
+        public async Task<bool> ExistAsync(string name, Guid parentId)
         {
             return (await GetByAsync(name: name, parentId: parentId)).Any();
         }
 
-        public async Task<IEnumerable<DirectoryEntryDto>> GetByNameAsync(string name)
-        {
-            return DtoMapper.Map<IEnumerable<DirectoryEntryDto>>(
-                await Context.Directories.GetDataAsync(d => d.Name == name));
-        }
+        #region Select Methods
 
         public async Task<IEnumerable<DirectoryEntryDto>> GetByParentIdAsync(Guid id)
         {
@@ -56,6 +52,30 @@ namespace MediaService.BLL.Services.ObjectsServices
         {
             var dirs = GetQuery(id, name, parentId, created, downloaded, modified, ownerId);
             return await Task.Run(() => DtoMapper.Map<IEnumerable<DirectoryEntryDto>>(dirs.AsParallel().ToList()));
+        }
+
+        /// <exception cref="InvalidDataException">Thrown when user with given Id or his root folder doesn't exist in the Database</exception>
+        public async Task<DirectoryEntryDto> GetRootAsync(string ownerId)
+        {
+            var root = (await Context.Directories.GetDataAsync(d => d.Owner.Id == ownerId && d.Name == "root")).SingleOrDefault();
+
+            if (root == null)
+            {
+                //await AddRootDirToUserAsync(ownerId);
+                //root = (await Context.Directories.GetDataAsync(d => d.Owner.Id == ownerId && d.Name == "root")).SingleOrDefault();
+                throw new InvalidDataException("Can't find root folder user with this Id in database");
+            }
+
+            return await Task.Run(() => DtoMapper.Map<DirectoryEntryDto>(root));
+        }
+
+        #endregion
+
+        #region Create Methods
+
+        public override void Add(DirectoryEntryDto item)
+        {
+            throw new NotImplementedException();
         }
 
         /// <exception cref="InvalidDataException">Thrown when user with given Id or his root folder doesn't exist in the Database</exception>
@@ -103,7 +123,6 @@ namespace MediaService.BLL.Services.ObjectsServices
                 Modified = DateTime.Now,
                 NodeLevel = (short)(parentDir.NodeLevel + 1),
                 Parent = parentDir,
-                Thumbnail = parentDir.Thumbnail,
                 Owner = parentDir.Owner,
                 Viewers = parentDir.Viewers
             };
@@ -112,18 +131,6 @@ namespace MediaService.BLL.Services.ObjectsServices
             await Context.SaveChangesAsync();
         }
 
-        /// <exception cref="InvalidDataException">Thrown when user with given Id or his root folder doesn't exist in the Database</exception>
-        public async Task<DirectoryEntryDto> GetRootAsync(string ownerId)
-        {
-            var root = (await Context.Directories.GetDataAsync(d => d.Owner.Id == ownerId && d.Name == "root")).SingleOrDefault();
-
-            if (root == null)
-            {
-                throw new InvalidDataException("Can't find root folder user with this Id in database");
-            }
-
-            return await Task.Run(() => DtoMapper.Map<DirectoryEntryDto>(root));
-        }
 
         /// <exception cref="InvalidDataException">Thrown when user with given Id doesn't exist in the Database</exception>
         public async Task AddRootDirToUserAsync(string userId)
@@ -134,7 +141,6 @@ namespace MediaService.BLL.Services.ObjectsServices
                 Created = DateTime.Now,
                 Downloaded = DateTime.Now,
                 Modified = DateTime.Now,
-                Thumbnail = "~/fonts/icons-buttons/folder.svg",
                 Name = "root"
             };
             var user = await Context.Users.FindByKeyAsync(userId);
@@ -143,6 +149,8 @@ namespace MediaService.BLL.Services.ObjectsServices
             await Context.Directories.AddAsync(rootDir);
             await Context.SaveChangesAsync();
         }
+
+        #endregion
 
         #endregion
 

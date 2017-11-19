@@ -11,6 +11,6 @@ namespace MediaService.BLL.Interfaces
 {
     public interface IFilesService : IObjectService<FileEntryDto>
     {
-        Task AddFilesAsync(List<FileEntryDto> files, Guid folderId);
+        Task AddRangeAsync(IEnumerable<FileEntryDto> objects, Guid parentId);
     }
 }

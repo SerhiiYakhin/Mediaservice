@@ -20,8 +20,6 @@ namespace MediaService.BLL.DTO
 
         public DateTime Modified { get; set; }
 
-        public string Thumbnail { get; set; }
-
 
         public DirectoryEntryDto Parent { get; set; }
 
