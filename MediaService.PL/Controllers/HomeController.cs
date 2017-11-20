@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Data.SqlTypes;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -262,7 +263,7 @@ namespace MediaService.PL.Controllers
 
         #region Helper Methods
 
-        private List<FileEntryDto> GetFilesToUpload(HttpFileCollectionBase requestFiles)
+        private static List<FileEntryDto> GetFilesToUpload(HttpFileCollectionBase requestFiles)
         {
             var filesToUpload = new List<FileEntryDto>();
             for (var i = 0; i < requestFiles.Count; i++)
@@ -274,7 +275,8 @@ namespace MediaService.PL.Controllers
                     //@todo: Add error message about this files to the result json form
                     continue;
                 }
-                string fname = GetFileName(file);
+                //@todo: Add error message about this files to the result json form
+                string fname = Path.GetFileName(file.FileName);
                 var fileEntryDto = new FileEntryDto
                 {
                     Name = fname,
@@ -287,18 +289,6 @@ namespace MediaService.PL.Controllers
             }
 
             return filesToUpload;
-        }
-
-        private string GetFileName(HttpPostedFileBase file)
-        {
-            if (string.Compare(Request.Browser.Browser, "IE", StringComparison.InvariantCultureIgnoreCase) == 0 ||
-                string.Compare(Request.Browser.Browser, "INTERNETEXPLORER", StringComparison.InvariantCultureIgnoreCase) == 0)
-            {
-                var testfiles = file.FileName.Split('\\');
-                return testfiles[testfiles.Length - 1];
-            }
-
-            return file.FileName;
         }
 
         #endregion
