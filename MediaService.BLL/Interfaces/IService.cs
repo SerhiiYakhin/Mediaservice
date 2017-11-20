@@ -1,10 +1,14 @@
-﻿using System;
+﻿#region usings
+
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+#endregion
+
 namespace MediaService.BLL.Interfaces
 {
-    public interface IService<TDto, in TId>: IDisposable where TDto : class
+    public interface IService<TDto, in TId> : IDisposable where TDto : class
     {
         TDto FindById(TId id);
 
@@ -20,22 +24,22 @@ namespace MediaService.BLL.Interfaces
         Task AddAsync(TDto item);
 
 
-        void AddRange(IEnumerable<TDto> items);
+        //void AddRange(IEnumerable<TDto> items);
 
-        Task AddRangeAsync(IEnumerable<TDto> items);
+        //Task AddRangeAsync(IEnumerable<TDto> items);
 
-        void Update(TDto item);
+        //void Update(TDto item);
 
-        Task UpdateAsync(TDto item);
-
-
-        void Remove(TDto item);
-
-        Task RemoveAsync(TDto item);
+        //Task UpdateAsync(TDto item);
 
 
-        void RemoveRange(IEnumerable<TDto> items);
+        //void Remove(TDto item);
 
-        Task RemoveRangeAsync(IEnumerable<TDto> items);
+        //Task RemoveAsync(TDto item);
+
+
+        //void RemoveRange(IEnumerable<TDto> items);
+
+        //Task RemoveRangeAsync(IEnumerable<TDto> items);
     }
 }

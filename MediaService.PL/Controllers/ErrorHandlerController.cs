@@ -1,4 +1,8 @@
-﻿using System.Web.Mvc;
+﻿#region usings
+
+using System.Web.Mvc;
+
+#endregion
 
 namespace MediaService.PL.Controllers
 {

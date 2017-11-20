@@ -1,5 +1,9 @@
-﻿using System;
+﻿#region usings
+
+using System;
 using System.Web.Mvc;
+
+#endregion
 
 namespace MediaService.PL.Utils.Attributes.ErrorHandler
 {
@@ -16,7 +20,7 @@ namespace MediaService.PL.Utils.Attributes.ErrorHandler
             if (filterContext?.Exception == null
                 || filterContext.ExceptionHandled
                 || !filterContext.HttpContext.IsCustomErrorEnabled
-                )
+            )
             {
                 return;
             }
@@ -38,5 +42,4 @@ namespace MediaService.PL.Utils.Attributes.ErrorHandler
             }
         }
     }
-
 }

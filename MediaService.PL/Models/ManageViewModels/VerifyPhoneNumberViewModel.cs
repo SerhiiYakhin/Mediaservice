@@ -1,4 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#region usings
+
+using System.ComponentModel.DataAnnotations;
+
+#endregion
 
 namespace MediaService.PL.Models.ManageViewModels
 {

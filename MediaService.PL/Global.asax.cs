@@ -1,8 +1,12 @@
-﻿using System.Web;
+﻿#region usings
+
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using NLog;
+
+#endregion
 
 namespace MediaService.PL
 {

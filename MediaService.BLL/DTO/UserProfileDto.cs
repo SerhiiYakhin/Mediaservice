@@ -1,4 +1,8 @@
-﻿using System;
+﻿#region usings
+
+using System;
+
+#endregion
 
 namespace MediaService.BLL.DTO
 {
@@ -7,7 +11,7 @@ namespace MediaService.BLL.DTO
         public Guid Id { get; set; }
 
         public string Avatar { get; set; }
-        
+
         public virtual UserDto User { get; set; }
     }
 }

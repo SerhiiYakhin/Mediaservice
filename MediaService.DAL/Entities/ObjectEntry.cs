@@ -1,13 +1,18 @@
-﻿using System;
+﻿#region usings
+
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
+#endregion
 
 namespace MediaService.DAL.Entities
 {
     public abstract class ObjectEntry
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid  Id { get; set; }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid Id { get; set; }
 
         [Required]
         [StringLength(128)]
@@ -29,10 +34,6 @@ namespace MediaService.DAL.Entities
         [Required]
         [Column(TypeName = "datetime2")]
         public DateTime Modified { get; set; }
-
-        [StringLength(250)]
-        public string Thumbnail { get; set; }
-
 
         public DirectoryEntry Parent { get; set; }
 

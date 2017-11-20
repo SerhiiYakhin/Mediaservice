@@ -1,4 +1,8 @@
-﻿using System;
+﻿#region usings
+
+using System;
+
+#endregion
 
 namespace MediaService.BLL.DTO
 {

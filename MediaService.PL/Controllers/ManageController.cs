@@ -17,6 +17,30 @@ namespace MediaService.PL.Controllers
     [Authorize]
     public class ManageController : Controller
     {
+        #region Overrided Methods
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_userManager != null)
+                {
+                    _userManager.Dispose();
+                    _userManager = null;
+                }
+
+                if (_signInManager != null)
+                {
+                    _signInManager.Dispose();
+                    _signInManager = null;
+                }
+            }
+
+            base.Dispose(disposing);
+        }
+
+        #endregion
+
         #region Managers
 
         private ApplicationSignInManager _signInManager;
@@ -27,7 +51,9 @@ namespace MediaService.PL.Controllers
 
         #region Constructors
 
-        public ManageController() { }
+        public ManageController()
+        {
+        }
 
         public ManageController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
@@ -104,7 +130,7 @@ namespace MediaService.PL.Controllers
             {
                 message = ManageMessageId.Error;
             }
-            return RedirectToAction("ManageLogins", new { Message = message });
+            return RedirectToAction("ManageLogins", new {Message = message});
         }
 
         // GET: /Manage/AddPhoneNumber
@@ -131,7 +157,7 @@ namespace MediaService.PL.Controllers
                 };
                 await UserManager.SmsService.SendAsync(message);
             }
-            return RedirectToAction("VerifyPhoneNumber", new { PhoneNumber = model.Number });
+            return RedirectToAction("VerifyPhoneNumber", new {PhoneNumber = model.Number});
         }
 
         // POST: /Manage/EnableTwoFactorAuthentication
@@ -169,7 +195,7 @@ namespace MediaService.PL.Controllers
             // Send an SMS through the SMS provider to verify the phone number
             return phoneNumber == null
                 ? View("Error")
-                : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
+                : View(new VerifyPhoneNumberViewModel {PhoneNumber = phoneNumber});
         }
 
         // POST: /Manage/VerifyPhoneNumber
@@ -188,7 +214,7 @@ namespace MediaService.PL.Controllers
                 var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
                 if (user != null)
                     await SignInManager.SignInAsync(user, false, false);
-                return RedirectToAction("Index", new { Message = ManageMessageId.AddPhoneSuccess });
+                return RedirectToAction("Index", new {Message = ManageMessageId.AddPhoneSuccess});
             }
 
             // If we got this far, something failed, redisplay form
@@ -205,14 +231,14 @@ namespace MediaService.PL.Controllers
             var result = await UserManager.SetPhoneNumberAsync(User.Identity.GetUserId(), null);
 
             if (!result.Succeeded)
-                return RedirectToAction("Index", new { Message = ManageMessageId.Error });
+                return RedirectToAction("Index", new {Message = ManageMessageId.Error});
 
             var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
 
             if (user != null)
                 await SignInManager.SignInAsync(user, false, false);
 
-            return RedirectToAction("Index", new { Message = ManageMessageId.RemovePhoneSuccess });
+            return RedirectToAction("Index", new {Message = ManageMessageId.RemovePhoneSuccess});
         }
 
         // GET: /Manage/ChangePassword
@@ -239,7 +265,7 @@ namespace MediaService.PL.Controllers
                 if (user != null)
                     await SignInManager.SignInAsync(user, false, false);
 
-                return RedirectToAction("Index", new { Message = ManageMessageId.ChangePasswordSuccess });
+                return RedirectToAction("Index", new {Message = ManageMessageId.ChangePasswordSuccess});
             }
 
             AddErrors(result);
@@ -269,7 +295,7 @@ namespace MediaService.PL.Controllers
                     if (user != null)
                         await SignInManager.SignInAsync(user, false, false);
 
-                    return RedirectToAction("Index", new { Message = ManageMessageId.SetPasswordSuccess });
+                    return RedirectToAction("Index", new {Message = ManageMessageId.SetPasswordSuccess});
                 }
 
                 AddErrors(result);
@@ -319,35 +345,11 @@ namespace MediaService.PL.Controllers
         {
             var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync(XsrfKey, User.Identity.GetUserId());
             if (loginInfo == null)
-                return RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
+                return RedirectToAction("ManageLogins", new {Message = ManageMessageId.Error});
             var result = await UserManager.AddLoginAsync(User.Identity.GetUserId(), loginInfo.Login);
             return result.Succeeded
                 ? RedirectToAction("ManageLogins")
-                : RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
-        }
-
-        #endregion
-
-        #region Overrided Methods
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (_userManager != null)
-                {
-                    _userManager.Dispose();
-                    _userManager = null;
-                }
-
-                if (_signInManager != null)
-                {
-                    _signInManager.Dispose();
-                    _signInManager = null;
-                }
-            }
-
-            base.Dispose(disposing);
+                : RedirectToAction("ManageLogins", new {Message = ManageMessageId.Error});
         }
 
         #endregion

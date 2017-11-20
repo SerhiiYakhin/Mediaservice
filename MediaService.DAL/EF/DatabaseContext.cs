@@ -1,10 +1,23 @@
-﻿using System.Data.Entity;
+﻿#region usings
+
+using System.Data.Entity;
 using MediaService.DAL.Entities;
+
+#endregion
 
 namespace MediaService.DAL.EF
 {
-    class DatabaseContext : DbContext
+    internal class DatabaseContext : DbContext
     {
+        public DatabaseContext(string connectionString) : base(connectionString)
+        {
+            //Configuration.ProxyCreationEnabled = false;
+        }
+
+        public DatabaseContext() : base("DefaultConnection")
+        {
+        }
+
         public virtual DbSet<ObjectEntry> ObjectEntries { get; set; }
 
         public virtual DbSet<FileEntry> FileEntries { get; set; }
@@ -21,16 +34,10 @@ namespace MediaService.DAL.EF
 
         public virtual DbSet<User> Users { get; set; }
 
-        public DatabaseContext(string connectionString) : base(connectionString)
+        public static DatabaseContext Create()
         {
-            //Configuration.ProxyCreationEnabled = false;
+            return new DatabaseContext();
         }
-
-        public DatabaseContext() : base("DefaultConnection")
-        {
-        }
-
-        public static DatabaseContext Create() => new DatabaseContext();
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

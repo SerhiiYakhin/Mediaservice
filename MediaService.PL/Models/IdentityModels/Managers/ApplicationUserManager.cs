@@ -1,9 +1,13 @@
-﻿using System;
+﻿#region usings
+
+using System;
 using MediaService.PL.Models.IdentityModels.Services;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
+
+#endregion
 
 namespace MediaService.PL.Models.IdentityModels.Managers
 {

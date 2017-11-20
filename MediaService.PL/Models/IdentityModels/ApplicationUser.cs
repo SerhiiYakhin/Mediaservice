@@ -1,7 +1,11 @@
-﻿using System.Security.Claims;
+﻿#region usings
+
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+
+#endregion
 
 namespace MediaService.PL.Models.IdentityModels
 {

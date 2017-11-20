@@ -1,4 +1,5 @@
-﻿﻿@model MediaService.BLL.DTO.DirectoryEntryDto
+﻿@using MediaService.PL.Models.ObjectViewModels
+﻿@model MediaService.BLL.DTO.DirectoryEntryDto
 @{
     ViewBag.Title = "Home Page";
 }
@@ -25,18 +26,25 @@
 else
 {
     <section id="WelcomeView">
+        @Html.Partial("_CreateFolder", new CreateFolderViewModel { Name = "", ParentId = Model.Id })
         <div class="row folderList">
             <div id='directories'></div>
         </div>
         <div class="row filesList">
             <div id='files'></div>
         </div>
+        @using (Ajax.BeginForm("UploadFiles", "Home", new AjaxOptions { UpdateTargetId = "files", HttpMethod = "POST"}, new { enctype = "multipart/form-data" }))
+        {
+            <input type="file" id="FileUpload" multiple/>
+            <input type="button" id="btnUpload" value="Upload Files"/>
+        }
+
         <input type="file" id="FileUpload" multiple/>
-        <input type="button" id="btnUpload" value="Upload Files" />
+        <input type="button" id="btnUpload" value="Upload Files"/>
     </section>
 }
 
-@section scripts {
+@section Scripts {
 
     <script>
         $.ajax({
@@ -76,45 +84,44 @@ else
         //});
 
     </script>
-    <script>  
-        $(document).ready(function(){  
-            $('#btnUpload').click(function () {  
-  
+    <script>
+        $(document).ready(function() {
+            $('#btnUpload').click(function() {
+
                 // Checking whether FormData is available in browser  
-                if (window.FormData !== undefined) {  
-  
-                    var fileUpload = $("#FileUpload").get(0);  
+                if (window.FormData !== undefined) {
+
+                    var fileUpload = $("#FileUpload").get(0);
                     var files = fileUpload.files;
                     // Create FormData object  
-                    var fileData = new FormData();  
-  
+                    var fileData = new FormData();
+
                     // Looping over all files and add it to FormData object  
-                    for (var i = 0; i < files.length; i++) {  
-                        fileData.append(files[i].name, files[i]);  
-                    }  
+                    for (var i = 0; i < files.length; i++) {
+                        fileData.append(files[i].name, files[i]);
+                    }
                     //files[1].creationTime
                     // Adding one more key to FormData object
                     //fileData.append('folderId', @Model.Id);
-  
-                    $.ajax({  
-                        url: '/Home/UploadFiles?parentId=@Model.Id',  
-                        type: "POST",  
+
+                    $.ajax({
+                        url: '/Home/UploadFiles?parentId=@Model.Id',
+                        type: "POST",
                         contentType: false, // Not to set any content header  
                         processData: false, // Not to process data  
-                        data: fileData,  
-                        success: function (data) {
+                        data: fileData,
+                        success: function(data) {
                             //todo: Think about what to do after upload
                             $('#files').html(data);
-                        },  
-                        error: function (err) {  
-                            alert(err.statusText + "BadLuck");  
-                        }  
-                    });  
+                        },
+                        error: function(err) {
+                            alert(err.statusText + "BadLuck");
+                        }
+                    });
+                } else {
+                    alert("FormData is not supported.");
                 }
-                else {  
-                    alert("FormData is not supported.");  
-                }  
-            });  
-        });  
-    </script> 
+            });
+        });
+    </script>
 }

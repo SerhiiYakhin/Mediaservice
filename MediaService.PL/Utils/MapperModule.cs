@@ -1,8 +1,12 @@
-﻿using AutoMapper;
+﻿#region usings
+
+using AutoMapper;
 using MediaService.BLL.DTO;
 using MediaService.PL.Models.AccountViewModels;
 using MediaService.PL.Models.IdentityModels;
 using MediaService.PL.Models.ObjectViewModels;
+
+#endregion
 
 namespace MediaService.PL.Utils
 {

@@ -1,5 +1,9 @@
-﻿using System.Web.Mvc;
+﻿#region usings
+
+using System.Web.Mvc;
 using MediaService.PL.Utils.Attributes.ErrorHandler;
+
+#endregion
 
 namespace MediaService.PL
 {

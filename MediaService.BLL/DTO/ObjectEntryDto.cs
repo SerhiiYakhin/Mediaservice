@@ -1,4 +1,8 @@
-﻿using System;
+﻿#region usings
+
+using System;
+
+#endregion
 
 namespace MediaService.BLL.DTO
 {
@@ -15,8 +19,6 @@ namespace MediaService.BLL.DTO
         public DateTime Downloaded { get; set; }
 
         public DateTime Modified { get; set; }
-
-        public string Thumbnail { get; set; }
 
 
         public DirectoryEntryDto Parent { get; set; }

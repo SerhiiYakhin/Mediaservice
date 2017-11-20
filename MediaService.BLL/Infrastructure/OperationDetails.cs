@@ -1,6 +1,4 @@
-﻿//using Microsoft.AspNet.Identity;
-
-namespace MediaService.BLL.Infrastructure
+﻿namespace MediaService.BLL.Infrastructure
 {
     public class OperationDetails //: IdentityResult
     {

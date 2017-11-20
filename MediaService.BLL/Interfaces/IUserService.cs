@@ -1,4 +1,8 @@
-﻿using MediaService.BLL.DTO;
+﻿#region usings
+
+using MediaService.BLL.DTO;
+
+#endregion
 
 namespace MediaService.BLL.Interfaces
 {
