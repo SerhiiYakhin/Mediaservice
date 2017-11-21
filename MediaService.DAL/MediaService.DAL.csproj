@@ -76,7 +76,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Accessors\AzureStorageAccessor.cs" />
+    <Compile Include="Accessors\AzureStorageBlobAccessor.cs" />
+    <Compile Include="Accessors\AzureStorageQueueAccessor.cs" />
     <Compile Include="EF\DatabaseContext.cs" />
     <Compile Include="Entities\DirectoryViewers.cs" />
     <Compile Include="Entities\Enums\FileType.cs" />

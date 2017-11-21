@@ -1,0 +1,21 @@
+﻿@model MediaService.PL.Models.ObjectViewModels.FileViewModels.UploadFilesViewModel
+
+@using (Ajax.BeginForm("UploadFiles", "File", null, new AjaxOptions { UpdateTargetId = "files", HttpMethod = "POST" }, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.Hidden("ParentId", Model.ParentId)
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="file" id="FileUpload" multiple />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="button" id="btnUpload" value="Upload Files"/>
+            </div>
+        </div>
+    </div>
+}

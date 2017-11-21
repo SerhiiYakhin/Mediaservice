@@ -215,10 +215,23 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\DirectoryController.cs" />
     <Compile Include="Controllers\ErrorHandlerController.cs" />
+    <Compile Include="Controllers\FileController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
-    <Compile Include="Models\ObjectViewModels\CreateFolderViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\DirectoryViewModels\DeleteDirectoryViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\DirectoryViewModels\DirectoriesListViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\DirectoryViewModels\DownloadDirectoryViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\Enums\OrderType.cs" />
+    <Compile Include="Models\ObjectViewModels\DirectoryViewModels\RenameDirectoryViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\Enums\SearchType.cs" />
+    <Compile Include="Models\ObjectViewModels\FileViewModels\AddTagViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\DirectoryViewModels\CreateDirectoryViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\FileViewModels\DeleteFileViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\FileViewModels\RenameFileViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\FileViewModels\SearchFilesViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\FileViewModels\UploadFilesViewModel.cs" />
     <Compile Include="Utils\Attributes\ErrorHandler\AiHandleErrorAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -376,14 +389,20 @@
     <Content Include="Views\Home\_WelcomePartial.cshtml" />
     <Content Include="Views\Home\_GeneralPartial.cshtml" />
     <Content Include="Views\Home\_GeneralTilePartial.cshtml" />
-    <Content Include="Views\Home\_DirectoriesList.cshtml" />
-    <Content Include="Views\Home\_FilesList.cshtml" />
+    <Content Include="Views\Directory\_DirectoriesList.cshtml" />
+    <Content Include="Views\File\_FilesList.cshtml" />
     <Content Include="Views\ErrorHandler\InternalServerError.cshtml" />
     <Content Include="Views\ErrorHandler\NotFound.cshtml" />
     <Content Include="Views\ErrorHandler\Forbidden.cshtml" />
-    <Content Include="Views\Home\_CreateFolder.cshtml" />
+    <Content Include="Views\Directory\_CreateDirectory.cshtml" />
     <Content Include="Scripts\jquery-3.2.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.2.1.min.map" />
+    <Content Include="Views\File\_AddTag.cshtml" />
+    <Content Include="Views\File\_RenameFile.cshtml" />
+    <Content Include="Views\File\_DeleteFile.cshtml" />
+    <Content Include="Views\Directory\_RenameDirectory.cshtml" />
+    <Content Include="Views\Directory\_DeleteDirectory.cshtml" />
+    <Content Include="Views\File\_UploadFiles.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

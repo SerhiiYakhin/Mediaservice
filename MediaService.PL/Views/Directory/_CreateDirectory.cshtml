@@ -1,6 +1,6 @@
-﻿@model MediaService.PL.Models.ObjectViewModels.CreateFolderViewModel
+﻿@model MediaService.PL.Models.ObjectViewModels.DirectoryViewModels.CreateDirectoryViewModel
 
-@using (Html.BeginForm("CreateFolder", "Home", FormMethod.Post))
+@using (Html.BeginForm("Create", "Directory", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
 
@@ -8,11 +8,7 @@
         <h4>CreateFolderViewModel</h4>
         <hr/>
         @Html.ValidationSummary(true, "", new {@class = "text-danger"})
-        <div class="form-group">
-            <div class="col-md-10">
-                @Html.HiddenFor(model => model.ParentId)
-            </div>
-        </div>
+        @Html.HiddenFor(model => model.ParentId)
 
         <div class="form-group">
             @Html.LabelFor(model => model.Name, new {@class = "control-label col-md-2"})

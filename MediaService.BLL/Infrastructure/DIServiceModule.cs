@@ -22,7 +22,7 @@ namespace MediaService.BLL.Infrastructure
         public override void Load()
         {
             Bind<IUnitOfWork>().To<EFUnitOfWork>().WithConstructorArgument(_dbConnectionString);
-            Bind<IStorage>().To<AzureStorageAccessor>().WithConstructorArgument(_storageConnection);
+            Bind<IStorage>().To<AzureStorageBlobAccessor>().WithConstructorArgument(_storageConnection);
         }
     }
 }

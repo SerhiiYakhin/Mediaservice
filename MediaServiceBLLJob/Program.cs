@@ -14,6 +14,7 @@ namespace MediaServiceBLLJob
         // AzureWebJobsDashboard and AzureWebJobsStorage
         static void Main()
         {
+            var startup = new Startup();
             var config = new JobHostConfiguration();
 
             if (config.IsDevelopment)

@@ -13,11 +13,11 @@ using Microsoft.WindowsAzure.Storage.RetryPolicies;
 
 namespace MediaService.DAL.Accessors
 {
-    public class AzureStorageAccessor : IStorage
+    public class AzureStorageBlobAccessor : IStorage
     {
         #region Constructors
 
-        public AzureStorageAccessor(string connectionString)
+        public AzureStorageBlobAccessor(string connectionString)
         {
             _connectionString = connectionString;
         }
@@ -25,8 +25,6 @@ namespace MediaService.DAL.Accessors
         #endregion
 
         #region Fields
-
-        private const string ConnectionStringSettingName = "StorageConnectionString";
 
         private const string ContainerName = "files";
 
@@ -37,8 +35,6 @@ namespace MediaService.DAL.Accessors
         //2 * 1024 * 1024 bytes or 2 MB
         private const int BlockSize = 2_097_152;
 
-        //private static readonly string ConnectionString = "UseDevelopmentStorage=true;";
-        //private static string _connectionString = CloudConfigurationManager.GetSetting(ConnectionStringSettingName);
         private static string _connectionString;
 
         #endregion

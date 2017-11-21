@@ -4,11 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Security;
 using System.Threading.Tasks;
 using MediaService.BLL.DTO;
 using MediaService.BLL.Interfaces;
 using MediaService.DAL.Entities;
 using MediaService.DAL.Interfaces;
+using Microsoft.Azure;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Queue;
+using Microsoft.WindowsAzure.Storage.RetryPolicies;
+using Newtonsoft.Json;
 
 #endregion
 
@@ -62,6 +68,22 @@ namespace MediaService.BLL.Services.ObjectsServices
             string ownerId = null
         )
         {
+            string appSetting = CloudConfigurationManager.GetSetting("DemoStorageAccount");
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(appSetting);
+            var queueMessage = new CloudQueueMessage(JsonConvert.SerializeObject(ownerId));
+            CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
+            CloudQueue queue = queueClient.GetQueueReference("messages");
+            queue.CreateIfNotExists();
+            queue.AddMessage(queueMessage);
+            var qro = new QueueRequestOptions
+            {
+                RetryPolicy = null,
+                EncryptionPolicy = null,
+                RequireEncryption = null,
+                LocationMode = null,
+                ServerTimeout = null,
+                MaximumExecutionTime = null
+            };
             var dirs = GetQuery(id, name, parentId, created, downloaded, modified, ownerId);
             return await Task.Run(() => DtoMapper.Map<IEnumerable<FileEntryDto>>(dirs.AsParallel().ToList()));
         }

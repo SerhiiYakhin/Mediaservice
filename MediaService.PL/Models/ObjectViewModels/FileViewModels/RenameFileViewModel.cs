@@ -1,20 +1,17 @@
-﻿#region usings
-
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
-#endregion
-
-namespace MediaService.PL.Models.ObjectViewModels
+namespace MediaService.PL.Models.ObjectViewModels.FileViewModels
 {
-    public class CreateFolderViewModel
+    public class RenameFileViewModel
     {
         [Required]
         [HiddenInput(DisplayValue = false)]
-        public Guid ParentId { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
+        [StringLength(128, ErrorMessage = "Max name lenght is 50 symbols")]
         [Display(Name = "Name")]
         public string Name { get; set; }
     }

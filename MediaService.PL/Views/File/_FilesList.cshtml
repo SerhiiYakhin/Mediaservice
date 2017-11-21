@@ -1,4 +1,5 @@
-﻿﻿@model IEnumerable<MediaService.BLL.DTO.FileEntryDto>
+﻿@using MediaService.BLL.DTO.Enums
+﻿@model IEnumerable<MediaService.BLL.DTO.FileEntryDto>
 
 <table class="table">
     <tr>
@@ -30,11 +31,15 @@
     {
         <tr>
             <td>
-                <img width="50" height="50" src="@item.Thumbnail">
+                <img width="50" height="50"
+                     src="@(item.FileType == FileType.Image ? Url.Content("/fonts/icons-buttons/picture.svg") : Url.Content("/fonts/icons-buttons/video-player.svg"))">
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
+            <th>
+                <img src='@Url.Action("GetThumbnailImg", "File", new {img = item.FileThumbnailStream })' />
+            </th>
             @*<td>
                 @Html.DisplayFor(modelItem => item.ParentId)
             </td>
@@ -51,9 +56,10 @@
                 @Html.DisplayFor(modelItem => item.Modified)
             </td>*@
             <td>
-                @Html.ActionLink("Edit", "Edit", new {id = item.Id}) |
-                @Html.ActionLink("Details", "Details", new {id = item.Id}) |
-                @Html.ActionLink("Delete", "Delete", new {id = item.Id})
+                @Html.ActionLink("Add Tag", "AddTag", "Home", new {id = item.Id}) |
+                @Html.ActionLink("Rename", "Rename", "Home", new {id = item.Id}) |
+                @Html.ActionLink("Delete", "Delete", "Home", new { id = item.Id }) |
+                @Html.ActionLink("Download", "Download", "Home", new { id = item.Id })
             </td>
         </tr>
     }

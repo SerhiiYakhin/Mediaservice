@@ -16,5 +16,6 @@ namespace MediaServiceBLLJob
         {
             log.WriteLine(message);
         }
+
     }
 }

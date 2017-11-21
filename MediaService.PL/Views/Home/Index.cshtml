@@ -1,5 +1,5 @@
-﻿@using MediaService.PL.Models.ObjectViewModels
-﻿@model MediaService.BLL.DTO.DirectoryEntryDto
+﻿@using MediaService.BLL.DTO
+﻿@model DirectoryEntryDto
 @{
     ViewBag.Title = "Home Page";
 }
@@ -20,25 +20,40 @@
 @if (ViewBag.FirstTime == "true")
 {
     <section id="GeneralView">
-        @Html.Partial("_WelcomePartial")
+        @Html.Partial("_WelcomePartial", Model as DirectoryEntryDto)
     </section>
 }
 else
 {
     <section id="WelcomeView">
-        @Html.Partial("_CreateFolder", new CreateFolderViewModel { Name = "", ParentId = Model.Id })
+        @Html.ActionLink("Create folder", "Create", "Directory", new {parentId = Model.Id}))
         <div class="row folderList">
             <div id='directories'></div>
         </div>
         <div class="row filesList">
             <div id='files'></div>
         </div>
-        @using (Ajax.BeginForm("UploadFiles", "Home", new AjaxOptions { UpdateTargetId = "files", HttpMethod = "POST"}, new { enctype = "multipart/form-data" }))
+        @using (Ajax.BeginForm("UploadFiles", "File", null, new AjaxOptions { UpdateTargetId = "files", HttpMethod = "POST" }, new { enctype = "multipart/form-data" }))
         {
-            <input type="file" id="FileUpload" multiple/>
-            <input type="button" id="btnUpload" value="Upload Files"/>
+            @Html.AntiForgeryToken()
+    
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.Hidden("ParentId", Model.ParentId as Guid?)
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="file" id="FileUpload" multiple />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="button" id="btnUpload" value="Upload Files"/>
+                    </div>
+                </div>
+            </div>
         }
-
+        @*todo: В идеале оот этого нужно избавиться, а верхняя форма должна работать.*@
+        @*А еще лучше, чтобы все папко/файловые действия были в их вьюхах, а на этой вызывать только Index()*@
         <input type="file" id="FileUpload" multiple/>
         <input type="button" id="btnUpload" value="Upload Files"/>
     </section>
@@ -48,7 +63,7 @@ else
 
     <script>
         $.ajax({
-            url: '@Url.Action("DirectoriesList", "Home", new {parentId = Model.Id})',
+            url: '@Url.Action("DirectoriesList", "Directory", new {parentId = Model.Id})',
             type: "POST",
             contentType: "text/html; charset=utf-8",
             success: function(data) {
@@ -57,7 +72,7 @@ else
         });
 
         $.ajax({
-            url: '@Url.Action("FilesList", "Home", new {parentId = Model.Id})',
+            url: '@Url.Action("FilesList", "File", new {parentId = Model.Id})',
             type: "POST",
             contentType: "text/html; charset=utf-8",
             success: function(data) {
@@ -105,7 +120,7 @@ else
                     //fileData.append('folderId', @Model.Id);
 
                     $.ajax({
-                        url: '/Home/UploadFiles?parentId=@Model.Id',
+                        url: '/File/UploadFiles?parentId=@Model.Id',
                         type: "POST",
                         contentType: false, // Not to set any content header  
                         processData: false, // Not to process data  

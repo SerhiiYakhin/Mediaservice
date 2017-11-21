@@ -22,6 +22,10 @@ namespace MediaService.DAL.Entities
         public virtual ICollection<DirectoryViewers> Viewers { get; set; }
 
         [Required]
+        [StringLength(50)]
+        public new string Name { get; set; }
+
+        [Required]
         [Range(0, 10)]
         public short NodeLevel { get; set; }
 
