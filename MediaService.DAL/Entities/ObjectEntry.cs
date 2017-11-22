@@ -14,11 +14,6 @@ namespace MediaService.DAL.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
 
-        [Required]
-        [StringLength(128)]
-        //[ConcurrencyCheck]
-        public string Name { get; set; }
-
         //[Required]
         //[StringLength(128)]
         //public string Discriminator { get; set; }

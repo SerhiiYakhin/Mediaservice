@@ -194,7 +194,7 @@ namespace MediaService.PL.Controllers
             var code = await UserManager.GenerateChangePhoneNumberTokenAsync(User.Identity.GetUserId(), phoneNumber);
             // Send an SMS through the SMS provider to verify the phone number
             return phoneNumber == null
-                ? View("Error")
+                ? View("Errors/Error")
                 : View(new VerifyPhoneNumberViewModel {PhoneNumber = phoneNumber});
         }
 
@@ -316,7 +316,7 @@ namespace MediaService.PL.Controllers
             var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
 
             if (user == null)
-                return View("Error");
+                return View("Errors/Error");
 
             var userLogins = await UserManager.GetLoginsAsync(User.Identity.GetUserId());
             var otherLogins = AuthenticationManager.GetExternalAuthenticationTypes()

@@ -26,7 +26,7 @@
 else
 {
     <section id="WelcomeView">
-        @Html.ActionLink("Create folder", "Create", "Directory", new {parentId = Model.Id}))
+        @Html.ActionLink("Create folder", "Create", "Directory", null, new {parentId = Model.Id})
         <div class="row folderList">
             <div id='directories'></div>
         </div>
@@ -52,7 +52,7 @@ else
                 </div>
             </div>
         }
-        @*todo: В идеале оот этого нужно избавиться, а верхняя форма должна работать.*@
+        @*todo: В идеале от этого нужно избавиться, а верхняя форма должна работать.*@
         @*А еще лучше, чтобы все папко/файловые действия были в их вьюхах, а на этой вызывать только Index()*@
         <input type="file" id="FileUpload" multiple/>
         <input type="button" id="btnUpload" value="Upload Files"/>

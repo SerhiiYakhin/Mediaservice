@@ -13,5 +13,6 @@ namespace MediaService.BLL.Interfaces
         Task AddRootDirToUserAsync(string userId);
 
         Task<DirectoryEntryDto> GetRootAsync(string ownerId);
+        Task UpdateAsync(DirectoryEntryDto editedDirEntryDto);
     }
 }

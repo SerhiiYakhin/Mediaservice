@@ -19,10 +19,16 @@ namespace MediaService.DAL.Entities
         }
 
         [Required]
-        public FileType FileType { get; set; }
+        [StringLength(128)]
+        //[ConcurrencyCheck]
+        public string Name { get; set; }
 
         [Required]
         public int Size { get; set; }
+
+        [Required]
+        public FileType FileType { get; set; }
+
 
         [Column("Owner_Id")]
         public string OwnerId { get; set; }

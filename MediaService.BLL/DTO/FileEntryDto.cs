@@ -2,12 +2,14 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization;
 using MediaService.BLL.DTO.Enums;
 
 #endregion
 
 namespace MediaService.BLL.DTO
 {
+    [DataContract]
     public class FileEntryDto : ObjectEntryDto
     {
         public FileEntryDto()
@@ -16,21 +18,29 @@ namespace MediaService.BLL.DTO
             Tags = new HashSet<TagDto>();
         }
 
+        [DataMember]
+        public string Name { get; set; }
+
+        [DataMember]
         public int Size { get; set; }
 
+        [DataMember]
         public FileType FileType { get; set; }
 
         public Stream FileStream { get; set; }
 
         public Stream FileThumbnailStream { get; set; }
 
+        [DataMember]
         public string OwnerId { get; set; }
 
+        [DataMember]
         public virtual UserDto Owner { get; set; }
 
+        [DataMember]
+        public ICollection<FileViewersDto> Viewers { get; set; }
 
-        public virtual ICollection<FileViewersDto> Viewers { get; set; }
-
-        public virtual ICollection<TagDto> Tags { get; set; }
+        [DataMember]
+        public ICollection<TagDto> Tags { get; set; }
     }
 }

@@ -35,6 +35,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper, Version=6.2.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\MSTest.TestFramework.1.2.0\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>
@@ -89,9 +90,21 @@
     <Content Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MediaService.BLL\MediaService.BLL.csproj">
+      <Project>{d2fc7e5b-058a-472f-bb1f-cbe374df6e3b}</Project>
+      <Name>MediaService.BLL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MediaService.DAL\MediaService.DAL.csproj">
+      <Project>{63d152e6-74dc-4778-87d9-ebc3cf7201b1}</Project>
+      <Name>MediaService.DAL</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MediaService.PL\MediaService.PL.csproj">
       <Project>{0692C7A9-ADFA-4006-B242-0002FD228604}</Project>
       <Name>MediaService.PL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MediaServiceBLLJob\MediaServiceBLLJob.csproj">
+      <Project>{e445756f-7047-4228-954b-cef1430138a1}</Project>
+      <Name>MediaServiceBLLJob</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

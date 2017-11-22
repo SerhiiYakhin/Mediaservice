@@ -1,11 +1,13 @@
 ﻿#region usings
 
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 #endregion
 
 namespace MediaService.BLL.DTO
 {
+    [DataContract]
     public class DirectoryEntryDto : ObjectEntryDto
     {
         public DirectoryEntryDto()
@@ -13,12 +15,19 @@ namespace MediaService.BLL.DTO
             Viewers = new HashSet<DirectoryViewersDto>();
         }
 
-        public virtual ICollection<DirectoryViewersDto> Viewers { get; set; }
+        [DataMember]
+        public string Name { get; set; }
 
+        [DataMember]
         public short NodeLevel { get; set; }
 
+        [DataMember]
         public string OwnerId { get; set; }
 
-        public virtual UserDto Owner { get; set; }
+        [DataMember]
+        public UserDto Owner { get; set; }
+
+        [DataMember]
+        public ICollection<DirectoryViewersDto> Viewers { get; set; }
     }
 }

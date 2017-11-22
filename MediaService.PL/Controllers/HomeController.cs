@@ -144,7 +144,7 @@ namespace MediaService.PL.Controllers
 
         // Get: /Home/Index
         [HttpGet]
-        [ErrorHandle(ExceptionType = typeof(SqlNullValueException), View = "Error")]
+        [ErrorHandle(ExceptionType = typeof(SqlNullValueException), View = "Errors/Error")]
         public async Task<ActionResult> Index(Guid? dirId)
         {
             DirectoryEntryDto rootDir;

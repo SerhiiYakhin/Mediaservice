@@ -3,11 +3,11 @@ using MediaService.BLL.DTO;
 using MediaService.BLL.Interfaces;
 using MediaService.PL.Models.IdentityModels.Managers;
 using MediaService.PL.Models.ObjectViewModels.DirectoryViewModels;
+using MediaService.PL.Models.ObjectViewModels.Enums;
 using MediaService.PL.Utils;
 using MediaService.PL.Utils.Attributes.ErrorHandler;
 using Microsoft.AspNet.Identity.Owin;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity.Infrastructure;
 using System.IO;
@@ -15,7 +15,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using MediaService.PL.Models.ObjectViewModels.Enums;
 
 namespace MediaService.PL.Controllers
 {
@@ -119,7 +118,7 @@ namespace MediaService.PL.Controllers
 
         // POST: /Directory/Create
         [HttpPost]
-        [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Error")]
+        [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
         public async Task<ActionResult> Create(CreateDirectoryViewModel model)
         {
             try
@@ -143,7 +142,7 @@ namespace MediaService.PL.Controllers
         }
 
         [HttpPost]
-        [ErrorHandle(ExceptionType = typeof(DataException), View = "Error")]
+        [ErrorHandle(ExceptionType = typeof(DataException), View = "Errors/Error")]
         public ActionResult Download(DownloadDirectoryViewModel model)
         {
             try
@@ -155,7 +154,7 @@ namespace MediaService.PL.Controllers
             catch (Exception ex)
             {
                 throw new DataException(
-                    "This files can't be downloaded at this moment, we're sorry, try again later", ex);
+                    "This folder can't be downloaded at this moment, we're sorry, try again later", ex);
             }
         }
 
@@ -166,25 +165,34 @@ namespace MediaService.PL.Controllers
         }
 
         [HttpGet]
-        public ActionResult Rename(Guid id, string name)
+        public ActionResult Rename(Guid id, Guid parentId, string name)
         {
-            var model = new RenameDirectoryViewModel { Id = id, Name = name };
+            var model = new RenameDirectoryViewModel { Id = id, ParentId = parentId, Name = name };
             return PartialView("_RenameDirectory", model);
         }
 
         [HttpPost]
-        public ActionResult Rename(RenameDirectoryViewModel model)
+        [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
+        public async Task<ActionResult> Rename(RenameDirectoryViewModel model)
         {
             try
             {
-                // TODO: Add insert logic here
-
-                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                if (!await DirectoryService.ExistAsync(model.Name, model.ParentId))
+                {
+                    var editedFolder = Mapper.Map<DirectoryEntryDto>(model);
+                    await DirectoryService.UpdateAsync(editedFolder);
+                    return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                }
+                ModelState.AddModelError("Name", "The folder with this name is already exist in this directory");
             }
-            catch
+            catch (Exception ex)
             {
-                return PartialView("_RenameDirectory", model);
+                throw new DbUpdateException(
+                    "This folder can't be renamed at this moment, we're sorry, try again later", ex);
             }
+
+            //We get here if were some model validation errors
+            return PartialView("_RenameDirectory", model);
         }
 
         [HttpGet]
@@ -196,6 +204,7 @@ namespace MediaService.PL.Controllers
         }
 
         [HttpPost]
+        [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
         public ActionResult Delete(DeleteDirectoryViewModel model)
         {
             try
@@ -204,9 +213,11 @@ namespace MediaService.PL.Controllers
 
                 return Json(new { success = true }, JsonRequestBehavior.AllowGet);
             }
-            catch
+            catch (Exception ex)
             {
-                return PartialView("_DeleteDirectory", model);
+                throw new DbUpdateException(
+                    "This folder can't be deleted at this moment, we're sorry, try again later", ex);
+                //return PartialView("_DeleteDirectory", model);
             }
         }
 

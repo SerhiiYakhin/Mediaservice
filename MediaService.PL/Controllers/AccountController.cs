@@ -170,7 +170,7 @@ namespace MediaService.PL.Controllers
         {
             // Require that the user has already logged in via username/password or external login
             if (!await SignInManager.HasBeenVerifiedAsync())
-                return View("Error");
+                return View("Errors/Error");
 
             return View(new VerifyCodeViewModel {Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe});
         }
@@ -214,7 +214,7 @@ namespace MediaService.PL.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Error")]
+        [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
@@ -258,7 +258,7 @@ namespace MediaService.PL.Controllers
         public async Task<ActionResult> ConfirmEmail(string userId, string code)
         {
             if (userId == null || code == null)
-                return View("Error");
+                return View("Errors/Error");
             var result = await UserManager.ConfirmEmailAsync(userId, code);
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
@@ -305,7 +305,7 @@ namespace MediaService.PL.Controllers
         [AllowAnonymous]
         public ActionResult ResetPassword(string code)
         {
-            return code == null ? View("Error") : View();
+            return code == null ? View("Errors/Error") : View();
         }
 
         // POST: /Account/ResetPassword
@@ -351,7 +351,7 @@ namespace MediaService.PL.Controllers
             var userId = await SignInManager.GetVerifiedUserIdAsync();
 
             if (userId == null)
-                return View("Error");
+                return View("Errors/Error");
 
             var userFactors = await UserManager.GetValidTwoFactorProvidersAsync(userId);
             var factorOptions = userFactors.Select(purpose => new SelectListItem {Text = purpose, Value = purpose})
@@ -376,7 +376,7 @@ namespace MediaService.PL.Controllers
 
             // Generate the token and send it
             if (!await SignInManager.SendTwoFactorCodeAsync(model.SelectedProvider))
-                return View("Error");
+                return View("Errors/Error");
 
             return RedirectToAction("VerifyCode",
                 new {Provider = model.SelectedProvider, model.ReturnUrl, model.RememberMe});

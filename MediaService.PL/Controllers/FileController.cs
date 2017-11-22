@@ -12,10 +12,12 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity.Infrastructure;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Management;
 using System.Web.Mvc;
 using MediaService.PL.Models.ObjectViewModels.Enums;
 
@@ -92,21 +94,29 @@ namespace MediaService.PL.Controllers
 
         // POST: /File/Search
         [HttpPost]
+        [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
         public async Task<ActionResult> Search(SearchFilesViewModel model)
         {
             IEnumerable<FileEntryDto> files;
-            //todo: Make special methods in FileService and complete this action
-            switch (model.SearchType)
+            try
             {
-                case SearchType.ByName:
+                //todo: Make special methods in FileService and complete this action
+                switch (model.SearchType)
+                {
+                    case SearchType.ByName:
                     //files = await FilesService.GetByAsync(name: model.SearchValue);
                     //break;
-                case SearchType.ByTag:
+                    case SearchType.ByTag:
                     //files = await FilesService.GetByAsync(name: model.SearchValue);
                     //break;
-                default:
-                    files = await FilesService.GetByParentIdAsync(model.ParentId);
-                    break;
+                    default:
+                        files = await FilesService.GetByParentIdAsync(model.ParentId);
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new DataException("We are sorry, but search function is unavaible in this time, try again later", e);
             }
 
             switch (model.OrderType)
@@ -137,7 +147,7 @@ namespace MediaService.PL.Controllers
 
         // POST: /File/UploadFiles
         [HttpPost]
-        [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Error")]
+        [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
         public async Task<ActionResult> UploadFiles(UploadFilesViewModel model)
         {
             if (Request.Files.Count > 0)
@@ -150,7 +160,7 @@ namespace MediaService.PL.Controllers
                 catch (Exception ex)
                 {
                     throw new DbUpdateException(
-                        "New folder can't be added at this moment, we're sorry, try again later", ex);
+                        "New files can't be uploaded at this moment, we're sorry, try again later", ex);
                 }
             }
 
@@ -167,7 +177,7 @@ namespace MediaService.PL.Controllers
         }
 
         [HttpPost]
-        [ErrorHandle(ExceptionType = typeof(DataException), View = "Error")]
+        [ErrorHandle(ExceptionType = typeof(DataException), View = "Errors/Error")]
         public ActionResult DownloadFiles(IEnumerable<Guid> filesId)
         {
             try
@@ -191,10 +201,19 @@ namespace MediaService.PL.Controllers
 
         // POST: /File/FilesList
         [HttpPost]
+        [ErrorHandle(ExceptionType = typeof(DataException), View = "Errors/Error")]
         public async Task<ActionResult> FilesList(Guid parentId)
         {
-            var files = await FilesService.GetByParentIdAsync(parentId);
-            return PartialView("_FilesList", files);
+            try
+            {
+                var files = await FilesService.GetByParentIdAsync(parentId);
+                return PartialView("_FilesList", files);
+            }
+            catch (Exception e)
+            {
+                throw new DataException(
+                    "Your files can't be displayed at this moment, we're sorry, try again later", e);
+            }
         }
 
         [HttpGet]
@@ -206,6 +225,7 @@ namespace MediaService.PL.Controllers
         }
 
         [HttpPost]
+        [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
         public ActionResult AddTag(AddTagViewModel model)
         {
             try
@@ -214,9 +234,11 @@ namespace MediaService.PL.Controllers
 
                 return Json(new { success = true }, JsonRequestBehavior.AllowGet);
             }
-            catch
+            catch (Exception e)
             {
-                return PartialView("_AddTag", model);
+                throw new DbUpdateException(
+                    "We can't add tag to this file at this moment, we're sorry, try again later", e);
+                //return PartialView("_AddTag", model);
             }
         }
 
@@ -228,6 +250,7 @@ namespace MediaService.PL.Controllers
         }
 
         [HttpPost]
+        [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
         public ActionResult Rename(RenameFileViewModel model)
         {
             try
@@ -236,9 +259,11 @@ namespace MediaService.PL.Controllers
 
                 return Json(new { success = true }, JsonRequestBehavior.AllowGet);
             }
-            catch
+            catch (Exception e)
             {
-                return PartialView("_RenameFile", model);
+                throw new DbUpdateException(
+                    "This file can't be renamed this file at this moment, we're sorry, try again later", e);
+                //return PartialView("_RenameFile", model);
             }
         }
 
@@ -251,6 +276,7 @@ namespace MediaService.PL.Controllers
         }
 
         [HttpPost]
+        [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
         public ActionResult Delete(DeleteFileViewModel model)
         {
             try
@@ -259,9 +285,11 @@ namespace MediaService.PL.Controllers
 
                 return Json(new { success = true }, JsonRequestBehavior.AllowGet);
             }
-            catch
+            catch (Exception e)
             {
-                return PartialView("_DeleteFile", model);
+                throw new DbUpdateException(
+                    "This file can't be deleted this file at this moment, we're sorry, try again later", e);
+                //return PartialView("_DeleteFile", model);
             }
         }
 
@@ -285,6 +313,7 @@ namespace MediaService.PL.Controllers
         //    return PartialView("_CreateFolder", model);
         //}
 
+        [HttpGet]
         public ActionResult GetThumbnailImg(Stream img)
         {
             return new FileStreamResult(img, "image/png");

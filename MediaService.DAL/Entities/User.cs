@@ -13,7 +13,6 @@ namespace MediaService.DAL.Entities
     [Table("AspNetUsers")]
     public class User
     {
-        [SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public User()
         {
             Files = new HashSet<FileEntry>();
@@ -52,16 +51,12 @@ namespace MediaService.DAL.Entities
 
         public virtual UserProfile UserProfile { get; set; }
 
-        [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<FileViewers> SharedFiles { get; set; }
 
-        [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DirectoryViewers> SharedDirectories { get; set; }
 
-        [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<FileEntry> Files { get; set; }
 
-        [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DirectoryEntry> Directories { get; set; }
     }
 }

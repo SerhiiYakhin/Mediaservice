@@ -73,9 +73,29 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         #region Create Methods
 
-        public override void Add(DirectoryEntryDto item)
+        public override void Add(DirectoryEntryDto directoryEntryDto)
         {
-            throw new NotImplementedException();
+            if (!directoryEntryDto.ParentId.HasValue)
+            {
+                throw new InvalidDataException("Can't find parent folder: there is no parentId");
+            }
+
+            var parentDir = Context.Directories.FindByKey(directoryEntryDto.ParentId.Value);
+
+            if (parentDir == null)
+            {
+                throw new InvalidDataException("Can't find parent folder user with this Id in database");
+            }
+
+            parentDir.Modified = DateTime.Now;
+            var dir = DtoMapper.Map<DirectoryEntry>(directoryEntryDto);
+            dir.Owner = parentDir.Owner;
+            dir.Parent = parentDir;
+            dir.NodeLevel = (short)(parentDir.NodeLevel + 1);
+            dir.Modified = dir.Created = dir.Downloaded = DateTime.Now;
+
+            Repository.Add(dir);
+            Context.SaveChanges();
         }
 
         /// <exception cref="InvalidDataException">Thrown when user with given Id or his root folder doesn't exist in the Database</exception>
@@ -98,39 +118,11 @@ namespace MediaService.BLL.Services.ObjectsServices
             dir.Owner = parentDir.Owner;
             dir.Parent = parentDir;
             dir.NodeLevel = (short)(parentDir.NodeLevel + 1);
+            dir.Modified = dir.Created = dir.Downloaded = DateTime.Now;
 
             await Repository.AddAsync(dir);
             await Context.SaveChangesAsync();
         }
-
-        /// <exception cref="InvalidDataException">Thrown when user with given Id or his root folder doesn't exist in the Database</exception>
-        public async Task AddAsync(string name, Guid parentId)
-        {
-            var parentDir = await Context.Directories.FindByKeyAsync(parentId);
-
-            if (parentDir == null)
-            {
-                throw new InvalidDataException("Can't find parent folder user with this Id in database");
-            }
-
-            parentDir.Modified = DateTime.Now;
-
-            var dir = new DirectoryEntry
-            {
-                Name = name,
-                Created = DateTime.Now,
-                Downloaded = DateTime.Now,
-                Modified = DateTime.Now,
-                NodeLevel = (short)(parentDir.NodeLevel + 1),
-                Parent = parentDir,
-                Owner = parentDir.Owner,
-                Viewers = parentDir.Viewers
-            };
-
-            await Repository.AddAsync(dir);
-            await Context.SaveChangesAsync();
-        }
-
 
         /// <exception cref="InvalidDataException">Thrown when user with given Id doesn't exist in the Database</exception>
         public async Task AddRootDirToUserAsync(string userId)
@@ -151,6 +143,25 @@ namespace MediaService.BLL.Services.ObjectsServices
         }
 
         #endregion
+
+        #region Update Methods
+
+        public async Task UpdateAsync(DirectoryEntryDto editedDirEntryDto)
+        {
+            var currDirectoryEntry = await Context.Directories.FindByKeyAsync(editedDirEntryDto.Id);
+
+            if (currDirectoryEntry == null)
+            {
+                throw new InvalidDataException("Can't find parent folder user with this Id in database");
+            }
+
+            currDirectoryEntry.Parent.Modified = DateTime.Now;
+            currDirectoryEntry.Modified = DateTime.Now;
+            currDirectoryEntry.Name = editedDirEntryDto.Name;
+
+            await Repository.UpdateAsync(currDirectoryEntry);
+            await Context.SaveChangesAsync();
+        }
 
         #endregion
 
@@ -198,6 +209,8 @@ namespace MediaService.BLL.Services.ObjectsServices
 
             return dirs;
         }
+
+        #endregion
 
         #endregion
     }
