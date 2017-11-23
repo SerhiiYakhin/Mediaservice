@@ -21,6 +21,7 @@ namespace MediaService.DAL.Interfaces
 
         IQueryable<TEntity> GetQuery(Expression<Func<TEntity, bool>> predicate);
 
+        Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate);
 
         IEnumerable<TEntity> GetData();
 

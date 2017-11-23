@@ -229,6 +229,8 @@
     <Compile Include="Models\ObjectViewModels\FileViewModels\AddTagViewModel.cs" />
     <Compile Include="Models\ObjectViewModels\DirectoryViewModels\CreateDirectoryViewModel.cs" />
     <Compile Include="Models\ObjectViewModels\FileViewModels\DeleteFileViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\FileViewModels\DownloadFilesViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\FileViewModels\FilesListViewModel.cs" />
     <Compile Include="Models\ObjectViewModels\FileViewModels\RenameFileViewModel.cs" />
     <Compile Include="Models\ObjectViewModels\FileViewModels\SearchFilesViewModel.cs" />
     <Compile Include="Models\ObjectViewModels\FileViewModels\UploadFilesViewModel.cs" />

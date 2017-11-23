@@ -6,15 +6,11 @@ using System.IO;
 using System.Linq;
 using System.Net.Security;
 using System.Threading.Tasks;
+using System.Web;
 using MediaService.BLL.DTO;
 using MediaService.BLL.Interfaces;
 using MediaService.DAL.Entities;
 using MediaService.DAL.Interfaces;
-using Microsoft.Azure;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Queue;
-using Microsoft.WindowsAzure.Storage.RetryPolicies;
-using Newtonsoft.Json;
 
 #endregion
 
@@ -30,15 +26,18 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         #region Properties
 
-        private IStorage Storage { get; }
+        private IBlobStorage Storage { get; }
+
+        private IQueueStorage Queue { get; }
 
         #endregion
 
         #region Constructor
 
-        public FileService(IUnitOfWork uow, IStorage storage) : base(uow)
+        public FileService(IUnitOfWork uow, IBlobStorage storage, IQueueStorage queue) : base(uow)
         {
             Storage = storage;
+            Queue = queue;
             Repository = uow.Files;
         }
 
@@ -46,9 +45,9 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         #region Methods
 
-        public Task<bool> ExistAsync(string name, Guid parentId)
+        public async Task<bool> ExistAsync(string name, Guid parentId)
         {
-            throw new NotImplementedException();
+            return await Context.Files.AnyAsync(f => f.Name == name && f.ParentId == parentId);
         }
 
         #region Select Methods
@@ -68,22 +67,6 @@ namespace MediaService.BLL.Services.ObjectsServices
             string ownerId = null
         )
         {
-            string appSetting = CloudConfigurationManager.GetSetting("DemoStorageAccount");
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(appSetting);
-            var queueMessage = new CloudQueueMessage(JsonConvert.SerializeObject(ownerId));
-            CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
-            CloudQueue queue = queueClient.GetQueueReference("messages");
-            queue.CreateIfNotExists();
-            queue.AddMessage(queueMessage);
-            var qro = new QueueRequestOptions
-            {
-                RetryPolicy = null,
-                EncryptionPolicy = null,
-                RequireEncryption = null,
-                LocationMode = null,
-                ServerTimeout = null,
-                MaximumExecutionTime = null
-            };
             var dirs = GetQuery(id, name, parentId, created, downloaded, modified, ownerId);
             return await Task.Run(() => DtoMapper.Map<IEnumerable<FileEntryDto>>(dirs.AsParallel().ToList()));
         }
@@ -104,16 +87,57 @@ namespace MediaService.BLL.Services.ObjectsServices
 
             parentDir.Modified = DateTime.Now;
 
-
             foreach (var fileDto in filesDto)
             {
                 var fileEntry = DtoMapper.Map<FileEntry>(fileDto);
+                var mimeType = MimeMapping.GetMimeMapping(fileEntry.Name);
+
                 fileEntry.Owner = parentDir.Owner;
                 fileEntry.Parent = parentDir;
                 await Context.Files.AddAsync(fileEntry);
                 await Context.SaveChangesAsync();
-                await Storage.UploadAsync(fileDto.FileStream, fileEntry.Id.ToString());
+                await Storage.UploadAsync(fileDto.FileStream, $"{fileEntry.Id}{Path.GetExtension(fileEntry.Name)}", mimeType);
             }
+        }
+
+        public async Task RenameAsync(FileEntryDto editedDirEntryDto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task DeleteAsync(Guid entryId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task DownloadWithJobAsync(IEnumerable<Guid> filesIds, Guid zipId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task DownloadAsync(IEnumerable<Guid> filesIds, Guid zipId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<string> GetLinkToFileAsync(string fileName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<string> GetLinkToFileAsync(Guid fileId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<Stream> GetFileThumbnailAsync(Guid fileId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task AddTagAsync(Guid fileId, string tagName)
+        {
+            throw new NotImplementedException();
         }
 
         public override void Add(FileEntryDto item)
@@ -130,15 +154,6 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         #region Update Methods
 
-        public void Update(FileEntryDto item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateAsync(FileEntryDto item)
-        {
-            throw new NotImplementedException();
-        }
 
         #endregion
 

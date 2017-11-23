@@ -33,7 +33,6 @@ namespace MediaService.DAL.Accessors
             return await _dbSet.FindAsync(key);
         }
 
-
         public IQueryable<TEntity> GetQuery()
         {
             return _dbSet.AsQueryable();
@@ -43,7 +42,11 @@ namespace MediaService.DAL.Accessors
         {
             return _dbSet.Where(predicate);
         }
-
+        
+        public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await _dbSet.AnyAsync(predicate);
+        }
 
         public IEnumerable<TEntity> GetData()
         {

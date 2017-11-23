@@ -1,19 +1,23 @@
 ﻿#region usings
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using MediaService.DAL.Interfaces;
 using Microsoft.Azure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.File;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
 
 #endregion
 
 namespace MediaService.DAL.Accessors
 {
-    public class AzureStorageBlobAccessor : IStorage
+    public class AzureStorageBlobAccessor : IBlobStorage
     {
         #region Constructors
 
@@ -32,8 +36,15 @@ namespace MediaService.DAL.Accessors
 
         private const string VideosContainerName = "videos";
 
-        //2 * 1024 * 1024 bytes or 2 MB
-        private const int BlockSize = 2_097_152;
+        private const int MaxAttempts = 1;
+
+        private const int MaxBlocksCount = 50000;
+
+        //Value: The size of a block, in bytes, ranging from between 16 KB and 100 MB inclusive.
+        private const int MaxBlockSize = 4_194_304;
+
+        //If blobs are small(less than 256 MB), keeping this value equal to 1 is advised.
+        private const int BytesToAddThread = 268_435_456;
 
         private static string _connectionString;
 
@@ -41,79 +52,183 @@ namespace MediaService.DAL.Accessors
 
         #region Methods
 
-        public void Upload(Stream file, string fileName)
+        #region Upload
+
+        public void Upload(Stream file, string fileName, string contentType)
         {
-            var blob = GetBlob(fileName);
+            var blob = PrepapreBlobToUpload(fileName, contentType);
             blob.UploadFromStream(file);
         }
 
-        public async Task UploadAsync(Stream file, string fileName)
+        public async Task UploadAsync(Stream file, string fileName, string contentType)
         {
-            var blob = GetBlob(fileName);
+            var blob = PrepapreBlobToUpload(fileName, contentType);
             await blob.UploadFromStreamAsync(file);
+            //var url = blob.Uri.ToString();
         }
 
-        public async Task UploadAsync(byte[] file, string fileName)
+        public async Task UploadAsync(byte[] file, string fileName, string contentType)
         {
-            var blob = GetBlob(fileName);
+            var blob = PrepapreBlobToUpload(fileName, contentType);
             await blob.UploadFromByteArrayAsync(file, 0, file.Length);
         }
 
-        public void UploadFileInBlocks(byte[] file, string fileName)
+        public void UploadFileInBlocks(byte[] file, string fileName, string contentType)
         {
-            var blob = GetBlob(fileName);
-
-            var requestOptions = new BlobRequestOptions
-            {
-                ParallelOperationThreadCount = 2,
-                RetryPolicy = new ExponentialRetry(TimeSpan.FromSeconds(2), 1)
-            };
-
-            blob.StreamWriteSizeInBytes = BlockSize;
-
+            PrepareBlobToUploadInBlocks(file.Length, fileName, contentType, out var blob, out var requestOptions);
             blob.UploadFromByteArray(file, 0, file.Length, null, requestOptions);
         }
 
-        //todo: Check if it works
-        public async Task UploadFileInBlocksAsync(byte[] file, string fileName)
+        public async Task UploadFileInBlocksAsync(byte[] file, string fileName, string contentType)
         {
-            var blob = GetBlob(fileName);
-
-            var requestOptions = new BlobRequestOptions
-            {
-                ParallelOperationThreadCount = 2,
-                RetryPolicy = new ExponentialRetry(TimeSpan.FromSeconds(2), 1)
-            };
-
-            blob.StreamWriteSizeInBytes = BlockSize;
-
+            PrepareBlobToUploadInBlocks(file.Length, fileName, contentType, out var blob, out var requestOptions);
             await blob.UploadFromByteArrayAsync(file, 0, file.Length, null, requestOptions, null);
         }
 
-        //todo: Check if it works
-        public async Task UploadFileInBlocksAsync(Stream file, string fileName)
+        public async Task UploadFileInBlocksAsync(Stream file, string fileName, string contentType)
         {
-            var blob = GetBlob(fileName);
-
-            var requestOptions = new BlobRequestOptions
-            {
-                ParallelOperationThreadCount = 2,
-                RetryPolicy = new ExponentialRetry(TimeSpan.FromSeconds(2), 1)
-            };
-
-            blob.StreamWriteSizeInBytes = BlockSize;
-
+            PrepareBlobToUploadInBlocks(file.Length, fileName, contentType, out var blob, out var requestOptions);
             await blob.UploadFromStreamAsync(file, null, requestOptions, null);
         }
 
         #endregion
 
+        #region Download
+
+        public async Task<(Stream blobStream, bool blobExist)> DownloadAsync(string blobName)
+        {
+            var blob = GetBlob(blobName);
+            var blobExist = await blob.ExistsAsync();
+            if (blobExist)
+            {
+                var blobStream = new MemoryStream();
+                await LoadBlobToStream(blobStream, blob);
+            }
+            return (null, false);
+        }
+
+        public async Task DownloadAsync(string blobName, Stream blobStream)
+        {
+            var blob = GetBlob(blobName);
+            await LoadBlobToStream(blobStream, blob);
+        }
+
+        public async Task<bool> BlobExistAsync(string blobName)
+        {
+            return await GetContainerReference()
+                        .GetBlockBlobReference(blobName)
+                        .ExistsAsync();
+        }
+
+        public string GetDirectLinkToBlob(string blobName, DateTimeOffset expiryTime, SharedAccessBlobPermissions permissions)
+        {
+            var blob = GetBlob(blobName);
+            if (blob.Exists())
+            {
+                var sasConstraints = new SharedAccessBlobPolicy
+                {
+                    SharedAccessStartTime = DateTime.UtcNow.AddMinutes(-5),
+                    SharedAccessExpiryTime = expiryTime,
+                    Permissions = permissions
+                };
+
+                var sasBlobToken = blob.GetSharedAccessSignature(sasConstraints);
+
+                return blob.Uri + sasBlobToken;
+            }
+
+            return null;
+        }
+
+        #endregion
+
+        #region Delete
+
+        public async Task DeleteAsync(string fileName)
+        {
+            var blob = GetBlob(fileName);
+            await blob.DeleteAsync();
+        }
+
+        #endregion
+
+        #endregion
+
         #region Help Methods
 
-        private static CloudBlockBlob GetBlob(string fileName)
+        private static async Task LoadBlobToStream(Stream blobStream, CloudBlockBlob blob)
+        {
+            var threadCount = (int)Math.Ceiling((double)blob.Properties.Length / BytesToAddThread);
+
+            var requestOptions = new BlobRequestOptions
+            {
+                SingleBlobUploadThresholdInBytes = (long)(blob.StreamWriteSizeInBytes * 1.6),
+                ParallelOperationThreadCount = threadCount,
+                RetryPolicy = new ExponentialRetry(TimeSpan.FromSeconds(2), MaxAttempts)
+            };
+
+            await blob.DownloadToStreamAsync(blobStream, null, requestOptions, null);
+        }
+
+        private static CloudBlockBlob PrepapreBlobToUpload(string fileName, string contentType)
+        {
+            var blob = GetBlob(fileName);
+            blob.Properties.ContentType = contentType;
+            blob.DeleteIfExists();
+
+            return blob;
+        }
+
+        private static void PrepareBlobToUploadInBlocks(long fileLenght, string fileName, string contentType, out CloudBlockBlob blob, out BlobRequestOptions requestOptions)
+        {
+            blob = PrepapreBlobToUpload(fileName, contentType);
+            blob.StreamWriteSizeInBytes = GetBlockSize(fileLenght);
+
+            var threadCount = (int)Math.Ceiling((double)fileLenght / BytesToAddThread);
+
+            requestOptions = new BlobRequestOptions
+            {
+                SingleBlobUploadThresholdInBytes = (long)(blob.StreamWriteSizeInBytes * 1.6),
+                ParallelOperationThreadCount = threadCount,
+                RetryPolicy = new ExponentialRetry(TimeSpan.FromSeconds(2), MaxAttempts)
+            };
+        }
+
+        private static int GetBlockSize(long fileSize)
+        {
+            long blocksize = 1_024_000;
+            long blockCount = GetBlockCount(fileSize, blocksize);
+
+            while (blockCount > MaxBlocksCount - 1)
+            {
+                blocksize += 1_024_000;
+                blockCount = GetBlockCount(fileSize, blocksize);
+            }
+
+            if (blocksize > MaxBlockSize)
+            {
+                throw new ArgumentException("Blob too big to upload.");
+            }
+
+            return (int)blocksize;
+        }
+
+        private static long GetBlockCount(long fileSize, long blocksize)
+        {
+            //long blockCount = (int)Math.Floor((double)fileSize / blocksize) + 1;
+            return (int)Math.Ceiling((double)fileSize / blocksize);
+        }
+
+        private static string GetBase64BlockId(int blockId)
+        {
+            return Convert.ToBase64String(Encoding.ASCII.GetBytes($"{blockId:0000000}"));
+        }
+
+        private static CloudBlockBlob GetBlob(string blobName)
         {
             var container = GetContainerReference();
-            var blob = container.GetBlockBlobReference(fileName);
+            var blob = container.GetBlockBlobReference(blobName);
+
             return blob;
         }
 

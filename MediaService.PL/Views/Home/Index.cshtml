@@ -1,4 +1,6 @@
 ﻿@using MediaService.BLL.DTO
+@using MediaService.PL.Models.ObjectViewModels.DirectoryViewModels
+@using MediaService.PL.Models.ObjectViewModels.FileViewModels
 ﻿@model DirectoryEntryDto
 @{
     ViewBag.Title = "Home Page";
@@ -63,8 +65,8 @@ else
 
     <script>
         $.ajax({
-            url: '@Url.Action("DirectoriesList", "Directory", new {parentId = Model.Id})',
-            type: "POST",
+            url: '@Url.Action("DirectoriesList", "Directory", new DirectoriesListViewModel {ParentId = Model.Id})',
+            type: "GET",
             contentType: "text/html; charset=utf-8",
             success: function(data) {
                 $('#directories').html(data);
@@ -72,8 +74,8 @@ else
         });
 
         $.ajax({
-            url: '@Url.Action("FilesList", "File", new {parentId = Model.Id})',
-            type: "POST",
+            url: '@Url.Action("FilesList", "File", new FilesListViewModel { ParentId = Model.Id })',
+            type: "GET",
             contentType: "text/html; charset=utf-8",
             success: function(data) {
                 $('#files').html(data);

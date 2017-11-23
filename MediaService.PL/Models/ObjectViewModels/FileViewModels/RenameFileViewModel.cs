@@ -11,6 +11,10 @@ namespace MediaService.PL.Models.ObjectViewModels.FileViewModels
         public Guid Id { get; set; }
 
         [Required]
+        [HiddenInput(DisplayValue = false)]
+        public Guid ParentId { get; set; }
+
+        [Required]
         [StringLength(128, ErrorMessage = "Max name lenght is 50 symbols")]
         [Display(Name = "Name")]
         public string Name { get; set; }
