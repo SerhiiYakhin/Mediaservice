@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Threading.Tasks;
+using MediaService.DAL.Accessors.Enums;
+using MediaService.DAL.Interfaces;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace MediaService.DAL.Accessors
 {
-    class AzureStorageQueueAccessor
+    public class AzureStorageQueueAccessor : IQueueStorage
     {
         #region Constructors
 
@@ -17,43 +20,56 @@ namespace MediaService.DAL.Accessors
 
         #region Fields
 
-        private const string ContainerName = "files";
-
-        private const string ImagesContainerName = "images";
-
-        private const string VideosContainerName = "videos";
-
         private const string DownloadQueueName = "download";
-        private const string ThumbnailQueueName = "thumbnail";
+
         private const string RepositoryQueueName = "repository";
 
-        //2 * 1024 * 1024 bytes or 2 MB
-        private const int BlockSize = 2_097_152;
-
         private static string _connectionString;
+
+        private readonly TimeSpan _timeToLive = new TimeSpan(0, 1, 0);
 
         #endregion
 
         #region Methods
 
-        public void AddMessage(string messageContent)
+        public void AddMessage(string messageContent, QueueJob queueJob)
         {
-            var queue = GetQueue(DownloadQueueName);
+            var queue = GetQueue(queueJob);
             var message = new CloudQueueMessage(messageContent);
 
-            queue.AddMessage(message, new TimeSpan(0, 1, 0));
+            queue.AddMessage(message, _timeToLive);
+        }
+
+        public async Task AddMessageAsync(string messageContent, QueueJob queueJob)
+        {
+            var queue = GetQueue(queueJob);
+            var message = new CloudQueueMessage(messageContent);
+
+            await queue.AddMessageAsync(message, _timeToLive, null, null, null);
         }
 
         #endregion
 
         #region Help Methods
 
-        private static CloudQueue GetQueue(string queueName)
+        private static CloudQueue GetQueue(QueueJob queueJob)
         {
             var storageAccount = CloudStorageAccount.Parse(_connectionString);
             var queueClient = storageAccount.CreateCloudQueueClient();
+            CloudQueue queue;
 
-            var queue = queueClient.GetQueueReference(queueName);
+            switch (queueJob)
+            {
+                case QueueJob.Download:
+                    queue = queueClient.GetQueueReference(DownloadQueueName);
+                    break;
+                case QueueJob.DataOperation:
+                    queue = queueClient.GetQueueReference(RepositoryQueueName);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(queueJob), queueJob, "There is no such queue to work with");
+            }
+
             queue.CreateIfNotExists();
             return queue;
         }

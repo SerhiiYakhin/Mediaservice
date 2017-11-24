@@ -48,12 +48,12 @@ namespace MediaService.PL.Tests.Controllers
     //            Modified = DateTime.Now.AddDays(-5),
     //            Created = DateTime.Now.AddDays(-10),
     //            Downloaded = DateTime.Now.AddDays(-10),
-    //            Id = new Guid(),
+    //            Id = Guid.NewGuid(),
     //            NodeLevel = 5,
     //            Owner = new User { Email = "Opa@gmail.com" },
     //            OwnerId = "sdf",
     //            Parent = new DirectoryEntry { Name = "root" },
-    //            ParentId = new Guid(),
+    //            ParentId = Guid.NewGuid(),
     //        };
     //        // Act
     //        var result = mapper.Map<DirectoryEntryDto, DirectoryEntry>(dirDto, dirEntity);

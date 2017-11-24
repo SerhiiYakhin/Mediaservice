@@ -10,7 +10,6 @@ using Microsoft.AspNet.Identity.Owin;
 using System;
 using System.Data;
 using System.Data.Entity.Infrastructure;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -86,25 +85,34 @@ namespace MediaService.PL.Controllers
         #endregion
 
         #region Actions
-        // GET: /Directory/DirectoriesList
+
+        // Get: /Directory/DirectoriesList
         [HttpGet]
+        [ErrorHandle(ExceptionType = typeof(DataException), View = "Errors/Error")]
         public async Task<ActionResult> DirectoriesList(DirectoriesListViewModel model)
         {
-            var directories = await DirectoryService.GetByParentIdAsync(model.ParentId);
-            switch (model.OrderType)
+            try
             {
-                case OrderType.BySize:
-                case OrderType.ByName:
-                    directories = directories.OrderBy(d => d.Name);
-                    break;
-                case OrderType.ByCreationTime:
-                    directories = directories.OrderBy(d => d.Created);
-                    break;
-                case OrderType.ByUploadingTime:
-                    directories = directories.OrderBy(d => d.Downloaded);
-                    break;
+                var directories = await DirectoryService.GetByParentIdAsync(model.ParentId);
+                switch (model.OrderType)
+                {
+                    case OrderType.BySize:
+                    case OrderType.ByName:
+                        directories = directories.OrderBy(d => d.Name);
+                        break;
+                    case OrderType.ByCreationTime:
+                        directories = directories.OrderBy(d => d.Created);
+                        break;
+                    case OrderType.ByUploadingTime:
+                        directories = directories.OrderBy(d => d.Downloaded);
+                        break;
+                }
+                return PartialView("_DirectoriesList", directories);
             }
-            return PartialView("_DirectoriesList", directories);
+            catch (Exception ex)
+            {
+                throw new DataException("We can't display your files at this moment, we're sorry, try again later", ex);
+            }
         }
 
         [HttpGet]
@@ -126,8 +134,7 @@ namespace MediaService.PL.Controllers
                 {
                     var newFolder = Mapper.Map<DirectoryEntryDto>(model);
                     await DirectoryService.AddAsync(newFolder);
-                    //return Json(new { success = true }, JsonRequestBehavior.AllowGet);
-                    return RedirectToAction("Index", "Home");
+                    return Json(new { success = true }, JsonRequestBehavior.AllowGet);
                 }
                 ModelState.AddModelError("Name", "The folder with this name is already exist in this directory");
             }
@@ -138,17 +145,17 @@ namespace MediaService.PL.Controllers
             }
 
             //We get here if were some model validation errors
-            return View(model);
+            return PartialView("_CreateDirectory", model);
         }
 
         [HttpPost]
         [ErrorHandle(ExceptionType = typeof(DataException), View = "Errors/Error")]
-        public ActionResult Download(DownloadDirectoryViewModel model)
+        public async Task<ActionResult> Download(DownloadDirectoryViewModel model)
         {
             try
             {
-                // TODO: Add insert logic here
-                var zipId = new Guid();
+                var zipId = Guid.NewGuid();
+                await DirectoryService.DownloadWithJobAsync(model.Id, zipId);
                 return Json(new { success = true, zipId, zipName = model.Name }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
@@ -161,7 +168,15 @@ namespace MediaService.PL.Controllers
         [HttpGet]
         public ActionResult DownloadZip(Guid zipId, string zipName)
         {
-            return File(new MemoryStream(), "application/zip", $"{zipName}.zip");
+            //var zipStream = await DirectoryService.DownloadZip($"{zipId}.zip");
+            //if (zipStream.blobExist)
+            //{
+            //    return File(zipStream.blobStream, "application/zip", $"{zipName}.zip");
+            //}
+            var link = FilesService.GetLinkToZip($"{zipId}.zip");
+            return link == null
+                ? Json(new { success = false }, JsonRequestBehavior.AllowGet)
+                : Json(new { success = true, link }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
@@ -180,7 +195,7 @@ namespace MediaService.PL.Controllers
                 if (!await DirectoryService.ExistAsync(model.Name, model.ParentId))
                 {
                     var editedFolder = Mapper.Map<DirectoryEntryDto>(model);
-                    await DirectoryService.UpdateAsync(editedFolder);
+                    await DirectoryService.RenameAsync(editedFolder);
                     return Json(new { success = true }, JsonRequestBehavior.AllowGet);
                 }
                 ModelState.AddModelError("Name", "The folder with this name is already exist in this directory");
@@ -205,12 +220,11 @@ namespace MediaService.PL.Controllers
 
         [HttpPost]
         [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
-        public ActionResult Delete(DeleteDirectoryViewModel model)
+        public async Task<ActionResult> Delete(DeleteDirectoryViewModel model)
         {
             try
             {
-                // TODO: Add insert logic here
-
+                await DirectoryService.DeleteWithJobAsync(model.Id);
                 return Json(new { success = true }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)

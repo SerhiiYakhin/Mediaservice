@@ -13,8 +13,5 @@ namespace MediaService.PL.Models.ObjectViewModels.DirectoryViewModels
 
         [Required]
         public OrderType OrderType { get; set; }
-
-        [Required]
-        public SearchType SearchType { get; set; }
     }
 }

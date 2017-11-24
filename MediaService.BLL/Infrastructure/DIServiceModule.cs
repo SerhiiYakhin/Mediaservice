@@ -22,7 +22,8 @@ namespace MediaService.BLL.Infrastructure
         public override void Load()
         {
             Bind<IUnitOfWork>().To<EFUnitOfWork>().WithConstructorArgument(_dbConnectionString);
-            Bind<IStorage>().To<AzureStorageBlobAccessor>().WithConstructorArgument(_storageConnection);
+            Bind<IBlobStorage>().To<AzureStorageBlobAccessor>().WithConstructorArgument(_storageConnection);
+            Bind<IQueueStorage>().To<AzureStorageQueueAccessor>().WithConstructorArgument(_storageConnection);
         }
     }
 }

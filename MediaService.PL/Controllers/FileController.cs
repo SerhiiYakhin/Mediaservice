@@ -1,9 +1,12 @@
-﻿using AutoMapper;
+﻿#region usings
+
+using AutoMapper;
 using MediaService.BLL.BusinessModels;
 using MediaService.BLL.DTO;
 using MediaService.BLL.DTO.Enums;
 using MediaService.BLL.Interfaces;
 using MediaService.PL.Models.IdentityModels.Managers;
+using MediaService.PL.Models.ObjectViewModels.Enums;
 using MediaService.PL.Models.ObjectViewModels.FileViewModels;
 using MediaService.PL.Utils;
 using MediaService.PL.Utils.Attributes.ErrorHandler;
@@ -12,14 +15,13 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity.Infrastructure;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Management;
 using System.Web.Mvc;
-using MediaService.PL.Models.ObjectViewModels.Enums;
+
+#endregion
 
 namespace MediaService.PL.Controllers
 {
@@ -97,44 +99,31 @@ namespace MediaService.PL.Controllers
         [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
         public async Task<ActionResult> Search(SearchFilesViewModel model)
         {
-            IEnumerable<FileEntryDto> files;
             try
             {
-                //todo: Make special methods in FileService and complete this action
-                switch (model.SearchType)
+                var files = await FilesService.SearchFilesAsync(model.ParentId, model.SearchType, model.SearchValue);
+
+                switch (model.OrderType)
                 {
-                    case SearchType.ByName:
-                    //files = await FilesService.GetByAsync(name: model.SearchValue);
-                    //break;
-                    case SearchType.ByTag:
-                    //files = await FilesService.GetByAsync(name: model.SearchValue);
-                    //break;
-                    default:
-                        files = await FilesService.GetByParentIdAsync(model.ParentId);
+                    case OrderType.BySize:
+                        files = files.OrderBy(d => d.Size);
+                        break;
+                    case OrderType.ByName:
+                        files = files.OrderBy(d => d.Name);
+                        break;
+                    case OrderType.ByCreationTime:
+                        files = files.OrderBy(d => d.Created);
+                        break;
+                    case OrderType.ByUploadingTime:
+                        files = files.OrderBy(d => d.Downloaded);
                         break;
                 }
+                return PartialView("_FilesList", files);
             }
             catch (Exception e)
             {
                 throw new DataException("We are sorry, but search function is unavaible in this time, try again later", e);
             }
-
-            switch (model.OrderType)
-            {
-                case OrderType.BySize:
-                    files = files.OrderBy(d => d.Size);
-                    break;
-                case OrderType.ByName:
-                    files = files.OrderBy(d => d.Name);
-                    break;
-                case OrderType.ByCreationTime:
-                    files = files.OrderBy(d => d.Created);
-                    break;
-                case OrderType.ByUploadingTime:
-                    files = files.OrderBy(d => d.Downloaded);
-                    break;
-            }
-            return PartialView("_FilesList", files);
         }
 
         [HttpGet]
@@ -156,6 +145,7 @@ namespace MediaService.PL.Controllers
                 {
                     var filesToUpload = GetFilesToUpload(model.Files);
                     await FilesService.AddRangeAsync(filesToUpload, model.ParentId);
+                    return Json(new { success = true }, JsonRequestBehavior.AllowGet);
                 }
                 catch (Exception ex)
                 {
@@ -163,27 +153,27 @@ namespace MediaService.PL.Controllers
                         "New files can't be uploaded at this moment, we're sorry, try again later", ex);
                 }
             }
-
-            //todo: Make return for result form with uploaded files and suggestion for tags addition
-            return await FilesList(model.ParentId);
-            //return RedirectToAction("FilesList", new { parentId });
+            return Json(new { success = false }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
-        public ActionResult Download(Guid fileId)
+        public async Task<ActionResult> Download(Guid fileId, int fileSize)
         {
-
-            return File(new MemoryStream(), "image/png", "picture.jpg");
+            var linkExpirationTime = fileSize / 10;
+            var link = await FilesService.GetPublicLinkToFileAsync(fileId, DateTimeOffset.Now.AddMilliseconds(linkExpirationTime));
+            return link == null
+                ? Json(new { success = false }, JsonRequestBehavior.AllowGet)
+                : Json(new { success = true, link }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
         [ErrorHandle(ExceptionType = typeof(DataException), View = "Errors/Error")]
-        public ActionResult DownloadFiles(IEnumerable<Guid> filesId)
+        public async Task<ActionResult> DownloadFiles(DownloadFilesViewModel model)
         {
             try
             {
-                // TODO: Add insert logic here
-                var zipId = new Guid();
+                var zipId = Guid.NewGuid();
+                await FilesService.DownloadWithJobAsync(model.FilesIds, zipId);
                 return Json(new { success = true, zipId}, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
@@ -194,19 +184,39 @@ namespace MediaService.PL.Controllers
         }
 
         [HttpGet]
-        public ActionResult DownloadZip(Guid zipId)
+        public ActionResult DownloadZip(Guid zipId, string zipName)
         {
-            return File(new MemoryStream(), "application/zip", "FilesFromLux.zip");
+            var link = FilesService.GetLinkToZip($"{zipId}.zip");
+            return link == null
+                ? Json(new { success = false }, JsonRequestBehavior.AllowGet)
+                : Json(new { success = true, link }, JsonRequestBehavior.AllowGet);
         }
 
-        // POST: /File/FilesList
+        // Get: /File/FilesList
         [HttpGet]
         [ErrorHandle(ExceptionType = typeof(DataException), View = "Errors/Error")]
-        public async Task<ActionResult> FilesList(Guid parentId)
+        public async Task<ActionResult> FilesList(FilesListViewModel model)
         {
             try
             {
-                var files = await FilesService.GetByParentIdAsync(parentId);
+                var files = await FilesService.GetByParentIdAsync(model.ParentId);
+
+                switch (model.OrderType)
+                {
+                    case OrderType.BySize:
+                        files = files.OrderBy(f => f.Size);
+                        break;
+                    case OrderType.ByName:
+                        files = files.OrderBy(f => f.Name);
+                        break;
+                    case OrderType.ByCreationTime:
+                        files = files.OrderBy(f => f.Created);
+                        break;
+                    case OrderType.ByUploadingTime:
+                        files = files.OrderBy(f => f.Downloaded);
+                        break;
+                }
+
                 return PartialView("_FilesList", files);
             }
             catch (Exception e)
@@ -226,45 +236,52 @@ namespace MediaService.PL.Controllers
 
         [HttpPost]
         [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
-        public ActionResult AddTag(AddTagViewModel model)
+        public async Task<ActionResult> AddTag(AddTagViewModel model)
         {
+            if (!ModelState.IsValid)
+                return PartialView("_AddTag", model);
             try
             {
-                // TODO: Add insert logic here
-
+                await FilesService.AddTagAsync(model.FileId, model.Name);
                 return Json(new { success = true }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception e)
             {
                 throw new DbUpdateException(
                     "We can't add tag to this file at this moment, we're sorry, try again later", e);
-                //return PartialView("_AddTag", model);
             }
+            return PartialView("_AddTag", model);
         }
 
         [HttpGet]
-        public ActionResult Rename(Guid fileId, string fileName)
+        public ActionResult Rename(Guid fileId, Guid parentId, string fileName)
         {
-            var model = new RenameFileViewModel { Id = fileId, Name = fileName};
+            var model = new RenameFileViewModel { Id = fileId, ParentId = parentId, Name = fileName};
             return PartialView("_RenameFile", model);
         }
 
         [HttpPost]
         [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
-        public ActionResult Rename(RenameFileViewModel model)
+        public async Task<ActionResult> Rename(RenameFileViewModel model)
         {
+            if (!ModelState.IsValid)
+                return PartialView("_RenameFile", model);
             try
             {
-                // TODO: Add insert logic here
-
-                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                if (!await FilesService.ExistAsync(model.Name, model.ParentId))
+                {
+                    var editedFile = Mapper.Map<FileEntryDto>(model);
+                    await FilesService.RenameAsync(editedFile);
+                    return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                }
+                ModelState.AddModelError("Name", "The file with this name is already exist in this directory");
             }
             catch (Exception e)
             {
                 throw new DbUpdateException(
                     "This file can't be renamed this file at this moment, we're sorry, try again later", e);
-                //return PartialView("_RenameFile", model);
             }
+            return PartialView("_RenameFile", model);
         }
 
         [HttpGet]
@@ -277,46 +294,21 @@ namespace MediaService.PL.Controllers
 
         [HttpPost]
         [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
-        public ActionResult Delete(DeleteFileViewModel model)
+        public async Task<ActionResult> Delete(DeleteFileViewModel model)
         {
+            if (!ModelState.IsValid)
+                return PartialView("_DeleteFile", model);
             try
             {
-                // TODO: Add insert logic here
-
+                await FilesService.DeleteAsync(model.FileId);
                 return Json(new { success = true }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception e)
             {
                 throw new DbUpdateException(
                     "This file can't be deleted this file at this moment, we're sorry, try again later", e);
-                //return PartialView("_DeleteFile", model);
             }
-        }
-
-        // POST: /File/DeleteFile
-        //[HttpPost]
-        //[ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Error")]
-        //public async Task<ActionResult> DeleteFile(Guid fileId)
-        //{
-        //    try
-        //    {
-        //        await FilesService.AddAsync(newFolder);
-        //        return RedirectToAction("Index", new { parentId = model.ParentId });
-        //        ModelState.AddModelError("Name", "The folder with this name is already exist in this directory");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new DbUpdateException("We can't create new folder for you at this moment, we're sorry, try again later", ex);
-        //    }
-
-        //    //We get here if were some model validation errors
-        //    return PartialView("_CreateFolder", model);
-        //}
-
-        [HttpGet]
-        public ActionResult GetThumbnailImg(Stream img)
-        {
-            return new FileStreamResult(img, "image/png");
+            return PartialView("_DeleteFile", model);
         }
 
         #endregion
@@ -340,7 +332,6 @@ namespace MediaService.PL.Controllers
                 var fileEntryDto = new FileEntryDto
                 {
                     Name = fname,
-                    //Created = DateTime.Now,
                     Size = file.ContentLength,
                     FileType = fileType,
                     FileStream = file.InputStream

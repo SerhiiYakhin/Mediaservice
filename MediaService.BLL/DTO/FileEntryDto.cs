@@ -29,7 +29,8 @@ namespace MediaService.BLL.DTO
 
         public Stream FileStream { get; set; }
 
-        public Stream FileThumbnailStream { get; set; }
+        [DataMember]
+        public string FileThumbnailLink { get; set; }
 
         [DataMember]
         public string OwnerId { get; set; }

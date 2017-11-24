@@ -6,6 +6,7 @@ using MediaService.PL.Models.AccountViewModels;
 using MediaService.PL.Models.IdentityModels;
 using MediaService.PL.Models.ObjectViewModels;
 using MediaService.PL.Models.ObjectViewModels.DirectoryViewModels;
+using MediaService.PL.Models.ObjectViewModels.FileViewModels;
 
 #endregion
 
@@ -23,6 +24,10 @@ namespace MediaService.PL.Utils
                 cfg.CreateMap<RegisterViewModel, ApplicationUser>();
                 cfg.CreateMap<ApplicationUser, UserDto>();
                 cfg.CreateMap<CreateDirectoryViewModel, DirectoryEntryDto>();
+                cfg.CreateMap<RenameFileViewModel, FileEntryDto>();
+                cfg.CreateMap<RenameDirectoryViewModel, DirectoryEntryDto>();
+
+                //cfg.CreateMap<AddTagViewModel, TagDto>();
             });
         }
 

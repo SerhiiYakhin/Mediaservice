@@ -1,14 +1,13 @@
 ﻿@using MediaService.BLL.DTO.Enums
 ﻿@model IEnumerable<MediaService.BLL.DTO.FileEntryDto>
 
-@foreach (var item in Model)
-{
-<div class="row">
-    <div class="folderItems">
-        @Html.DisplayFor(modelItem => item.Name)
-    </div>
-</div>
-}
+<table class="table">
+    <tr>
+        <th>
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
         @*<th>
             @Html.DisplayNameFor(model => model.ParentId)
         </th>
@@ -24,7 +23,7 @@
         <th>
             @Html.DisplayNameFor(model => model.Modified)
         </th>*@
-        @*<th></th>
+        <th></th>
     </tr>
 
     @foreach (var item in Model)
@@ -38,8 +37,8 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <th>
-                <img src='@Url.Action("GetThumbnailImg", "File", new {img = item.FileThumbnailStream })' />
-            </th>*@
+                <img src='@item.FileThumbnailLink' />
+            </th>
             @*<td>
                 @Html.DisplayFor(modelItem => item.ParentId)
             </td>
@@ -55,7 +54,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Modified)
             </td>*@
-            @*<td>
+            <td>
                 @Html.ActionLink("Add Tag", "AddTag", "Home", new {id = item.Id}) |
                 @Html.ActionLink("Rename", "Rename", "Home", new {id = item.Id}) |
                 @Html.ActionLink("Delete", "Delete", "Home", new { id = item.Id }) |
@@ -64,4 +63,4 @@
         </tr>
     }
 
-</table>*@
+</table>

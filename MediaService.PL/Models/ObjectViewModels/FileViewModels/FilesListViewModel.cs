@@ -1,17 +1,17 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Web;
 using System.Web.Mvc;
+using MediaService.PL.Models.ObjectViewModels.Enums;
 
 namespace MediaService.PL.Models.ObjectViewModels.FileViewModels
 {
-    public class UploadFilesViewModel
+    public class FilesListViewModel
     {
         [Required]
         [HiddenInput(DisplayValue = false)]
         public Guid ParentId { get; set; }
 
         [Required]
-        public HttpFileCollectionBase Files { get; set; }
+        public OrderType OrderType { get; set; }
     }
 }

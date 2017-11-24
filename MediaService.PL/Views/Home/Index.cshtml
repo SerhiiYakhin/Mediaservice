@@ -2,6 +2,8 @@
 
 @using MediaService.PL.Models.ObjectViewModels.FileViewModels
 @using MediaService.BLL.DTO
+@using MediaService.PL.Models.ObjectViewModels.DirectoryViewModels
+@using MediaService.PL.Models.ObjectViewModels.FileViewModels
 ﻿@model DirectoryEntryDto
 @{
     ViewBag.Title = "Home Page";
@@ -158,15 +160,15 @@
         $(document).ready(function() {
             $('#btnUpload').click(function() {
 
-                // Checking whether FormData is available in browser
+                // Checking whether FormData is available in browser  
                 if (window.FormData !== undefined) {
 
                     var fileUpload = $("#FileUpload").get(0);
                     var files = fileUpload.files;
-                    // Create FormData object
+                    // Create FormData object  
                     var fileData = new FormData();
 
-                    // Looping over all files and add it to FormData object
+                    // Looping over all files and add it to FormData object  
                     for (var i = 0; i < files.length; i++) {
                         fileData.append(files[i].name, files[i]);
                     }
