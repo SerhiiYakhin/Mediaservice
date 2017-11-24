@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web;
 using System.Web.Mvc;
@@ -12,6 +13,6 @@ namespace MediaService.PL.Models.ObjectViewModels.FileViewModels
         public Guid ParentId { get; set; }
 
         [Required]
-        public HttpFileCollectionBase Files { get; set; }
+        public IEnumerable<HttpPostedFileBase> Files { get; set; }
     }
 }
