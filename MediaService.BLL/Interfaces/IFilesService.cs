@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using MediaService.BLL.DTO;
+using MediaService.BLL.DTO.Enums;
 
 #endregion
 
@@ -14,7 +15,7 @@ namespace MediaService.BLL.Interfaces
     {
         Task AddRangeAsync(IEnumerable<FileEntryDto> files, Guid parentId);
 
-        Task RenameAsync(FileEntryDto editedDirEntryDto);
+        Task RenameAsync(FileEntryDto editedFileEntryDto);
 
         Task DeleteAsync(Guid entryId);
 
@@ -22,12 +23,12 @@ namespace MediaService.BLL.Interfaces
 
         Task DownloadAsync(IEnumerable<Guid> filesIds, Guid zipId);
 
-        Task<string> GetLinkToFileAsync(string fileName);
+        string GetLinkToZip(string fileName);
 
-        Task<string> GetLinkToFileAsync(Guid fileId);
-
-        Task<Stream> GetFileThumbnailAsync(Guid fileId);
+        Task<string> GetPublicLinkToFileAsync(Guid fileId, DateTimeOffset expiryTime);
 
         Task AddTagAsync(Guid fileId, string tagName);
+
+        Task<IEnumerable<FileEntryDto>> SearchFilesAsync(Guid modelParentId, SearchType modelSearchType, string modelSearchValue);
     }
 }

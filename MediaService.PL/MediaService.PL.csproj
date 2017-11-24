@@ -225,7 +225,6 @@
     <Compile Include="Models\ObjectViewModels\DirectoryViewModels\DownloadDirectoryViewModel.cs" />
     <Compile Include="Models\ObjectViewModels\Enums\OrderType.cs" />
     <Compile Include="Models\ObjectViewModels\DirectoryViewModels\RenameDirectoryViewModel.cs" />
-    <Compile Include="Models\ObjectViewModels\Enums\SearchType.cs" />
     <Compile Include="Models\ObjectViewModels\FileViewModels\AddTagViewModel.cs" />
     <Compile Include="Models\ObjectViewModels\DirectoryViewModels\CreateDirectoryViewModel.cs" />
     <Compile Include="Models\ObjectViewModels\FileViewModels\DeleteFileViewModel.cs" />

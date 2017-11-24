@@ -4,7 +4,6 @@
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Thumbnail)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Name)
@@ -38,7 +37,7 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <th>
-                <img src='@Url.Action("GetThumbnailImg", "File", new {img = item.FileThumbnailStream })' />
+                <img src='@item.FileThumbnailLink' />
             </th>
             @*<td>
                 @Html.DisplayFor(modelItem => item.ParentId)

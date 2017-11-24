@@ -1,4 +1,4 @@
-﻿namespace MediaService.PL.Models.ObjectViewModels.Enums
+﻿namespace MediaService.BLL.DTO.Enums
 {
     public enum SearchType
     {

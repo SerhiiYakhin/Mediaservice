@@ -26,6 +26,9 @@ namespace MediaService.DAL.Entities
         [Required]
         public int Size { get; set; }
 
+        [StringLength(256)]
+        public string FileThumbnailLink { get; set; }
+
         [Required]
         public FileType FileType { get; set; }
 

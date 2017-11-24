@@ -166,17 +166,17 @@ namespace MediaService.PL.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> DownloadZip(Guid zipId, string zipName)
+        public ActionResult DownloadZip(Guid zipId, string zipName)
         {
             //var zipStream = await DirectoryService.DownloadZip($"{zipId}.zip");
             //if (zipStream.blobExist)
             //{
             //    return File(zipStream.blobStream, "application/zip", $"{zipName}.zip");
             //}
-            var link = await FilesService.GetLinkToFileAsync($"{zipId}.zip");
+            var link = FilesService.GetLinkToZip($"{zipId}.zip");
             return link == null
-                ? Json(new {success = false}, JsonRequestBehavior.AllowGet)
-                : Json(new {success = true, link}, JsonRequestBehavior.AllowGet);
+                ? Json(new { success = false }, JsonRequestBehavior.AllowGet)
+                : Json(new { success = true, link }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]

@@ -169,7 +169,7 @@ namespace MediaService.BLL.Services.ObjectsServices
 
             if (currDirectoryEntry == null)
             {
-                throw new InvalidDataException("Can't find parent folder user with this Id in database");
+                throw new InvalidDataException("Can't find user's folder with this Id in database");
             }
 
             currDirectoryEntry.Parent.Modified = DateTime.Now;
@@ -255,16 +255,17 @@ namespace MediaService.BLL.Services.ObjectsServices
                 throw new InvalidDataException("Can't find parent folder user with this Id in database");
             }
 
-            using (var fs = new FileStream($"{zipId}.zip", FileMode.OpenOrCreate))
+            var zipName = $"{zipId}.zip";
+            using (var fs = new FileStream(zipName, FileMode.OpenOrCreate))
             {
                 using (ZipArchive archive = new ZipArchive(fs, ZipArchiveMode.Create, false))
                 {
                     await WriteToFolderAsync(directoryId, archive, currDirectoryEntry.Name);
                 }
                 fs.Position = 0;
-                await Storage.UploadFileInBlocksAsync(fs, $"{zipId}.zip", "application/zip");
+                await Storage.UploadFileInBlocksAsync(fs, zipName, "application/zip");
             }
-            File.Delete($"{zipId}.zip");
+            File.Delete(zipName);
         }
 
         private async Task WriteToFolderAsync(Guid dirId, ZipArchive archive, string path)

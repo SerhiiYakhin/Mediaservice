@@ -99,44 +99,31 @@ namespace MediaService.PL.Controllers
         [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
         public async Task<ActionResult> Search(SearchFilesViewModel model)
         {
-            IEnumerable<FileEntryDto> files;
             try
             {
-                //todo: Make special methods in FileService and complete this action
-                switch (model.SearchType)
+                var files = await FilesService.SearchFilesAsync(model.ParentId, model.SearchType, model.SearchValue);
+
+                switch (model.OrderType)
                 {
-                    case SearchType.ByName:
-                    //files = await FilesService.GetByAsync(name: model.SearchValue);
-                    //break;
-                    case SearchType.ByTag:
-                    //files = await FilesService.GetByAsync(name: model.SearchValue);
-                    //break;
-                    default:
-                        files = await FilesService.GetByParentIdAsync(model.ParentId);
+                    case OrderType.BySize:
+                        files = files.OrderBy(d => d.Size);
+                        break;
+                    case OrderType.ByName:
+                        files = files.OrderBy(d => d.Name);
+                        break;
+                    case OrderType.ByCreationTime:
+                        files = files.OrderBy(d => d.Created);
+                        break;
+                    case OrderType.ByUploadingTime:
+                        files = files.OrderBy(d => d.Downloaded);
                         break;
                 }
+                return PartialView("_FilesList", files);
             }
             catch (Exception e)
             {
                 throw new DataException("We are sorry, but search function is unavaible in this time, try again later", e);
             }
-
-            switch (model.OrderType)
-            {
-                case OrderType.BySize:
-                    files = files.OrderBy(d => d.Size);
-                    break;
-                case OrderType.ByName:
-                    files = files.OrderBy(d => d.Name);
-                    break;
-                case OrderType.ByCreationTime:
-                    files = files.OrderBy(d => d.Created);
-                    break;
-                case OrderType.ByUploadingTime:
-                    files = files.OrderBy(d => d.Downloaded);
-                    break;
-            }
-            return PartialView("_FilesList", files);
         }
 
         [HttpGet]
@@ -170,9 +157,10 @@ namespace MediaService.PL.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> Download(Guid fileId)
+        public async Task<ActionResult> Download(Guid fileId, int fileSize)
         {
-            var link = await FilesService.GetLinkToFileAsync(fileId);
+            var linkExpirationTime = fileSize / 10;
+            var link = await FilesService.GetPublicLinkToFileAsync(fileId, DateTimeOffset.Now.AddMilliseconds(linkExpirationTime));
             return link == null
                 ? Json(new { success = false }, JsonRequestBehavior.AllowGet)
                 : Json(new { success = true, link }, JsonRequestBehavior.AllowGet);
@@ -196,9 +184,9 @@ namespace MediaService.PL.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> DownloadZip(Guid zipId, string zipName)
+        public ActionResult DownloadZip(Guid zipId, string zipName)
         {
-            var link = await FilesService.GetLinkToFileAsync($"{zipId}.zip");
+            var link = FilesService.GetLinkToZip($"{zipId}.zip");
             return link == null
                 ? Json(new { success = false }, JsonRequestBehavior.AllowGet)
                 : Json(new { success = true, link }, JsonRequestBehavior.AllowGet);
@@ -212,6 +200,7 @@ namespace MediaService.PL.Controllers
             try
             {
                 var files = await FilesService.GetByParentIdAsync(model.ParentId);
+
                 switch (model.OrderType)
                 {
                     case OrderType.BySize:
@@ -227,6 +216,7 @@ namespace MediaService.PL.Controllers
                         files = files.OrderBy(f => f.Downloaded);
                         break;
                 }
+
                 return PartialView("_FilesList", files);
             }
             catch (Exception e)
@@ -321,12 +311,6 @@ namespace MediaService.PL.Controllers
             return PartialView("_DeleteFile", model);
         }
 
-        [HttpGet]
-        public async Task<ActionResult> GetThumbnailImg(Guid id)
-        {
-            return new FileStreamResult(await FilesService.GetFileThumbnailAsync(id), "image/png");
-        }
-
         #endregion
 
         #region Helper Methods
@@ -348,7 +332,6 @@ namespace MediaService.PL.Controllers
                 var fileEntryDto = new FileEntryDto
                 {
                     Name = fname,
-                    //Created = DateTime.Now,
                     Size = file.ContentLength,
                     FileType = fileType,
                     FileStream = file.InputStream

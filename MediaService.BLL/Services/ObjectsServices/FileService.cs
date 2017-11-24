@@ -3,14 +3,17 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net.Security;
 using System.Threading.Tasks;
 using System.Web;
 using MediaService.BLL.DTO;
+using MediaService.BLL.DTO.Enums;
 using MediaService.BLL.Interfaces;
 using MediaService.DAL.Entities;
 using MediaService.DAL.Interfaces;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 #endregion
 
@@ -71,6 +74,27 @@ namespace MediaService.BLL.Services.ObjectsServices
             return await Task.Run(() => DtoMapper.Map<IEnumerable<FileEntryDto>>(dirs.AsParallel().ToList()));
         }
 
+        public string GetLinkToZip(string fileName)
+        {
+            return Storage.GetDirectLinkToBlob(fileName, DateTimeOffset.Now.AddDays(1), SharedAccessBlobPermissions.Read);
+        }
+
+        public async Task<string> GetPublicLinkToFileAsync(Guid fileId, DateTimeOffset expiryTime)
+        {
+            var fileEntry = await Context.Files.FindByKeyAsync(fileId);
+
+            if (fileEntry == null)
+            {
+                throw new InvalidDataException("Can't find this file in database");
+            }
+
+            return Storage.GetDirectLinkToBlob($"{fileEntry.Id}{Path.GetExtension(fileEntry.Name)}", expiryTime, SharedAccessBlobPermissions.Read);
+        }
+
+        public async Task<IEnumerable<FileEntryDto>> SearchFilesAsync(Guid modelParentId, SearchType modelSearchType, string modelSearchValue)
+        {
+            throw new NotImplementedException();
+        }
 
         #endregion
 
@@ -91,7 +115,7 @@ namespace MediaService.BLL.Services.ObjectsServices
             {
                 var fileEntry = DtoMapper.Map<FileEntry>(fileDto);
                 var mimeType = MimeMapping.GetMimeMapping(fileEntry.Name);
-
+                fileEntry.Downloaded = fileEntry.Created = fileEntry.Modified = DateTime.Now;
                 fileEntry.Owner = parentDir.Owner;
                 fileEntry.Parent = parentDir;
                 await Context.Files.AddAsync(fileEntry);
@@ -100,66 +124,161 @@ namespace MediaService.BLL.Services.ObjectsServices
             }
         }
 
-        public async Task RenameAsync(FileEntryDto editedDirEntryDto)
+        public override void Add(FileEntryDto item)
         {
-            throw new NotImplementedException();
+            if (!item.ParentId.HasValue)
+            {
+                throw new InvalidDataException("Can't create file without any parent directory");
+            }
+
+            var parentDir = Context.Directories.FindByKey(item.ParentId.Value);
+
+            if (parentDir == null)
+            {
+                throw new InvalidDataException("Can't find parent folder user with this Id in database");
+            }
+
+            parentDir.Modified = DateTime.Now;
+
+            var fileEntry = DtoMapper.Map<FileEntry>(item);
+            var mimeType = MimeMapping.GetMimeMapping(fileEntry.Name);
+
+            fileEntry.Downloaded = fileEntry.Created = fileEntry.Modified = DateTime.Now;
+            fileEntry.Owner = parentDir.Owner;
+            fileEntry.Parent = parentDir;
+            Context.Files.Add(fileEntry);
+            Context.SaveChanges();
+            Storage.Upload(item.FileStream, $"{fileEntry.Id}{Path.GetExtension(fileEntry.Name)}", mimeType);
         }
 
-        public async Task DeleteAsync(Guid entryId)
+        public override async Task AddAsync(FileEntryDto item)
         {
-            throw new NotImplementedException();
-        }
+            if (!item.ParentId.HasValue)
+            {
+                throw new InvalidDataException("Can't create file without any parent directory");
+            }
 
-        public async Task DownloadWithJobAsync(IEnumerable<Guid> filesIds, Guid zipId)
-        {
-            throw new NotImplementedException();
-        }
+            var parentDir = await Context.Directories.FindByKeyAsync(item.ParentId.Value);
 
-        public async Task DownloadAsync(IEnumerable<Guid> filesIds, Guid zipId)
-        {
-            throw new NotImplementedException();
-        }
+            if (parentDir == null)
+            {
+                throw new InvalidDataException("Can't find parent folder user with this Id in database");
+            }
 
-        public async Task<string> GetLinkToFileAsync(string fileName)
-        {
-            throw new NotImplementedException();
-        }
+            parentDir.Modified = DateTime.Now;
 
-        public async Task<string> GetLinkToFileAsync(Guid fileId)
-        {
-            throw new NotImplementedException();
-        }
+            var fileEntry = DtoMapper.Map<FileEntry>(item);
+            var mimeType = MimeMapping.GetMimeMapping(fileEntry.Name);
 
-        public async Task<Stream> GetFileThumbnailAsync(Guid fileId)
-        {
-            throw new NotImplementedException();
+            fileEntry.Downloaded = fileEntry.Created = fileEntry.Modified = DateTime.Now;
+            fileEntry.Owner = parentDir.Owner;
+            fileEntry.Parent = parentDir;
+            await Context.Files.AddAsync(fileEntry);
+            await Context.SaveChangesAsync();
+            await Storage.UploadAsync(item.FileStream, $"{fileEntry.Id}{Path.GetExtension(fileEntry.Name)}", mimeType);
         }
 
         public async Task AddTagAsync(Guid fileId, string tagName)
         {
-            throw new NotImplementedException();
-        }
+            var fileEntry = await Context.Files.FindByKeyAsync(fileId);
 
-        public override void Add(FileEntryDto item)
-        {
-            throw new NotImplementedException();
-        }
+            var tagEntry = (await Context.Tags.GetDataAsync(t => t.Name == tagName)).FirstOrDefault();
+            if (tagEntry == null)
+            {
+                tagEntry = new Tag { Name = tagName };
+                //fileEntry.Tags.Add(tagEntry);
+            }
+            else if (fileEntry.Tags.Any(t => t.Id == tagEntry.Id))
+            {
+                return;
+            }
 
-        public override Task AddAsync(FileEntryDto item)
-        {
-            throw new NotImplementedException();
+            tagEntry.FileEntries.Add(fileEntry);
+            await Context.Tags.AddAsync(tagEntry);
+            await Context.SaveChangesAsync();
         }
 
         #endregion
 
         #region Update Methods
 
+        public async Task RenameAsync(FileEntryDto editedFileEntryDto)
+        {
+            var currFileEntry = await Context.Files.FindByKeyAsync(editedFileEntryDto.Id);
+
+            if (currFileEntry == null)
+            {
+                throw new InvalidDataException("Can't find user's file with this Id in database");
+            }
+
+            currFileEntry.Parent.Modified = DateTime.Now;
+            currFileEntry.Modified = DateTime.Now;
+            currFileEntry.Name = editedFileEntryDto.Name;
+
+            await Context.Files.UpdateAsync(currFileEntry);
+            await Context.SaveChangesAsync();
+        }
 
         #endregion
 
         #region Delete Methods
 
+        public async Task DeleteAsync(Guid entryId)
+        {
+            var currFileEntry = await Context.Files.FindByKeyAsync(entryId);
 
+            if (currFileEntry == null)
+            {
+                throw new InvalidDataException("Can't find user's file with this Id in database");
+            }
+
+            await Context.Files.RemoveAsync(currFileEntry);
+            await Storage.DeleteAsync($"{currFileEntry.Id}{Path.GetExtension(currFileEntry.Name)}");
+
+            await Context.SaveChangesAsync();
+        }
+
+        #endregion
+
+        #region Download Methods
+
+        public async Task DownloadWithJobAsync(IEnumerable<Guid> filesIds, Guid zipId)
+        {
+            await DownloadAsync(filesIds, zipId);
+        }
+
+        public async Task DownloadAsync(IEnumerable<Guid> filesIds, Guid zipId)
+        {
+            var filesEntries = (await Context.Files.GetDataAsync(f => filesIds.Contains(f.Id))).ToList();
+
+            if (filesEntries == null || !filesEntries.Any())
+            {
+                throw new InvalidDataException("There is no files in database to download");
+            }
+
+            var zipName = $"{zipId}.zip";
+            using (var fs = new FileStream(zipName, FileMode.OpenOrCreate))
+            {
+                using (ZipArchive archive = new ZipArchive(fs, ZipArchiveMode.Create, false))
+                {
+                    foreach (var fileEntry in filesEntries)
+                    {
+                        var blobName = $"{fileEntry.Id}{Path.GetExtension(fileEntry.Name)}";
+                        if (await Storage.BlobExistAsync(blobName))
+                        {
+                            var zipEntry = archive.CreateEntry(fileEntry.Name);
+                            using (var zipEntryStream = zipEntry.Open())
+                            {
+                                await Storage.DownloadAsync(blobName, zipEntryStream);
+                            }
+                        }
+                    }
+                }
+                fs.Position = 0;
+                await Storage.UploadFileInBlocksAsync(fs, zipName, "application/zip");
+            }
+            File.Delete(zipName);
+        }
 
         #endregion
 
