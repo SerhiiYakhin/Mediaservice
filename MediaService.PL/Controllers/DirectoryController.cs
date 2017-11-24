@@ -86,9 +86,8 @@ namespace MediaService.PL.Controllers
         #endregion
 
         #region Actions
-
-        // POST: /Directory/DirectoriesList
-        [HttpPost]
+        // GET: /Directory/DirectoriesList
+        [HttpGet]
         public async Task<ActionResult> DirectoriesList(DirectoriesListViewModel model)
         {
             var directories = await DirectoryService.GetByParentIdAsync(model.ParentId);
@@ -127,7 +126,8 @@ namespace MediaService.PL.Controllers
                 {
                     var newFolder = Mapper.Map<DirectoryEntryDto>(model);
                     await DirectoryService.AddAsync(newFolder);
-                    return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                    //return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                    return RedirectToAction("Index", "Home");
                 }
                 ModelState.AddModelError("Name", "The folder with this name is already exist in this directory");
             }
@@ -138,7 +138,7 @@ namespace MediaService.PL.Controllers
             }
 
             //We get here if were some model validation errors
-            return PartialView("_CreateDirectory", model);
+            return View(model);
         }
 
         [HttpPost]

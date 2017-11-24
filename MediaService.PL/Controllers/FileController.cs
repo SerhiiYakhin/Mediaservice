@@ -200,7 +200,7 @@ namespace MediaService.PL.Controllers
         }
 
         // POST: /File/FilesList
-        [HttpPost]
+        [HttpGet]
         [ErrorHandle(ExceptionType = typeof(DataException), View = "Errors/Error")]
         public async Task<ActionResult> FilesList(Guid parentId)
         {

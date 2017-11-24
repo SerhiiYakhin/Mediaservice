@@ -2,8 +2,10 @@
 
 @foreach (var item in Model)
 {
-    <div class="row folderItems">
-        @Html.DisplayFor(modelItem => item.Name)
+    <div class="row">
+        <div class="folderItems">
+            @Html.DisplayFor(modelItem => item.Name)
+        </div>
     </div>
 }
 @*<p>

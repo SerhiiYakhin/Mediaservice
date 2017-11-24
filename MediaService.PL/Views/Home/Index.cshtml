@@ -1,70 +1,125 @@
-﻿@using MediaService.BLL.DTO
+﻿@using MediaService.PL.Models.ObjectViewModels.DirectoryViewModels
+
+@using MediaService.PL.Models.ObjectViewModels.FileViewModels
+@using MediaService.BLL.DTO
 ﻿@model DirectoryEntryDto
 @{
     ViewBag.Title = "Home Page";
 }
 
-<div class="row">
-    <div class="col-xs-4">
-        <input type="search" value="Поиск файлов" class="searchField"/>
-    </div>
-    <div class="col-xs-4">
-        <h1>LuxStorage</h1>
-    </div>
-    <div class="col-xs-4">
-        @Html.Partial("_LoginPartial")
+<div class="container indexMenu">
+    <div class="row">
+        <div class="col-xs-4">
+
+            <input type="search" placeholder="Поиск файлов" class="custom-search-input" />
+
+        </div>
+        <div class="col-xs-4">
+            <h2 class="indexTitle text-center">LuxStorage</h2>
+        </div>
+        <div class="col-xs-4">
+            @Html.Partial("_LoginPartial")
+        </div>
     </div>
 </div>
-<hr/>
+<hr />
+<div class="row customNav">
+    <div class="col-xs-7">
+        <p class="customBreadcrumb">Мои файлы</p>
+    </div>
+    <div class="col-xs-5">
+        <div>
 
-@if (ViewBag.FirstTime == "true")
-{
-    <section id="GeneralView">
-        @Html.Partial("_WelcomePartial", Model as DirectoryEntryDto)
-    </section>
-}
-else
-{
-    <section id="WelcomeView">
-        @Html.ActionLink("Create folder", "Create", "Directory", null, new {parentId = Model.Id})
+            <a class="pull-right" href="#">
+                <img src="~/fonts/icons-buttons/tile.svg" id="tileImg" />
+            </a>
+            <a class="pull-right" href="#">
+                <img src="~/fonts/icons-buttons/list.svg" id="listImg" />
+            </a>
+        </div>
+        <img src="~/fonts/icons-buttons/next.svg" class="pull-right" id="dropdownImg" />
+        <a class="pull-right btnLink" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            По дате создания
+        </a>
+
+
+        <ul class="dropdown-menu dropdown-menu-right pull-right" aria-labelledby="navbarDropdownMenuLink">
+            <li>
+                <a class="dropdown-item" href="#">По дате добавления</a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="#">По размеру</a>
+            </li>
+</ul>
+        
+        <a class="pull-right btnLink" href="#">Настройки доступа </a>
+</div>
+</div>
+
+           
+      
+           
+
+<div class="row dirListView">
+    <div class="col-xs-9">
         <div class="row folderList">
             <div id='directories'></div>
         </div>
         <div class="row filesList">
             <div id='files'></div>
         </div>
-        @using (Ajax.BeginForm("UploadFiles", "File", null, new AjaxOptions { UpdateTargetId = "files", HttpMethod = "POST" }, new { enctype = "multipart/form-data" }))
-        {
-            @Html.AntiForgeryToken()
-    
-            <div class="form-horizontal">
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                @Html.Hidden("ParentId", Model.ParentId as Guid?)
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="file" id="FileUpload" multiple />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="button" id="btnUpload" value="Upload Files"/>
-                    </div>
-                </div>
+    </div>
+    <div class="col-xs-3">
+        <div id = "dirListMenu">
+            <a href="#uploadFileModal" class="btn btn-primary  uploadFileBtn pull-right" rel="modal:open">Загрузить файл</a>
+            <div id="uploadFileModal" style="display:none">
+                @{Html.RenderPartial("~/Views/File/_UploadFiles.cshtml", new UploadFilesViewModel { ParentId = Model.Id });}
             </div>
-        }
-        @*todo: В идеале от этого нужно избавиться, а верхняя форма должна работать.*@
-        @*А еще лучше, чтобы все папко/файловые действия были в их вьюхах, а на этой вызывать только Index()*@
-        <input type="file" id="FileUpload" multiple/>
-        <input type="button" id="btnUpload" value="Upload Files"/>
-    </section>
+            
+         
+            <a href="#createDirModal" class="btn btn-primary  createDirBtn pull-right" rel="modal:open">Создать папку</a>
+            <div id="createDirModal" style="display:none">
+                @{Html.RenderPartial("~/Views/Directory/_CreateDirectory.cshtml", new CreateDirectoryViewModel { ParentId = Model.Id });}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@using (Ajax.BeginForm("UploadFiles", "File", null, new AjaxOptions { UpdateTargetId = "files", HttpMethod = "POST" }, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.Hidden("ParentId", Model.ParentId as Guid?)
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="file" id="FileUpload" multiple />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="button" id="btnUpload" value="Upload Files" />
+            </div>
+        </div>
+    </div>
 }
+
+
+@*todo: В идеале от этого нужно избавиться, а верхняя форма должна работать.*@
+@*А еще лучше, чтобы все папко/файловые действия были в их вьюхах, а на этой вызывать только Index()*@
+<input type="file" id="FileUpload" multiple />
+<input type="button" id="btnUpload" value="Upload Files" />
+
+
 
 @section Scripts {
 
     <script>
         $.ajax({
             url: '@Url.Action("DirectoriesList", "Directory", new {parentId = Model.Id})',
-            type: "POST",
+            type: "GET",
             contentType: "text/html; charset=utf-8",
             success: function(data) {
                 $('#directories').html(data);
@@ -73,7 +128,7 @@ else
 
         $.ajax({
             url: '@Url.Action("FilesList", "File", new {parentId = Model.Id})',
-            type: "POST",
+            type: "GET",
             contentType: "text/html; charset=utf-8",
             success: function(data) {
                 $('#files').html(data);
@@ -103,15 +158,15 @@ else
         $(document).ready(function() {
             $('#btnUpload').click(function() {
 
-                // Checking whether FormData is available in browser  
+                // Checking whether FormData is available in browser
                 if (window.FormData !== undefined) {
 
                     var fileUpload = $("#FileUpload").get(0);
                     var files = fileUpload.files;
-                    // Create FormData object  
+                    // Create FormData object
                     var fileData = new FormData();
 
-                    // Looping over all files and add it to FormData object  
+                    // Looping over all files and add it to FormData object
                     for (var i = 0; i < files.length; i++) {
                         fileData.append(files[i].name, files[i]);
                     }
@@ -122,8 +177,8 @@ else
                     $.ajax({
                         url: '/File/UploadFiles?parentId=@Model.Id',
                         type: "POST",
-                        contentType: false, // Not to set any content header  
-                        processData: false, // Not to process data  
+                        contentType: false, // Not to set any content header
+                        processData: false, // Not to process data
                         data: fileData,
                         success: function(data) {
                             //todo: Think about what to do after upload
