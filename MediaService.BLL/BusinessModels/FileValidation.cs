@@ -20,6 +20,7 @@ namespace MediaService.BLL.BusinessModels
         {
             PicturesAllowRule = (2_097_152, new[] { "image/png", "image/jpg", "image/jpeg" }, FileType.Image);
             VidieosAllowRule = (52_428_800, new[] { "video/quicktime", "video/x-msvideo", "video/x-matroska" }, FileType.Video);
+            FileValidationRules = new[] { PicturesAllowRule, VidieosAllowRule };
         }
 
         public static bool FileIsValid(HttpPostedFileBase file)

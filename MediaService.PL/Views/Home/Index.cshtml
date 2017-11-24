@@ -88,31 +88,43 @@
 
 </div>
 
-@using (Ajax.BeginForm("UploadFiles", "File", null, new AjaxOptions { UpdateTargetId = "files", HttpMethod = "POST" }, new { enctype = "multipart/form-data" }))
+@*@using (Ajax.BeginForm("UploadFiles", "File", null, new AjaxOptions { UpdateTargetId = "files", HttpMethod = "POST" }, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
 
     <div class="form-horizontal">
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.Hidden("ParentId", Model.ParentId as Guid?)
+        @Html.Hidden("ParentId", Model.Id as Guid?)
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="file" id="FileUpload" multiple />
+                <input type="file" name="Files" id="Files" multiple />
             </div>
         </div>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="button" id="btnUpload" value="Upload Files" />
+                <input type="submit" name="Upload" id="Upload" value="Upload Files" />
             </div>
         </div>
     </div>
+}*@
+<div>
+@using (Html.BeginForm("UploadFiles2", "File", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <span>Select File:</span>
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.Hidden("ParentId", Model.Id as Guid?)
+    <input type="file" name="files" multiple="multiple"/>
+    <hr/>
+    <input type="submit" value="Upload"/>
+    <br/>
+    <span style="color:green">@Html.Raw(ViewBag.Message)</span>
 }
-
+</div>
 
 @*todo: В идеале от этого нужно избавиться, а верхняя форма должна работать.*@
 @*А еще лучше, чтобы все папко/файловые действия были в их вьюхах, а на этой вызывать только Index()*@
-<input type="file" id="FileUpload" multiple />
-<input type="button" id="btnUpload" value="Upload Files" />
+@*<input type="file" id="FileUpload" multiple />
+<input type="button" id="btnUpload" value="Upload Files" />*@
 
 
 
@@ -120,7 +132,7 @@
 
     <script>
         $.ajax({
-            url: '@Url.Action("DirectoriesList", "Directory", new {parentId = Model.Id})',
+            url: '@Url.Action("DirectoriesList", "Directory", new DirectoriesListViewModel{ParentId = Model.Id})',
             type: "GET",
             contentType: "text/html; charset=utf-8",
             success: function(data) {
@@ -129,34 +141,15 @@
         });
 
         $.ajax({
-            url: '@Url.Action("FilesList", "File", new {parentId = Model.Id})',
+            url: '@Url.Action("FilesList", "File", new FilesListViewModel { ParentId = Model.Id })',
             type: "GET",
             contentType: "text/html; charset=utf-8",
             success: function(data) {
                 $('#files').html(data);
             }
         });
-        //$(function(){
-        //    $(document).ajaxStart(function () {
-        //    //show a progress modal of your choosing
-        //        window.showProgressModal('loading');
-        //    });
-        //    $(document).ajaxStop(function () {
-        //    //hide it
-        //        window.hideProgressModal();
-        //    });
-
-        //    $.ajax({
-        //        url: '/Home/DirectoriesList',
-        //        dataType: 'html',
-        //        success: function(data) {
-        //            $('#directories').html(data);
-        //        }
-        //    });
-        //});
-
     </script>
-    <script>
+    @*<script>
         $(document).ready(function() {
             $('#btnUpload').click(function() {
 
@@ -195,5 +188,5 @@
                 }
             });
         });
-    </script>
+    </script>*@
 }

@@ -1,7 +1,7 @@
 CREATE TABLE [dbo].[FileEntries] (
     [Id]                UNIQUEIDENTIFIER DEFAULT (newsequentialid()) NOT NULL,
     [Name]              NVARCHAR (128)   NOT NULL,
-    [FileThumbnailLink] NVARCHAR (256)   NOT NULL,
+    [FileThumbnailLink] NVARCHAR (256)   NULL,
     [Size]              INT              NOT NULL,
     [FileType]          TINYINT          NOT NULL,
     [Created]           DATETIME2 (7)    NOT NULL,
