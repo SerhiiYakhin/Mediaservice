@@ -369,3 +369,13 @@ a:hover.dropdown-menu-right, a:focus.dropdown-menu-right {
     color: #787876;
     font-weight: 600;
 }
+.fileImg {
+    height: 15px;
+    width: 15px;
+}
+
+.dirImg {
+    height: 15px;
+    width: 15px;
+    margin-right: 10px;
+}
