@@ -134,12 +134,7 @@
 <input type="button" id="btnUpload" value="Upload Files" />*@
 
 
-@Ajax.ActionLink(
-    "load partial view",
-    "DirectoriesList",
-    "Directory", new DirectoriesListViewModel { ParentId = Model.Id },
-    new AjaxOptions { UpdateTargetId = "directories" }
-)
+
 @section Scripts {
 
     <script>
