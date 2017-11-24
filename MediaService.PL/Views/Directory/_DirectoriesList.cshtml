@@ -1,13 +1,27 @@
-﻿﻿@model IEnumerable<MediaService.BLL.DTO.DirectoryEntryDto>
-
+﻿@using MediaService.PL.Models.ObjectViewModels.DirectoryViewModels
+﻿@model IEnumerable<MediaService.BLL.DTO.DirectoryEntryDto>
+@ViewBag.parentId
 @foreach (var item in Model)
 {
+   
     <div class="row">
         <div class="folderItems">
-            @Html.DisplayFor(modelItem => item.Name)
+ @Html.ActionLink(
+    item.Name,                                                  
+    "Index", "Home", new
+    {                                                     
+        dirId = item.Id
+
+    }, null                                 
+
+)
+   
+           
         </div>
     </div>
+   
 }
+
 @*<p>
     @Html.ActionLink("Create New", "Create")
 </p>

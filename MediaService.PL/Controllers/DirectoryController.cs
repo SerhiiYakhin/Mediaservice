@@ -107,7 +107,7 @@ namespace MediaService.PL.Controllers
                         directories = directories.OrderBy(d => d.Downloaded);
                         break;
                 }
-                return PartialView("_DirectoriesList", directories);
+                return PartialView("~/Views/Directory/_DirectoriesList.cshtml", directories);
             }
             catch (Exception ex)
             {
@@ -135,7 +135,7 @@ namespace MediaService.PL.Controllers
                     var newFolder = Mapper.Map<DirectoryEntryDto>(model);
                     await DirectoryService.AddAsync(newFolder);
                     //return Json(new { success = true }, JsonRequestBehavior.AllowGet);
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "Home", new { dirId = model.ParentId});
                 }
                 ModelState.AddModelError("Name", "The folder with this name is already exist in this directory");
             }

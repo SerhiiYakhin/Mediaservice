@@ -1,6 +1,4 @@
-﻿@using MediaService.PL.Models.ObjectViewModels.DirectoryViewModels
-
-@using MediaService.PL.Models.ObjectViewModels.FileViewModels
+﻿
 @using MediaService.BLL.DTO
 @using MediaService.PL.Models.ObjectViewModels.DirectoryViewModels
 @using MediaService.PL.Models.ObjectViewModels.FileViewModels
@@ -70,9 +68,18 @@
         <div class="row filesList">
             <div id='files'></div>
         </div>
+        @Html.ActionLink(
+    "Back",
+    "Index", "Home", new
+    {
+        dirId = Model.ParentId
+    }, null)
     </div>
+    
+
     <div class="col-xs-3">
         <div id = "dirListMenu">
+           
             <a href="#uploadFileModal" class="btn btn-primary  uploadFileBtn pull-right" rel="modal:open">Загрузить файл</a>
             <div id="uploadFileModal" style="display:none">
                 @{Html.RenderPartial("~/Views/File/_UploadFiles.cshtml", new UploadFilesViewModel { ParentId = Model.Id });}
@@ -115,7 +122,12 @@
 <input type="button" id="btnUpload" value="Upload Files" />
 
 
-
+@Ajax.ActionLink(
+    "load partial view",
+    "DirectoriesList",
+    "Directory", new DirectoriesListViewModel { ParentId = Model.Id },
+    new AjaxOptions { UpdateTargetId = "directories" }
+)
 @section Scripts {
 
     <script>
@@ -130,7 +142,7 @@
 
         $.ajax({
             url: '@Url.Action("FilesList", "File", new {parentId = Model.Id})',
-            type: "GET",
+            type: "POST",
             contentType: "text/html; charset=utf-8",
             success: function(data) {
                 $('#files').html(data);

@@ -18,6 +18,11 @@ namespace MediaService.PL
                 "{controller}/{action}/{id}",
                 new {controller = "Account", action = "Login", id = UrlParameter.Optional}
             );
+            routes.MapRoute(
+    "Home",
+    "{controller}/{action}/{id}",
+    new { controller = "Home", action = "Index", dirId = UrlParameter.Optional }
+);
         }
     }
 }
