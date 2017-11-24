@@ -124,7 +124,22 @@ namespace MediaService.DAL.Accessors
         {
             var blob = GetBlob(blobName);
             if (blob.Exists())
-            {
+            {    // Do not set start time so the sas becomes valid immediately.
+                //var sasConstraints2 = new SharedAccessBlobPolicy
+                //{
+                //    SharedAccessExpiryTime = DateTime.UtcNow.AddMinutes(30),
+                //    Permissions = SharedAccessBlobPermissions.Write
+                //                  | SharedAccessBlobPermissions.Read
+                //                  | SharedAccessBlobPermissions.List,
+                //};
+
+                //var container = GetContainerReference();
+                //var sasContainerToken = container.GetSharedAccessSignature(sasConstraints2);
+
+                ////Return the URI string for the container, including the SAS token.
+                //var sas = $"{container.Uri.AbsoluteUri}{sasContainerToken}";
+                //return sas;
+
                 var sasConstraints = new SharedAccessBlobPolicy
                 {
                     SharedAccessStartTime = DateTime.UtcNow.AddMinutes(-5),

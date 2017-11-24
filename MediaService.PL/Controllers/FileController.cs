@@ -206,9 +206,15 @@ namespace MediaService.PL.Controllers
         {
             var linkExpirationTime = fileSize / 10;
             var link = await FilesService.GetPublicLinkToFileAsync(fileId, DateTimeOffset.Now.AddMilliseconds(linkExpirationTime));
-            return link == null
-                ? Json(new { success = false }, JsonRequestBehavior.AllowGet)
-                : Json(new { success = true, link }, JsonRequestBehavior.AllowGet);
+            //return link == null
+            //    ? Json(new { success = false }, JsonRequestBehavior.AllowGet)
+            //    : Json(new { success = true, link }, JsonRequestBehavior.AllowGet);
+            if (link == null)
+            {
+                return HttpNotFound();
+            }
+            ViewBag.Link = link;
+            return PartialView("_LoadFileRomLink");
         }
 
         [HttpPost]

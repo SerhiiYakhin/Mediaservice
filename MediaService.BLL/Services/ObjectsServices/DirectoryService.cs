@@ -172,7 +172,10 @@ namespace MediaService.BLL.Services.ObjectsServices
                 throw new InvalidDataException("Can't find user's folder with this Id in database");
             }
 
-            currDirectoryEntry.Parent.Modified = DateTime.Now;
+            if (currDirectoryEntry.Parent != null)
+            {
+                currDirectoryEntry.Parent.Modified = DateTime.Now;
+            }
             currDirectoryEntry.Modified = DateTime.Now;
             currDirectoryEntry.Name = editedDirEntryDto.Name;
 

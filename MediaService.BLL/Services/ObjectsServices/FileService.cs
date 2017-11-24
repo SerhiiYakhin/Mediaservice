@@ -210,8 +210,10 @@ namespace MediaService.BLL.Services.ObjectsServices
             {
                 throw new InvalidDataException("Can't find user's file with this Id in database");
             }
-
-            currFileEntry.Parent.Modified = DateTime.Now;
+            if (currFileEntry.Parent != null)
+            {
+                currFileEntry.Parent.Modified = DateTime.Now;
+            }
             currFileEntry.Modified = DateTime.Now;
             currFileEntry.Name = editedFileEntryDto.Name;
 

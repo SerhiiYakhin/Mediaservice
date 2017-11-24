@@ -6,20 +6,25 @@
    
     <div class="row">
         <div class="folderItems">
- @Html.ActionLink(
-    item.Name,                                                  
-    "Index", "Home", new
-    {                                                     
+ @Html.ActionLink(item.Name,"Index", "Home", new
+    {
         dirId = item.Id
-
-    }, null                                 
-
+    }, null
 )
    
            
         </div>
     </div>
-   
+    <div>
+        @using (Html.BeginForm("Download", "Directory", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+
+            <hr/>
+            <input type="submit" value="Upload"/>
+            <br/>
+            <span style="color:green">@Html.Raw(ViewBag.Message)</span>
+        }
+    </div>
 }
 
 @*<p>

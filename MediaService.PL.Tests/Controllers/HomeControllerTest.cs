@@ -28,6 +28,23 @@ namespace MediaService.PL.Tests.Controllers
         }
     }
 
+    [TestClass]
+    public class HomeControllerTest2
+    {
+        [TestMethod]
+        public async void Download()
+        {
+            // Arrange
+            var controller = new HomeController();
+
+            // Act
+            var result = await controller.Index(null);
+
+            // Assert
+            Assert.IsNotNull(result);
+        }
+    }
+
     //[TestClass]
     //public class AutoMapperTest
     //{

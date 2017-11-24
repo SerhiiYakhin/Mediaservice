@@ -133,8 +133,10 @@ namespace MediaService.PL.Controllers
 
         // GET: /Account/Login
         [AllowAnonymous]
+        [ErrorHandle(ExceptionType = typeof(InvalidCastException), View = "Errors/Error")]
         public ActionResult Login(string returnUrl)
         {
+            throw new InvalidCastException("Bad things Serhii :(");
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }

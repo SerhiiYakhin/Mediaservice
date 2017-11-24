@@ -40,25 +40,25 @@
                 <img src='@item.FileThumbnailLink' />
             </th>
             @*<td>
-                @Html.DisplayFor(modelItem => item.ParentId)
-            </td>
+        @Html.DisplayFor(modelItem => item.ParentId)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Size)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Created)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Downloaded)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Modified)Guid fileId, Guid parentId, string fileName
+    </td>*@
             <td>
-                @Html.DisplayFor(modelItem => item.Size)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Created)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Downloaded)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Modified)
-            </td>*@
-            <td>
-                @Html.ActionLink("Add Tag", "AddTag", "Home", new {id = item.Id}) |
-                @Html.ActionLink("Rename", "Rename", "Home", new {id = item.Id}) |
-                @Html.ActionLink("Delete", "Delete", "Home", new { id = item.Id }) |
-                @Html.ActionLink("Download", "Download", "Home", new { id = item.Id })
+                @Html.ActionLink("Add Tag", "AddTag", "File", new { fileId = item.Id}, null ) |
+                @Html.ActionLink("Rename", "Rename", "File", new { fileId = item.Id, parentId = item.ParentId, fileName = item.Name }, null) |
+                @Html.ActionLink("Delete", "Delete", "File", new { fileId = item.Id }, null) |
+                @Html.ActionLink("Download", "Download", "File", new { fileId = item.Id, fileSize = item.Size }, null)
             </td>
         </tr>
     }
