@@ -6,7 +6,7 @@
         <th>
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Name)
+          
         </th>
         @*<th>
             @Html.DisplayNameFor(model => model.ParentId)
@@ -28,16 +28,16 @@
 
     @foreach (var item in Model)
     {
-        <tr>
+        <tr class="folderItems">
             <td>
-                <img width="50" height="50"
+                <img width="20" height="20"
                      src="@(item.FileType == FileType.Image ? Url.Content("/fonts/icons-buttons/picture.svg") : Url.Content("/fonts/icons-buttons/video-player.svg"))">
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <th>
-                <img src='@item.FileThumbnailLink' />
+                <img class="fileImg" src='@item.FileThumbnailLink' />
             </th>
             @*<td>
                 @Html.DisplayFor(modelItem => item.ParentId)
