@@ -15,6 +15,8 @@ namespace MediaService.BLL.Interfaces
     {
         Task AddRangeAsync(IEnumerable<FileEntryDto> files, Guid parentId);
 
+        Task AddTagAsync(Guid fileId, string tagName);
+
         Task RenameAsync(FileEntryDto editedFileEntryDto);
 
         Task DeleteAsync(Guid entryId);
@@ -26,8 +28,6 @@ namespace MediaService.BLL.Interfaces
         string GetLinkToZip(string fileName);
 
         Task<string> GetPublicLinkToFileAsync(Guid fileId, DateTimeOffset expiryTime);
-
-        Task AddTagAsync(Guid fileId, string tagName);
 
         Task<IEnumerable<FileEntryDto>> SearchFilesAsync(Guid modelParentId, SearchType modelSearchType, string modelSearchValue);
     }

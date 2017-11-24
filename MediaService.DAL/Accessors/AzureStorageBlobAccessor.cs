@@ -1,17 +1,13 @@
 ﻿#region usings
 
+using MediaService.DAL.Interfaces;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using MediaService.DAL.Interfaces;
-using Microsoft.Azure;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage.File;
-using Microsoft.WindowsAzure.Storage.RetryPolicies;
 
 #endregion
 
@@ -19,15 +15,6 @@ namespace MediaService.DAL.Accessors
 {
     public class AzureStorageBlobAccessor : IBlobStorage
     {
-        #region Constructors
-
-        public AzureStorageBlobAccessor(string connectionString)
-        {
-            _connectionString = connectionString;
-        }
-
-        #endregion
-
         #region Fields
 
         private const string ContainerName = "files";
@@ -50,6 +37,15 @@ namespace MediaService.DAL.Accessors
 
         #endregion
 
+        #region Constructors
+
+        public AzureStorageBlobAccessor(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
+
+        #endregion
+
         #region Methods
 
         #region Upload
@@ -64,7 +60,6 @@ namespace MediaService.DAL.Accessors
         {
             var blob = PrepapreBlobToUpload(fileName, contentType);
             await blob.UploadFromStreamAsync(file);
-            //var url = blob.Uri.ToString();
         }
 
         public async Task UploadAsync(byte[] file, string fileName, string contentType)
@@ -99,11 +94,13 @@ namespace MediaService.DAL.Accessors
         {
             var blob = GetBlob(blobName);
             var blobExist = await blob.ExistsAsync();
+
             if (blobExist)
             {
                 var blobStream = new MemoryStream();
                 await LoadBlobToStream(blobStream, blob);
             }
+
             return (null, false);
         }
 
@@ -124,22 +121,7 @@ namespace MediaService.DAL.Accessors
         {
             var blob = GetBlob(blobName);
             if (blob.Exists())
-            {    // Do not set start time so the sas becomes valid immediately.
-                //var sasConstraints2 = new SharedAccessBlobPolicy
-                //{
-                //    SharedAccessExpiryTime = DateTime.UtcNow.AddMinutes(30),
-                //    Permissions = SharedAccessBlobPermissions.Write
-                //                  | SharedAccessBlobPermissions.Read
-                //                  | SharedAccessBlobPermissions.List,
-                //};
-
-                //var container = GetContainerReference();
-                //var sasContainerToken = container.GetSharedAccessSignature(sasConstraints2);
-
-                ////Return the URI string for the container, including the SAS token.
-                //var sas = $"{container.Uri.AbsoluteUri}{sasContainerToken}";
-                //return sas;
-
+            {    
                 var sasConstraints = new SharedAccessBlobPolicy
                 {
                     SharedAccessStartTime = DateTime.UtcNow.AddMinutes(-5),
@@ -230,7 +212,6 @@ namespace MediaService.DAL.Accessors
 
         private static long GetBlockCount(long fileSize, long blocksize)
         {
-            //long blockCount = (int)Math.Floor((double)fileSize / blocksize) + 1;
             return (int)Math.Ceiling((double)fileSize / blocksize);
         }
 

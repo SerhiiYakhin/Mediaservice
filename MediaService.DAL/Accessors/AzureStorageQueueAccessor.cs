@@ -1,23 +1,14 @@
-﻿using System;
-using System.Threading.Tasks;
-using MediaService.DAL.Accessors.Enums;
+﻿using MediaService.DAL.Accessors.Enums;
 using MediaService.DAL.Interfaces;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
+using System;
+using System.Threading.Tasks;
 
 namespace MediaService.DAL.Accessors
 {
     public class AzureStorageQueueAccessor : IQueueStorage
     {
-        #region Constructors
-
-        public AzureStorageQueueAccessor(string connectionString)
-        {
-            _connectionString = connectionString;
-        }
-
-        #endregion
-
         #region Fields
 
         private const string DownloadQueueName = "download";
@@ -27,6 +18,15 @@ namespace MediaService.DAL.Accessors
         private static string _connectionString;
 
         private readonly TimeSpan _timeToLive = new TimeSpan(0, 1, 0);
+
+        #endregion
+
+        #region Constructors
+
+        public AzureStorageQueueAccessor(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
 
         #endregion
 
@@ -71,6 +71,7 @@ namespace MediaService.DAL.Accessors
             }
 
             queue.CreateIfNotExists();
+
             return queue;
         }
 

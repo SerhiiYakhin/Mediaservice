@@ -10,24 +10,24 @@ namespace MediaService.PL.Controllers
     {
         #region Actions
 
-        // GET: ErrorHandler/Forbidden
         public ActionResult Forbidden()
         {
             Response.StatusCode = 403;
+
             return View();
         }
 
-        // GET: ErrorHandler/NotFound
         public ActionResult NotFound()
         {
             Response.StatusCode = 404;
+
             return View();
         }
 
-        // GET: ErrorHandler/InternalServerError
         public ActionResult InternalServerError()
         {
             Response.StatusCode = 500;
+
             return View();
         }
 

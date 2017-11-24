@@ -9,7 +9,6 @@ namespace MediaService.PL.Models.IdentityModels
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext() : base("DefaultConnection", false) { }
-        //public ApplicationDbContext() : base("AzureDbConnection", false) { }
 
         public static ApplicationDbContext Create()
         {

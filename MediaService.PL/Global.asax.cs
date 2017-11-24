@@ -1,10 +1,10 @@
 ﻿#region usings
 
+using NLog;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
-using NLog;
 
 #endregion
 

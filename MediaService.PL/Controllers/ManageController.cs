@@ -17,30 +17,6 @@ namespace MediaService.PL.Controllers
     [Authorize]
     public class ManageController : Controller
     {
-        #region Overrided Methods
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (_userManager != null)
-                {
-                    _userManager.Dispose();
-                    _userManager = null;
-                }
-
-                if (_signInManager != null)
-                {
-                    _signInManager.Dispose();
-                    _signInManager = null;
-                }
-            }
-
-            base.Dispose(disposing);
-        }
-
-        #endregion
-
         #region Managers
 
         private ApplicationSignInManager _signInManager;
@@ -81,7 +57,6 @@ namespace MediaService.PL.Controllers
 
         #region Actions
 
-        // GET: /Manage/Index
         public async Task<ActionResult> Index(ManageMessageId? message)
         {
             ViewBag.StatusMessage =
@@ -100,6 +75,7 @@ namespace MediaService.PL.Controllers
                                         : "";
 
             var userId = User.Identity.GetUserId();
+
             var model = new IndexViewModel
             {
                 HasPassword = HasPassword(),
@@ -108,46 +84,53 @@ namespace MediaService.PL.Controllers
                 Logins = await UserManager.GetLoginsAsync(userId),
                 BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId)
             };
+
             return View(model);
         }
 
-        // POST: /Manage/RemoveLogin
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> RemoveLogin(string loginProvider, string providerKey)
         {
             ManageMessageId? message;
-            var result = await UserManager.RemoveLoginAsync(User.Identity.GetUserId(),
-                new UserLoginInfo(loginProvider, providerKey));
+            var result = await UserManager
+                .RemoveLoginAsync(User.Identity.GetUserId(), new UserLoginInfo(loginProvider, providerKey));
+
             if (result.Succeeded)
             {
                 var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+
                 if (user != null)
+                {
                     await SignInManager.SignInAsync(user, false, false);
+                }
+
                 message = ManageMessageId.RemoveLoginSuccess;
             }
             else
             {
                 message = ManageMessageId.Error;
             }
+
             return RedirectToAction("ManageLogins", new {Message = message});
         }
 
-        // GET: /Manage/AddPhoneNumber
         public ActionResult AddPhoneNumber()
         {
             return View();
         }
 
-        // POST: /Manage/AddPhoneNumber
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> AddPhoneNumber(AddPhoneNumberViewModel model)
         {
             if (!ModelState.IsValid)
+            {
                 return View(model);
-            // Generate the token and send it
+            }
+
             var code = await UserManager.GenerateChangePhoneNumberTokenAsync(User.Identity.GetUserId(), model.Number);
+
             if (UserManager.SmsService != null)
             {
                 var message = new IdentityMessage
@@ -157,10 +140,10 @@ namespace MediaService.PL.Controllers
                 };
                 await UserManager.SmsService.SendAsync(message);
             }
-            return RedirectToAction("VerifyPhoneNumber", new {PhoneNumber = model.Number});
+
+            return RedirectToAction("VerifyPhoneNumber", new { PhoneNumber = model.Number });
         }
 
-        // POST: /Manage/EnableTwoFactorAuthentication
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> EnableTwoFactorAuthentication()
@@ -169,12 +152,13 @@ namespace MediaService.PL.Controllers
             var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
 
             if (user != null)
+            {
                 await SignInManager.SignInAsync(user, false, false);
+            }
 
             return RedirectToAction("Index", "Manage");
         }
 
-        // POST: /Manage/DisableTwoFactorAuthentication
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DisableTwoFactorAuthentication()
@@ -183,28 +167,30 @@ namespace MediaService.PL.Controllers
             var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
 
             if (user != null)
+            {
                 await SignInManager.SignInAsync(user, false, false);
+            }
 
             return RedirectToAction("Index", "Manage");
         }
 
-        // GET: /Manage/VerifyPhoneNumber
         public async Task<ActionResult> VerifyPhoneNumber(string phoneNumber)
         {
             var code = await UserManager.GenerateChangePhoneNumberTokenAsync(User.Identity.GetUserId(), phoneNumber);
-            // Send an SMS through the SMS provider to verify the phone number
+
             return phoneNumber == null
                 ? View("Errors/Error")
                 : View(new VerifyPhoneNumberViewModel {PhoneNumber = phoneNumber});
         }
 
-        // POST: /Manage/VerifyPhoneNumber
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> VerifyPhoneNumber(VerifyPhoneNumberViewModel model)
         {
             if (!ModelState.IsValid)
+            {
                 return View(model);
+            }
 
             var result =
                 await UserManager.ChangePhoneNumberAsync(User.Identity.GetUserId(), model.PhoneNumber, model.Code);
@@ -212,18 +198,20 @@ namespace MediaService.PL.Controllers
             if (result.Succeeded)
             {
                 var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+
                 if (user != null)
+                {
                     await SignInManager.SignInAsync(user, false, false);
+                }
+
                 return RedirectToAction("Index", new {Message = ManageMessageId.AddPhoneSuccess});
             }
 
-            // If we got this far, something failed, redisplay form
             ModelState.AddModelError("", "Failed to verify phone");
 
             return View(model);
         }
 
-        // POST: /Manage/RemovePhoneNumber
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> RemovePhoneNumber()
@@ -231,29 +219,33 @@ namespace MediaService.PL.Controllers
             var result = await UserManager.SetPhoneNumberAsync(User.Identity.GetUserId(), null);
 
             if (!result.Succeeded)
-                return RedirectToAction("Index", new {Message = ManageMessageId.Error});
+            {
+                return RedirectToAction("Index", new { Message = ManageMessageId.Error });
+            }
 
             var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
 
             if (user != null)
+            {
                 await SignInManager.SignInAsync(user, false, false);
+            }
 
             return RedirectToAction("Index", new {Message = ManageMessageId.RemovePhoneSuccess});
         }
 
-        // GET: /Manage/ChangePassword
         public ActionResult ChangePassword()
         {
             return View();
         }
 
-        // POST: /Manage/ChangePassword
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ChangePassword(ChangePasswordViewModel model)
         {
             if (!ModelState.IsValid)
+            {
                 return View(model);
+            }
 
             var result =
                 await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
@@ -263,7 +255,9 @@ namespace MediaService.PL.Controllers
                 var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
 
                 if (user != null)
+                {
                     await SignInManager.SignInAsync(user, false, false);
+                }
 
                 return RedirectToAction("Index", new {Message = ManageMessageId.ChangePasswordSuccess});
             }
@@ -273,13 +267,11 @@ namespace MediaService.PL.Controllers
             return View(model);
         }
 
-        // GET: /Manage/SetPassword
         public ActionResult SetPassword()
         {
             return View();
         }
 
-        // POST: /Manage/SetPassword
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SetPassword(SetPasswordViewModel model)
@@ -293,7 +285,9 @@ namespace MediaService.PL.Controllers
                     var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
 
                     if (user != null)
+                    {
                         await SignInManager.SignInAsync(user, false, false);
+                    }
 
                     return RedirectToAction("Index", new {Message = ManageMessageId.SetPasswordSuccess});
                 }
@@ -304,7 +298,6 @@ namespace MediaService.PL.Controllers
             return View(model);
         }
 
-        // GET: /Manage/ManageLogins
         public async Task<ActionResult> ManageLogins(ManageMessageId? message)
         {
             ViewBag.StatusMessage =
@@ -316,7 +309,9 @@ namespace MediaService.PL.Controllers
             var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
 
             if (user == null)
+            {
                 return View("Errors/Error");
+            }
 
             var userLogins = await UserManager.GetLoginsAsync(User.Identity.GetUserId());
             var otherLogins = AuthenticationManager.GetExternalAuthenticationTypes()
@@ -330,33 +325,37 @@ namespace MediaService.PL.Controllers
             });
         }
 
-        // POST: /Manage/LinkLogin
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult LinkLogin(string provider)
         {
-            // Request a redirect to the external login provider to link a login for the current user
-            return new AccountController.ChallengeResult(provider, Url.Action("LinkLoginCallback", "Manage"),
-                User.Identity.GetUserId());
+            return new AccountController.ChallengeResult(
+                provider,
+                Url.Action("LinkLoginCallback", "Manage"),
+                User.Identity.GetUserId()
+                );
         }
 
-        // GET: /Manage/LinkLoginCallback
         public async Task<ActionResult> LinkLoginCallback()
         {
             var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync(XsrfKey, User.Identity.GetUserId());
+
             if (loginInfo == null)
-                return RedirectToAction("ManageLogins", new {Message = ManageMessageId.Error});
+            {
+                return RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
+            }
+
             var result = await UserManager.AddLoginAsync(User.Identity.GetUserId(), loginInfo.Login);
+
             return result.Succeeded
                 ? RedirectToAction("ManageLogins")
-                : RedirectToAction("ManageLogins", new {Message = ManageMessageId.Error});
+                : RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
         }
 
         #endregion
 
         #region Helpers
 
-        // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
 
         private IAuthenticationManager AuthenticationManager => HttpContext.GetOwinContext().Authentication;
@@ -364,7 +363,9 @@ namespace MediaService.PL.Controllers
         private void AddErrors(IdentityResult result)
         {
             foreach (var error in result.Errors)
+            {
                 ModelState.AddModelError("", error);
+            }
         }
 
         private bool HasPassword()
@@ -390,6 +391,30 @@ namespace MediaService.PL.Controllers
             RemoveLoginSuccess,
             RemovePhoneSuccess,
             Error
+        }
+
+        #endregion
+
+        #region Overrided Methods
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_userManager != null)
+                {
+                    _userManager.Dispose();
+                    _userManager = null;
+                }
+
+                if (_signInManager != null)
+                {
+                    _signInManager.Dispose();
+                    _signInManager = null;
+                }
+            }
+
+            base.Dispose(disposing);
         }
 
         #endregion

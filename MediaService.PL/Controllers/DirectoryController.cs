@@ -86,7 +86,6 @@ namespace MediaService.PL.Controllers
 
         #region Actions
 
-        // Get: /Directory/DirectoriesList
         [HttpGet]
         [ErrorHandle(ExceptionType = typeof(DataException), View = "Errors/Error")]
         public async Task<ActionResult> DirectoriesList(DirectoriesListViewModel model)
@@ -94,6 +93,7 @@ namespace MediaService.PL.Controllers
             try
             {
                 var directories = await DirectoryService.GetByParentIdAsync(model.ParentId);
+
                 switch (model.OrderType)
                 {
                     case OrderType.BySize:
@@ -107,6 +107,7 @@ namespace MediaService.PL.Controllers
                         directories = directories.OrderBy(d => d.Downloaded);
                         break;
                 }
+
                 return PartialView("~/Views/Directory/_DirectoriesList.cshtml", directories);
             }
             catch (Exception ex)
@@ -123,7 +124,6 @@ namespace MediaService.PL.Controllers
             return PartialView("_CreateDirectory", model);
         }
 
-        // POST: /Directory/Create
         [HttpPost]
         [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
         public async Task<ActionResult> Create(CreateDirectoryViewModel model)
@@ -135,6 +135,7 @@ namespace MediaService.PL.Controllers
                     var newFolder = Mapper.Map<DirectoryEntryDto>(model);
                     await DirectoryService.AddAsync(newFolder);
                     //return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+
                     return RedirectToAction("Index", "Home", new { dirId = model.ParentId});
                 }
                 ModelState.AddModelError("Name", "The folder with this name is already exist in this directory");
@@ -145,7 +146,6 @@ namespace MediaService.PL.Controllers
                     "We can't create new folder for you at this moment, we're sorry, try again later", ex);
             }
 
-            //We get here if were some model validation errors
             return PartialView("_CreateDirectory", model);
         }
 
@@ -157,6 +157,7 @@ namespace MediaService.PL.Controllers
             {
                 var zipId = Guid.NewGuid();
                 await DirectoryService.DownloadWithJobAsync(model.Id, zipId);
+
                 return Json(new { success = true, zipId, zipName = model.Name }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
@@ -175,6 +176,7 @@ namespace MediaService.PL.Controllers
             //    return File(zipStream.blobStream, "application/zip", $"{zipName}.zip");
             //}
             var link = FilesService.GetLinkToZip($"{zipId}.zip");
+
             return link == null
                 ? Json(new { success = false }, JsonRequestBehavior.AllowGet)
                 : Json(new { success = true, link }, JsonRequestBehavior.AllowGet);
@@ -184,6 +186,7 @@ namespace MediaService.PL.Controllers
         public ActionResult Rename(Guid id, Guid parentId, string name)
         {
             var model = new RenameDirectoryViewModel { Id = id, ParentId = parentId, Name = name };
+
             return PartialView("_RenameDirectory", model);
         }
 
@@ -197,8 +200,10 @@ namespace MediaService.PL.Controllers
                 {
                     var editedFolder = Mapper.Map<DirectoryEntryDto>(model);
                     await DirectoryService.RenameAsync(editedFolder);
+
                     return Json(new { success = true }, JsonRequestBehavior.AllowGet);
                 }
+
                 ModelState.AddModelError("Name", "The folder with this name is already exist in this directory");
             }
             catch (Exception ex)
@@ -207,7 +212,6 @@ namespace MediaService.PL.Controllers
                     "This folder can't be renamed at this moment, we're sorry, try again later", ex);
             }
 
-            //We get here if were some model validation errors
             return PartialView("_RenameDirectory", model);
         }
 
@@ -226,13 +230,13 @@ namespace MediaService.PL.Controllers
             try
             {
                 await DirectoryService.DeleteWithJobAsync(model.Id);
+
                 return Json(new { success = true }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
                 throw new DbUpdateException(
                     "This folder can't be deleted at this moment, we're sorry, try again later", ex);
-                //return PartialView("_DeleteDirectory", model);
             }
         }
 

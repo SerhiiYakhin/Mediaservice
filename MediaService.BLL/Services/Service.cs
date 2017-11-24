@@ -1,11 +1,11 @@
 ﻿#region usings
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using AutoMapper;
 using MediaService.BLL.Infrastructure;
 using MediaService.BLL.Interfaces;
 using MediaService.DAL.Interfaces;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 #endregion
 
@@ -63,34 +63,6 @@ namespace MediaService.BLL.Services
         {
             return DtoMapper.Map<IEnumerable<TDto>>(await Repository.GetDataAsync());
         }
-
-        #endregion
-
-        #region Delete Methods
-
-        //public virtual void Remove(TDto item)
-        //{
-        //    Repository.Remove(DtoMapper.Map<TEntity>(item));
-        //    Context.SaveChanges();
-        //}
-
-        //public virtual async Task RemoveAsync(TDto item)
-        //{
-        //    await Repository.RemoveAsync(DtoMapper.Map<TEntity>(item));
-        //    await Context.SaveChangesAsync();
-        //}
-
-        //public virtual void RemoveRange(IEnumerable<TDto> items)
-        //{
-        //    Repository.RemoveRange(DtoMapper.Map<IEnumerable<TEntity>>(items));
-        //    Context.SaveChanges();
-        //}
-
-        //public virtual async Task RemoveRangeAsync(IEnumerable<TDto> items)
-        //{
-        //    await Repository.RemoveRangeAsync(DtoMapper.Map<IEnumerable<TEntity>>(items));
-        //    await Context.SaveChangesAsync();
-        //}
 
         #endregion
 

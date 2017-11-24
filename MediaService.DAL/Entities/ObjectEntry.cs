@@ -14,10 +14,6 @@ namespace MediaService.DAL.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
 
-        //[Required]
-        //[StringLength(128)]
-        //public string Discriminator { get; set; }
-
         [Required]
         [Column(TypeName = "datetime2")]
         public DateTime Created { get; set; }

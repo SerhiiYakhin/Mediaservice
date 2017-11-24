@@ -14,7 +14,6 @@ namespace MediaService.BLL.Interfaces
 
         Task<TDto> FindByIdAsync(TId id);
 
-
         IEnumerable<TDto> GetData();
 
         Task<IEnumerable<TDto>> GetDataAsync();
@@ -23,23 +22,5 @@ namespace MediaService.BLL.Interfaces
 
         Task AddAsync(TDto item);
 
-
-        //void AddRange(IEnumerable<TDto> items);
-
-        //Task AddRangeAsync(IEnumerable<TDto> items);
-
-        //void Update(TDto item);
-
-        //Task UpdateAsync(TDto item);
-
-
-        //void Remove(TDto item);
-
-        //Task RemoveAsync(TDto item);
-
-
-        //void RemoveRange(IEnumerable<TDto> items);
-
-        //Task RemoveRangeAsync(IEnumerable<TDto> items);
     }
 }

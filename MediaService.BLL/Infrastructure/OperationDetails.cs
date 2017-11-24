@@ -1,8 +1,8 @@
 ﻿namespace MediaService.BLL.Infrastructure
 {
-    public class OperationDetails //: IdentityResult
+    public class OperationDetails
     {
-        public OperationDetails(bool succeeded, string message, string prop) //: base(succedeed)
+        public OperationDetails(bool succeeded, string message, string prop)
         {
             Succeeded = succeeded;
             Message = message;

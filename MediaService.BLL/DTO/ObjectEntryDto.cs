@@ -12,8 +12,6 @@ namespace MediaService.BLL.DTO
         [DataMember]
         public Guid Id { get; set; }
 
-        //public string Discriminator { get; set; }
-
         [DataMember]
         public DateTime Created { get; set; }
 

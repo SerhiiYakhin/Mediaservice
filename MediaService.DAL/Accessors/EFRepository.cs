@@ -14,14 +14,30 @@ namespace MediaService.DAL.Accessors
 {
     public class EFRepository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntity : class
     {
+        #region Fields
+
         private readonly DbContext _context;
+
         private readonly DbSet<TEntity> _dbSet;
+
+        #endregion
+
+        #region Constructor
 
         public EFRepository(DbContext context)
         {
             _context = context;
             _dbSet = context.Set<TEntity>();
         }
+
+        #endregion
+
+        public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await _dbSet.AnyAsync(predicate);
+        }
+
+        #region Select Methods
 
         public TEntity FindByKey(TKey key)
         {
@@ -42,11 +58,6 @@ namespace MediaService.DAL.Accessors
         {
             return _dbSet.Where(predicate);
         }
-        
-        public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate)
-        {
-            return await _dbSet.AnyAsync(predicate);
-        }
 
         public IEnumerable<TEntity> GetData()
         {
@@ -58,7 +69,6 @@ namespace MediaService.DAL.Accessors
             return await Task.Run(() => _dbSet);
         }
 
-
         public IEnumerable<TEntity> GetData(Expression<Func<TEntity, bool>> predicate)
         {
             return _dbSet.Where(predicate);
@@ -69,6 +79,9 @@ namespace MediaService.DAL.Accessors
             return await Task.Run(() => _dbSet.Where(predicate));
         }
 
+        #endregion
+
+        #region Create Methods
 
         public void Add(TEntity item)
         {
@@ -91,6 +104,9 @@ namespace MediaService.DAL.Accessors
             await Task.Run(() => _dbSet.AddRange(items));
         }
 
+        #endregion
+
+        #region Update Methods
 
         public void Update(TEntity item)
         {
@@ -102,6 +118,9 @@ namespace MediaService.DAL.Accessors
             await Task.Run(() => _context.Entry(item).State = EntityState.Modified);
         }
 
+        #endregion
+
+        #region Delete Methods
 
         public void Remove(TEntity item)
         {
@@ -123,5 +142,7 @@ namespace MediaService.DAL.Accessors
         {
             await Task.Run(() => _dbSet.RemoveRange(items));
         }
+
+        #endregion
     }
 }

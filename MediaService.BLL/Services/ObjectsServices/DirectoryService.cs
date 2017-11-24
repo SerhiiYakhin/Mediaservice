@@ -1,15 +1,15 @@
 ﻿#region usings
 
+using MediaService.BLL.DTO;
+using MediaService.BLL.Interfaces;
+using MediaService.DAL.Entities;
+using MediaService.DAL.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
-using MediaService.BLL.DTO;
-using MediaService.BLL.Interfaces;
-using MediaService.DAL.Entities;
-using MediaService.DAL.Interfaces;
 
 #endregion
 
@@ -17,12 +17,6 @@ namespace MediaService.BLL.Services.ObjectsServices
 {
     public class DirectoryService : Service<DirectoryEntryDto, DirectoryEntry, Guid>, IDirectoryService
     {
-        #region Fields
-
-
-
-        #endregion
-
         #region Properties
 
         private IBlobStorage Storage { get; }
@@ -68,6 +62,7 @@ namespace MediaService.BLL.Services.ObjectsServices
         )
         {
             var dirs = GetQuery(id, name, parentId, created, downloaded, modified, ownerId);
+
             return await Task.Run(() => DtoMapper.Map<IEnumerable<DirectoryEntryDto>>(dirs.AsParallel().ToList()));
         }
 
@@ -78,8 +73,6 @@ namespace MediaService.BLL.Services.ObjectsServices
 
             if (root == null)
             {
-                //await AddRootDirToUserAsync(ownerId);
-                //root = (await Context.Directories.GetDataAsync(d => d.Owner.Id == ownerId && d.Name == "root")).SingleOrDefault();
                 throw new InvalidDataException("Can't find root folder user with this Id in database");
             }
 
@@ -176,29 +169,13 @@ namespace MediaService.BLL.Services.ObjectsServices
             {
                 currDirectoryEntry.Parent.Modified = DateTime.Now;
             }
+
             currDirectoryEntry.Modified = DateTime.Now;
             currDirectoryEntry.Name = editedDirEntryDto.Name;
 
             await Context.Directories.UpdateAsync(currDirectoryEntry);
             await Context.SaveChangesAsync();
         }
-
-        //public async Task UpdateAsync(DirectoryEntryDto editedDirEntryDto)
-        //{
-        //    var currDirectoryEntry = await Context.Directories.FindByKeyAsync(editedDirEntryDto.Id);
-
-        //    if (currDirectoryEntry == null)
-        //    {
-        //        throw new InvalidDataException("Can't find parent folder user with this Id in database");
-        //    }
-
-        //    currDirectoryEntry.Parent.Modified = DateTime.Now;
-        //    currDirectoryEntry.Modified = DateTime.Now;
-        //    currDirectoryEntry.Name = editedDirEntryDto.Name;
-
-        //    await Context.Directories.UpdateAsync(currDirectoryEntry);
-        //    await Context.SaveChangesAsync();
-        //}
 
         #endregion
 
@@ -222,10 +199,12 @@ namespace MediaService.BLL.Services.ObjectsServices
                 await Context.Files.RemoveAsync(file);
                 await Storage.DeleteAsync($"{file.Id}{Path.GetExtension(file.Name)}");
             }
+
             foreach (var dir in childDirs)
             {
                 await DeleteAsync(dir.Id);
             }
+
             await Context.Directories.RemoveAsync(currDirectoryEntry);
 
             await Context.SaveChangesAsync();
@@ -233,10 +212,7 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public async Task DeleteWithJobAsync(Guid entryId)
         {
-            //var ffMpeg = new NReco.VideoConverter.FFMpegConverter();
-            //ffMpeg.GetVideoThumbnail(pathToVideoFile, thumbJpegStream, 5);
             await DeleteAsync(entryId);
-            //await Queue.AddMessageAsync(entryId.ToString(), QueueJob.DataOperation);
         }
 
         #endregion
@@ -259,50 +235,19 @@ namespace MediaService.BLL.Services.ObjectsServices
             }
 
             var zipName = $"{zipId}.zip";
+
             using (var fs = new FileStream(zipName, FileMode.OpenOrCreate))
             {
                 using (ZipArchive archive = new ZipArchive(fs, ZipArchiveMode.Create, false))
                 {
                     await WriteToFolderAsync(directoryId, archive, currDirectoryEntry.Name);
                 }
+
                 fs.Position = 0;
                 await Storage.UploadFileInBlocksAsync(fs, zipName, "application/zip");
             }
+
             File.Delete(zipName);
-        }
-
-        private async Task WriteToFolderAsync(Guid dirId, ZipArchive archive, string path)
-        {
-            var files = await Context.Files.GetDataAsync(f => f.ParentId == dirId);
-            var dirs = await Context.Files.GetDataAsync(f => f.ParentId == dirId);
-
-            foreach (var file in files)
-            {
-                var blobName = $"{file.Id}{Path.GetExtension(file.Name)}";
-                if (await Storage.BlobExistAsync(blobName))
-                {
-                    var zipEntry = archive.CreateEntry($"{path}/{file.Name}");
-                    using (var zipEntryStream = zipEntry.Open())
-                    {
-                        await Storage.DownloadAsync(blobName, zipEntryStream);
-                    }
-                }
-                //(Stream blobStream, bool blobExist) = await Storage.DownloadAsync($"{file.Id}{Path.GetExtension(file.Name)}");
-                //if (blobExist)
-                //{
-                //    var zipEntry = archive.CreateEntry($"{path}/{file.Name}");
-                //    using (var zipEntryStream = zipEntry.Open())
-                //    {
-                //        blobStream.Position = 0;
-                //        blobStream.CopyTo(zipEntryStream);
-                //    }
-                //}
-            }
-
-            foreach (var dir in dirs)
-            {
-                await WriteToFolderAsync(dir.Id, archive, $"{path}/{dir.Name}");
-            }
         }
 
         public async Task<(Stream blobStream, bool blobExist)> DownloadZip(string zipName)
@@ -313,6 +258,32 @@ namespace MediaService.BLL.Services.ObjectsServices
         #endregion
 
         #region Helper Methods
+
+        private async Task WriteToFolderAsync(Guid dirId, ZipArchive archive, string path)
+        {
+            var files = await Context.Files.GetDataAsync(f => f.ParentId == dirId);
+            var dirs = await Context.Files.GetDataAsync(f => f.ParentId == dirId);
+
+            foreach (var file in files)
+            {
+                var blobName = $"{file.Id}{Path.GetExtension(file.Name)}";
+
+                if (await Storage.BlobExistAsync(blobName))
+                {
+                    var zipEntry = archive.CreateEntry($"{path}/{file.Name}");
+
+                    using (var zipEntryStream = zipEntry.Open())
+                    {
+                        await Storage.DownloadAsync(blobName, zipEntryStream);
+                    }
+                }
+            }
+
+            foreach (var dir in dirs)
+            {
+                await WriteToFolderAsync(dir.Id, archive, $"{path}/{dir.Name}");
+            }
+        }
 
         private IQueryable<DirectoryEntry> GetQuery(
             Guid? id,
@@ -325,6 +296,7 @@ namespace MediaService.BLL.Services.ObjectsServices
         )
         {
             var dirs = Context.Directories.GetQuery();
+
             if (id.HasValue)
             {
                 dirs = dirs.Intersect(Context.Directories.GetQuery(d => d.Id == id.Value));
