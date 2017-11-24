@@ -134,7 +134,8 @@ namespace MediaService.PL.Controllers
                 {
                     var newFolder = Mapper.Map<DirectoryEntryDto>(model);
                     await DirectoryService.AddAsync(newFolder);
-                    return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                    //return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                    return RedirectToAction("Index", "Home");
                 }
                 ModelState.AddModelError("Name", "The folder with this name is already exist in this directory");
             }
