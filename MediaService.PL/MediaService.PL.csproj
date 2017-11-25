@@ -406,7 +406,6 @@
     <Content Include="Views\Directory\_DeleteDirectory.cshtml" />
     <Content Include="Views\File\_UploadFiles.cshtml" />
     <Content Include="Views\File\_LoadFileRomLink.cshtml" />
-    <Content Include="Views\File\_PreUploadFiles.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
