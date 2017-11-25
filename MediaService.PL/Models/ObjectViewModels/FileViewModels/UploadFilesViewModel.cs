@@ -13,6 +13,6 @@ namespace MediaService.PL.Models.ObjectViewModels.FileViewModels
         public Guid ParentId { get; set; }
 
         [Required]
-        public IEnumerable<HttpPostedFileBase> Files { get; set; }
+        public List<HttpPostedFileBase> Files { get; set; }
     }
 }

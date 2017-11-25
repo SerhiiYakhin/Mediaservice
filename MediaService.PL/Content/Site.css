@@ -34,8 +34,6 @@ body {
         color: #d3095f;
     }
 
-
-
 #Index {
         background-color: #E8E9F2;
         padding-bottom: 30px;
@@ -286,6 +284,10 @@ input[type="search"], textarea {
    
 }
 
+.thumb-image {
+    width: 44px;
+    height: 44px;
+}
 .uploadFileBtn {
     padding-top: 10px;
     margin-top: 4px;

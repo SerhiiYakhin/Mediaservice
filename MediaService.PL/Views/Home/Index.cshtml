@@ -1,7 +1,7 @@
-﻿
-@using MediaService.BLL.DTO
+﻿@using MediaService.BLL.DTO
 @using MediaService.PL.Models.ObjectViewModels.DirectoryViewModels
 @using MediaService.PL.Models.ObjectViewModels.FileViewModels
+
 ﻿@model DirectoryEntryDto
 @{
     ViewBag.Title = "Home Page";
@@ -10,9 +10,7 @@
 <div class="container indexMenu">
     <div class="row">
         <div class="col-xs-4">
-
             <input type="search" placeholder="Поиск файлов" class="custom-search-input" />
-
         </div>
         <div class="col-xs-4">
             <h2 class="indexTitle text-center">LuxStorage</h2>
@@ -29,7 +27,6 @@
     </div>
     <div class="col-xs-5">
         <div>
-
             <a class="pull-right" href="#">
                 <img src="~/fonts/icons-buttons/tile.svg" id="tileImg" />
             </a>
@@ -41,8 +38,6 @@
         <a class="pull-right btnLink" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             По дате создания
         </a>
-
-
         <ul class="dropdown-menu dropdown-menu-right pull-right" aria-labelledby="navbarDropdownMenuLink">
             <li>
                 <a class="dropdown-item" href="#">По дате добавления</a>
@@ -50,16 +45,10 @@
             <li>
                 <a class="dropdown-item" href="#">По размеру</a>
             </li>
-</ul>
-        
+        </ul>
         <a class="pull-right btnLink" href="#">Настройки доступа </a>
+    </div>
 </div>
-</div>
-
-           
-      
-           
-
 <div class="row dirListView">
     <div class="col-xs-9">
         <div class="row folderList">
@@ -68,75 +57,23 @@
         <div class="row filesList">
             <div id='files'></div>
         </div>
-        @Html.ActionLink(
-    "Back",
-    "Index", "Home", new
-    {
-        dirId = Model.ParentId
-    }, null)
+        @Html.ActionLink("Back", "Index", "Home", new { dirId = Model.ParentId }, null)
     </div>
-    
-
     <div class="col-xs-3">
-        <div id = "dirListMenu">
-           
+        <div id="dirListMenu">
             <a href="#uploadFileModal" class="btn btn-primary  uploadFileBtn pull-right" rel="modal:open">Загрузить файл</a>
             <div id="uploadFileModal" style="display:none">
                 @{Html.RenderPartial("~/Views/File/_UploadFiles.cshtml", new UploadFilesViewModel { ParentId = Model.Id });}
             </div>
-            
-         
             <a href="#createDirModal" class="btn btn-primary  createDirBtn pull-right" rel="modal:open">Создать папку</a>
             <div id="createDirModal" style="display:none">
                 @{Html.RenderPartial("~/Views/Directory/_CreateDirectory.cshtml", new CreateDirectoryViewModel { ParentId = Model.Id });}
             </div>
         </div>
     </div>
-
 </div>
-
-@*@using (Ajax.BeginForm("UploadFiles", "File", null, new AjaxOptions { UpdateTargetId = "files", HttpMethod = "POST" }, new { enctype = "multipart/form-data" }))
-{
-    @Html.AntiForgeryToken()
-
-    <div class="form-horizontal">
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.Hidden("ParentId", Model.Id as Guid?)
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="file" name="Files" id="Files" multiple />
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" name="Upload" id="Upload" value="Upload Files" />
-            </div>
-        </div>
-    </div>
-}*@
-<div>
-@using (Html.BeginForm("UploadFiles2", "File", FormMethod.Post, new { enctype = "multipart/form-data" }))
-{
-    <span>Select File:</span>
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    @Html.Hidden("ParentId", Model.Id as Guid?)
-    <input type="file" name="files" multiple="multiple"/>
-    <hr/>
-    <input type="submit" value="Upload"/>
-    <br/>
-    <span style="color:green">@Html.Raw(ViewBag.Message)</span>
-}
-</div>
-
-@*todo: В идеале от этого нужно избавиться, а верхняя форма должна работать.*@
-@*А еще лучше, чтобы все папко/файловые действия были в их вьюхах, а на этой вызывать только Index()*@
-@*<input type="file" id="FileUpload" multiple />
-<input type="button" id="btnUpload" value="Upload Files" />*@
-
-
 
 @section Scripts {
-
     <script>
         $.ajax({
             url: '@Url.Action("DirectoriesList", "Directory", new DirectoriesListViewModel{ParentId = Model.Id})',
@@ -146,7 +83,6 @@
                 $('#directories').html(data);
             }
         });
-
         $.ajax({
             url: '@Url.Action("FilesList", "File", new FilesListViewModel { ParentId = Model.Id })',
             type: "GET",
@@ -156,44 +92,4 @@
             }
         });
     </script>
-    @*<script>
-        $(document).ready(function() {
-            $('#btnUpload').click(function() {
-
-                // Checking whether FormData is available in browser  
-                if (window.FormData !== undefined) {
-
-                    var fileUpload = $("#FileUpload").get(0);
-                    var files = fileUpload.files;
-                    // Create FormData object  
-                    var fileData = new FormData();
-
-                    // Looping over all files and add it to FormData object  
-                    for (var i = 0; i < files.length; i++) {
-                        fileData.append(files[i].name, files[i]);
-                    }
-                    //files[1].creationTime
-                    // Adding one more key to FormData object
-                    //fileData.append('folderId', @Model.Id);
-
-                    $.ajax({
-                        url: '/File/UploadFiles?parentId=@Model.Id',
-                        type: "POST",
-                        contentType: false, // Not to set any content header
-                        processData: false, // Not to process data
-                        data: fileData,
-                        success: function(data) {
-                            //todo: Think about what to do after upload
-                            $('#files').html(data);
-                        },
-                        error: function(err) {
-                            alert(err.statusText + "BadLuck");
-                        }
-                    });
-                } else {
-                    alert("FormData is not supported.");
-                }
-            });
-        });
-    </script>*@
 }

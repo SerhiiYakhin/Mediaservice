@@ -20,12 +20,9 @@
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort>44352</IISExpressSSLPort>
-    <IISExpressAnonymousAuthentication>
-    </IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>
-    </IISExpressWindowsAuthentication>
-    <IISExpressUseClassicPipelineMode>
-    </IISExpressUseClassicPipelineMode>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -267,6 +264,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Utils\Attributes\ErrorHandler\FailedSetupMiddleware.cs" />
     <Compile Include="Utils\Attributes\ErrorHandler\ErrorHandleAttribute.cs" />
+    <Compile Include="Utils\Attributes\FileContentAttribute.cs" />
     <Compile Include="Utils\MapperModule.cs" />
     <Compile Include="Utils\NinjectDependencyResolver.cs" />
   </ItemGroup>
@@ -408,6 +406,7 @@
     <Content Include="Views\Directory\_DeleteDirectory.cshtml" />
     <Content Include="Views\File\_UploadFiles.cshtml" />
     <Content Include="Views\File\_LoadFileRomLink.cshtml" />
+    <Content Include="Views\File\_PreUploadFiles.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

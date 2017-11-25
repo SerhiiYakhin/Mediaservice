@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaService.PL", "MediaService.PL\MediaService.PL.csproj", "{0692C7A9-ADFA-4006-B242-0002FD228604}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaService.PL.Tests", "MediaService.PL.Tests\MediaService.PL.Tests.csproj", "{7A12E1C1-6EA2-4ABA-B0CF-3268BEF3272D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaService.BLL", "MediaService.BLL\MediaService.BLL.csproj", "{D2FC7E5B-058A-472F-BB1F-CBE374DF6E3B}"
 EndProject
@@ -14,6 +12,8 @@ EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "MediaService.Database", "MediaService.Database\MediaService.Database.sqlproj", "{F326C836-D51A-4FA3-97B1-779221733150}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaServiceBLLJob", "MediaServiceBLLJob\MediaServiceBLLJob.csproj", "{E445756F-7047-4228-954B-CEF1430138A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaService.Tests", "MediaService.Tests\MediaService.Tests.csproj", "{9E8510D5-4217-4BB4-8DD7-E9666B7D036A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +25,6 @@ Global
 		{0692C7A9-ADFA-4006-B242-0002FD228604}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0692C7A9-ADFA-4006-B242-0002FD228604}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0692C7A9-ADFA-4006-B242-0002FD228604}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7A12E1C1-6EA2-4ABA-B0CF-3268BEF3272D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7A12E1C1-6EA2-4ABA-B0CF-3268BEF3272D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7A12E1C1-6EA2-4ABA-B0CF-3268BEF3272D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7A12E1C1-6EA2-4ABA-B0CF-3268BEF3272D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D2FC7E5B-058A-472F-BB1F-CBE374DF6E3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D2FC7E5B-058A-472F-BB1F-CBE374DF6E3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2FC7E5B-058A-472F-BB1F-CBE374DF6E3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -47,6 +43,10 @@ Global
 		{E445756F-7047-4228-954B-CEF1430138A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E445756F-7047-4228-954B-CEF1430138A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E445756F-7047-4228-954B-CEF1430138A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E8510D5-4217-4BB4-8DD7-E9666B7D036A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E8510D5-4217-4BB4-8DD7-E9666B7D036A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E8510D5-4217-4BB4-8DD7-E9666B7D036A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E8510D5-4217-4BB4-8DD7-E9666B7D036A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
