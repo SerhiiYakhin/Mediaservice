@@ -19,7 +19,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace MediaService.BLL.Services.ObjectsServices
 {
-    public class FileService : Service<FileEntryDto, FileEntry, Guid>, IFilesService
+    public class FilesService : Service<FileEntryDto, FileEntry, Guid>, IFilesService
     {
         #region Fields
 
@@ -37,7 +37,7 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         #region Constructor
 
-        public FileService(IUnitOfWork uow, IBlobStorage storage, IQueueStorage queue) : base(uow)
+        public FilesService(IUnitOfWork uow, IBlobStorage storage, IQueueStorage queue) : base(uow)
         {
             Storage = storage;
             Queue = queue;

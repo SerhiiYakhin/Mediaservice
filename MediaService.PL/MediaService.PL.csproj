@@ -267,6 +267,7 @@
     <Compile Include="Utils\Attributes\FileContentAttribute.cs" />
     <Compile Include="Utils\MapperModule.cs" />
     <Compile Include="Utils\NinjectDependencyResolver.cs" />
+    <Compile Include="Utils\ViewsExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />

@@ -1,27 +1,14 @@
 ﻿@model MediaService.PL.Models.ObjectViewModels.FileViewModels.UploadFilesViewModel
 
+
+
 <div>
-    @using (Html.BeginForm("UploadFiles", "File", FormMethod.Post, new { enctype = "multipart/form-data" }))
-    {
-        @Html.AntiForgeryToken()
+  
+    <input type="hidden" name="ParentId"  id="ParentId" value="@Model.ParentId">
+    <input type="file" id="FileUpload" multiple />
+    <input type="button" id="Upload" value="Upload" />
 
-        <div class="form-horizontal">
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            @Html.HiddenFor(model => model.ParentId)
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="file" name="Files" id="Files" multiple />
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" name="Upload" id="Upload" value="Загрузить" />
-                </div>
-            </div>
-        </div>
-    }
 </div>
-
 
 @*@*<div>
     <div class="form-horizontal">

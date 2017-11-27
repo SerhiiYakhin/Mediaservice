@@ -75,6 +75,35 @@
 
 @section Scripts {
     <script>
+
+        $(document).ready(function () {
+            $("#Upload").click(function () {
+                var formData = new FormData();
+                var totalFiles = document.getElementById("FileUpload").files.length;
+                for (var i = 0; i < totalFiles; i++) {
+                    var file = document.getElementById("FileUpload").files[i];
+                    formData.append("FileUpload", file);
+                }
+                formData.append("ParentId", $("#ParentId").val());
+                $.ajax({
+                    type: "POST",
+                    url: '/File/Upload',
+                    data: formData,
+                    dataType: 'json',
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        $('#files').html(data.html);
+
+                    },
+                    error: function(error) {
+                        alert("errror");
+                    }
+                });
+            });
+        });
+
+
         $.ajax({
             url: '@Url.Action("DirectoriesList", "Directory", new DirectoriesListViewModel{ParentId = Model.Id})',
             type: "GET",
@@ -91,5 +120,7 @@
                 $('#files').html(data);
             }
         });
+
+
     </script>
 }

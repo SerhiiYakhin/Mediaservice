@@ -5,6 +5,7 @@ using MediaService.BLL.BusinessModels;
 using MediaService.BLL.DTO;
 using MediaService.BLL.DTO.Enums;
 using MediaService.BLL.Interfaces;
+using MediaService.BLL.Services.ObjectsServices;
 using MediaService.PL.Models.IdentityModels.Managers;
 using MediaService.PL.Models.ObjectViewModels.Enums;
 using MediaService.PL.Models.ObjectViewModels.FileViewModels;
@@ -91,6 +92,33 @@ namespace MediaService.PL.Controllers
         #endregion
 
         #region Actions
+       
+        [HttpPost]
+        [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
+        public async Task<ActionResult> Upload(Guid ParentId)
+        {
+           
+            if (Request.Files.Count > 0)
+            {
+                
+                try
+                {
+                    var filesToUpload = GetFilesToUpload(Request.Files);
+                    await FilesService.AddRangeAsync(filesToUpload, ParentId);
+                    
+                    var FilesListModel = await FilesService.GetByParentIdAsync(ParentId);
+                    var html = PartialView("_FilesList", FilesListModel).RenderToString();
+                    return Json(new { Success = true, html }, JsonRequestBehavior.AllowGet);
+                  
+                }
+                catch (Exception ex)
+                {
+                    throw new DbUpdateException(
+                        "New files can't be uploaded at this moment, we're sorry, try again later", ex);
+                }
+            }
+            return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+        }
 
         [HttpPost]
         [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
@@ -131,50 +159,6 @@ namespace MediaService.PL.Controllers
             var model = new UploadFilesViewModel { ParentId = folderId };
 
             return PartialView("_UploadFiles", model);
-        }
-
-        [HttpPost]
-        [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
-        public async Task<ActionResult> UploadFiles(UploadFilesViewModel model)
-        {
-            if (model.Files.Count > 0)
-            {
-                try
-                {
-                    var filesToUpload = GetFilesToUpload(model.Files);
-                    await FilesService.AddRangeAsync(filesToUpload, model.ParentId);
-                    return Json(new { success = true }, JsonRequestBehavior.AllowGet);
-                }
-                catch (Exception ex)
-                {
-                    throw new DbUpdateException(
-                        "New files can't be uploaded at this moment, we're sorry, try again later", ex);
-                }
-            }
-            return Json(new { success = false }, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpPost]
-        [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
-        public async Task<ActionResult> UploadFilesAjax(Guid parentId)
-        {
-            if (Request.Files.Count > 0)
-            {
-                var filesList = Request.Files.OfType<HttpPostedFileBase>().ToList();
-                try
-                {
-                    var filesToUpload = GetFilesToUpload(filesList);
-                    await FilesService.AddRangeAsync(filesToUpload, parentId);
-                    return Json(new { success = true }, JsonRequestBehavior.AllowGet);
-                }
-                catch (Exception ex)
-                {
-                    throw new DbUpdateException(
-                        "New files can't be uploaded at this moment, we're sorry, try again later", ex);
-                }
-            }
-
-            return Json(new { success = false }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
@@ -359,22 +343,22 @@ namespace MediaService.PL.Controllers
 
         #region Helper Methods
 
-        private static List<FileEntryDto> GetFilesToUpload(List<HttpPostedFileBase> files)
+        private static List<FileEntryDto> GetFilesToUpload(HttpFileCollectionBase files)
         {
+            
             var filesToUpload = new List<FileEntryDto>();
-
-            foreach (var file in files)
+            for (int i = 0; i < files.Count; i++)
             {
+                var file = files[i];
                 var fileType = FileValidation.GetFileTypeValidation(file);
-
-                if (fileType == FileType.Unallowed)
+                
+               if (fileType == FileType.Unallowed)
                 {
                     //@todo: Add error message about this files to the result json form
                     continue;
                 }
 
                 string fname = Path.GetFileName(file.FileName);
-
                 var fileEntryDto = new FileEntryDto
                 {
                     Name = fname,
