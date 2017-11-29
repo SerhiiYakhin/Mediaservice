@@ -361,7 +361,7 @@ namespace MediaService.PL.Controllers
                 }
 
                 string fname = Path.GetFileName(file.FileName);
-                var fileTag = Tags[i];
+              
               
                 var fileEntryDto = new FileEntryDto
                 {
@@ -369,9 +369,9 @@ namespace MediaService.PL.Controllers
                     Size = file.ContentLength,
                     FileType = fileType,
                     FileStream = file.InputStream,
-                    Tags = new HashSet<TagDto> { new TagDto { Name = fileTag } }
+                    
                 };
-                fileEntryDto.Tags.ElementAt(0).FileEntries.Add(fileEntryDto);
+              
 
                 filesToUpload.Add(fileEntryDto);
             }
