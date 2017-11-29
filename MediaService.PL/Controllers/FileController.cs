@@ -95,7 +95,7 @@ namespace MediaService.PL.Controllers
        
         [HttpPost]
         [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
-        public async Task<ActionResult> Upload(Guid ParentId, List<string> Tags)
+        public async Task<ActionResult> UploadFilesAsync(Guid ParentId, List<string> Tags)
         {
            
             if (Request.Files.Count > 0)
