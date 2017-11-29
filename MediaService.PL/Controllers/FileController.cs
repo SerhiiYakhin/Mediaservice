@@ -95,7 +95,7 @@ namespace MediaService.PL.Controllers
        
         [HttpPost]
         [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
-        public async Task<ActionResult> Upload(Guid ParentId)
+        public async Task<ActionResult> Upload(Guid ParentId, List<string> Tags)
         {
            
             if (Request.Files.Count > 0)
@@ -103,7 +103,8 @@ namespace MediaService.PL.Controllers
                 
                 try
                 {
-                    var filesToUpload = GetFilesToUpload(Request.Files);
+                    var filesToUpload = GetFilesToUpload(Request.Files, Tags);
+                   
                     await FilesService.AddRangeAsync(filesToUpload, ParentId);
                     
                     var FilesListModel = await FilesService.GetByParentIdAsync(ParentId);
@@ -343,13 +344,14 @@ namespace MediaService.PL.Controllers
 
         #region Helper Methods
 
-        private static List<FileEntryDto> GetFilesToUpload(HttpFileCollectionBase files)
+        private static List<FileEntryDto> GetFilesToUpload(HttpFileCollectionBase files, List<string> Tags)
         {
             
             var filesToUpload = new List<FileEntryDto>();
             for (int i = 0; i < files.Count; i++)
             {
                 var file = files[i];
+                
                 var fileType = FileValidation.GetFileTypeValidation(file);
                 
                if (fileType == FileType.Unallowed)
@@ -359,13 +361,17 @@ namespace MediaService.PL.Controllers
                 }
 
                 string fname = Path.GetFileName(file.FileName);
+                var fileTag = Tags[i];
+              
                 var fileEntryDto = new FileEntryDto
                 {
                     Name = fname,
                     Size = file.ContentLength,
                     FileType = fileType,
-                    FileStream = file.InputStream
+                    FileStream = file.InputStream,
+                    Tags = new HashSet<TagDto> { new TagDto { Name = fileTag } }
                 };
+                fileEntryDto.Tags.ElementAt(0).FileEntries.Add(fileEntryDto);
 
                 filesToUpload.Add(fileEntryDto);
             }

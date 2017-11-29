@@ -83,11 +83,16 @@
                 for (var i = 0; i < totalFiles; i++) {
                     var file = document.getElementById("FileUpload").files[i];
                     formData.append("FileUpload", file);
+                    
+                    formData.append('Tags[' + i + ']', $("#tag"+i).val());
                 }
+                
+               
                 formData.append("ParentId", $("#ParentId").val());
+              
                 $.ajax({
                     type: "POST",
-                    url: '/File/Upload',
+                    url: '/File/UploadFilesAsync',
                     data: formData,
                     dataType: 'json',
                     contentType: false,
@@ -103,6 +108,20 @@
             });
         });
 
+        updateList = function () {
+            var input = document.getElementById('FileUpload');
+            var output = document.getElementById('fileList');
+
+          
+            for (var i = 0; i < input.files.length; ++i) {
+                output.innerHTML += '<div>';
+                output.innerHTML += '<p>' + input.files.item(i).name + '</p>';
+                output.innerHTML += '<input type="text" class="tags" id = "tag' + i +'">';
+                output.innerHTML += '</div>';
+                
+            }
+           
+        }
 
         $.ajax({
             url: '@Url.Action("DirectoriesList", "Directory", new DirectoriesListViewModel{ParentId = Model.Id})',

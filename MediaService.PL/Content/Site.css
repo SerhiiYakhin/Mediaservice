@@ -256,7 +256,6 @@ input[type="search"], textarea {
 .folderItems {
     line-height: 44px;
     background-color: #fff;
-    
     margin-bottom: 4px;
     margin-top: 4px;
     height: 44px;
@@ -266,7 +265,10 @@ input[type="search"], textarea {
     -moz-box-shadow: 0 0 3px #ccc;
     -webkit-box-shadow: 0 0 3px #ccc;
     box-shadow: 0 0 3px #ccc;
+    padding-left: 0;
 }
+
+
 
 
 #userImg {
@@ -378,4 +380,8 @@ a:hover.dropdown-menu-right, a:focus.dropdown-menu-right {
     height: 15px;
     width: 15px;
     margin-right: 10px;
+}
+#uploadFileModal {
+width: 420px;
+height: 480px;
 }

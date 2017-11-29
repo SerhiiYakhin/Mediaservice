@@ -1,66 +1,26 @@
 ﻿@using MediaService.BLL.DTO.Enums
 ﻿@model IEnumerable<MediaService.BLL.DTO.FileEntryDto>
 
-<table class="table">
-    <tr>
-        <th>
-        </th>
-        <th>
-          
-        </th>
-        @*<th>
-            @Html.DisplayNameFor(model => model.ParentId)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Size)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Created)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Downloaded)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Modified)
-        </th>*@
-        <th></th>
-    </tr>
+
+
 
     @foreach (var item in Model)
     {
-        <tr class="folderItems">
-            <td>
-                <img width="20" height="20"
-                     src="@(item.FileType == FileType.Image ? Url.Content("/fonts/icons-buttons/picture.svg") : Url.Content("/fonts/icons-buttons/video-player.svg"))">
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <th>
-                <img class="fileImg" src='@item.FileThumbnailLink' />
-            </th>
-            @*<td>
-        @Html.DisplayFor(modelItem => item.ParentId)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.Size)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.Created)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.Downloaded)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.Modified)Guid fileId, Guid parentId, string fileName
-    </td>*@
-            <td>
-                @Html.ActionLink("Add Tag", "AddTag", "File", new { fileId = item.Id}, null ) |
-                @Html.ActionLink("Rename", "Rename", "File", new { fileId = item.Id, parentId = item.ParentId, fileName = item.Name }, null) |
-                @Html.ActionLink("Delete", "Delete", "File", new { fileId = item.Id }, null) |
-                @Html.ActionLink("Download", "Download", "File", new { fileId = item.Id, fileSize = item.Size }, null)
-            </td>
-        </tr>
+        <div class="row">
+            <div class="folderItems">
+           
+                    <img width="15" height="15"
+                         src="@(item.FileType == FileType.Image ? Url.Content("/fonts/icons-buttons/picture.svg") : Url.Content("/fonts/icons-buttons/video-player.svg"))">
+
+                    @Html.DisplayFor(modelItem => item.Name)
+            
+            
+                    @Html.ActionLink("Add Tag", "AddTag", "File", new { fileId = item.Id }, null) |
+                    @Html.ActionLink("Rename", "Rename", "File", new { fileId = item.Id, parentId = item.ParentId, fileName = item.Name }, null) |
+                    @Html.ActionLink("Delete", "Delete", "File", new { fileId = item.Id }, null) |
+                    @Html.ActionLink("Download", "Download", "File", new { fileId = item.Id, fileSize = item.Size }, null)
+           
+            </div>
+        </div>
     }
 
-</table>

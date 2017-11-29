@@ -19,7 +19,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace MediaService.BLL.Services.ObjectsServices
 {
-    public class FilesService : Service<FileEntryDto, FileEntry, Guid>, IFilesService
+    public class FileService : Service<FileEntryDto, FileEntry, Guid>, IFilesService
     {
         #region Fields
 
@@ -37,7 +37,7 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         #region Constructor
 
-        public FilesService(IUnitOfWork uow, IBlobStorage storage, IQueueStorage queue) : base(uow)
+        public FileService(IUnitOfWork uow, IBlobStorage storage, IQueueStorage queue) : base(uow)
         {
             Storage = storage;
             Queue = queue;
@@ -118,6 +118,7 @@ namespace MediaService.BLL.Services.ObjectsServices
                 fileEntry.Downloaded = fileEntry.Created = fileEntry.Modified = DateTime.Now;
                 fileEntry.Owner = parentDir.Owner;
                 fileEntry.Parent = parentDir;
+               
                 await Context.Files.AddAsync(fileEntry);
                 await Context.SaveChangesAsync();
                 await Storage.UploadAsync(fileDto.FileStream, $"{fileEntry.Id}{Path.GetExtension(fileEntry.Name)}", mimeType);
