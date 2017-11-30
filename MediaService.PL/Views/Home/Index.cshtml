@@ -5,6 +5,7 @@
 ﻿@model DirectoryEntryDto
 @{
     ViewBag.Title = "Home Page";
+    ViewBag.ChildModel = Model;
 }
 
 <div class="container indexMenu">
@@ -23,8 +24,24 @@
 <hr />
 <div class="row customNav">
     <div class="col-xs-7">
-        <p class="customBreadcrumb">Мои файлы</p>
-    </div>
+        <div class="customBreadcrumb">
+          
+            <ul style="list-style-type:none; white-space: nowrap; float:left ">
+                @Html.ActionLink("Мои файлы", "Index", "Home")
+
+                @while (ViewBag.ChildModel.ParentId != null)
+                {
+
+                    <li style="float:right;  display: inline-block">
+                        > @Html.ActionLink((string)ViewBag.ChildModel.Name, "Index", "Home", new { dirId = ViewBag.ChildModel.ParentId }, null)
+                    </li>
+                    ViewBag.ChildModel = ViewBag.ChildModel.Parent;
+                }
+            </ul>
+
+            </div>
+
+</div>
     <div class="col-xs-5">
         <div>
             <a class="pull-right" href="#">
@@ -51,12 +68,12 @@
 </div>
 <div class="row dirListView">
     <div class="col-xs-9">
-        
-            <div id='directories'></div>
-  
-      
-            <div id='files'></div>
- 
+
+        <div id='directories'></div>
+
+
+        <div id='files'></div>
+
         @Html.ActionLink("Back", "Index", "Home", new { dirId = Model.ParentId }, null)
     </div>
     <div class="col-xs-3">
@@ -75,7 +92,6 @@
 
 @section Scripts {
     <script>
-
         $(document).ready(function () {
             $("#Upload").click(function () {
                 var formData = new FormData();
@@ -83,13 +99,13 @@
                 for (var i = 0; i < totalFiles; i++) {
                     var file = document.getElementById("FileUpload").files[i];
                     formData.append("FileUpload", file);
-                    
-                    formData.append('Tags[' + i + ']', $("#tag"+i).val());
+
+                    formData.append('Tags[' + i + ']', $("#tag" + i).val());
                 }
-                
-               
+
+
                 formData.append("ParentId", $("#ParentId").val());
-              
+
                 $.ajax({
                     type: "POST",
                     url: '/File/UploadFilesAsync',
@@ -101,7 +117,7 @@
                         $('#files').html(data.html);
 
                     },
-                    error: function(error) {
+                    error: function (error) {
                         alert("errror");
                     }
                 });
@@ -112,21 +128,19 @@
             var input = document.getElementById('FileUpload');
             var output = document.getElementById('fileList');
 
-           
+
             for (var i = 0; i < input.files.length; ++i) {
                 output.innerHTML += '<div class="row uploadFilesRow">';
                 output.innerHTML += '<div class="col-xs-8" style="padding: 0"><img src="/fonts/icons-buttons/success.svg" height="20" width="20" class="uploadSuccessImg"/><img src="/fonts/icons-buttons/picture.svg" height="20" width="20" style="margin-right:18px"/>'
                     + input.files.item(i).name; + '</div>';
-                    output.innerHTML += '<div class="col-xs-4" style="padding: 0"><input type="text" class="tags" id = "tag' + i + '" placeholder="+Добавить тег""></div >';
+                output.innerHTML += '<div class="col-xs-4" style="padding: 0"><input type="text" class="tags" id = "tag' + i + '" placeholder="+Добавить тег""></div >';
                 output.innerHTML += '<div class="col-xs-12" style="padding: 0"><hr /></div>';
 
                 output.innerHTML += '</div>';
-                
-               
             }
-
-           
         }
+
+
 
         $.ajax({
             url: '@Url.Action("DirectoriesList", "Directory", new DirectoriesListViewModel{ParentId = Model.Id})',

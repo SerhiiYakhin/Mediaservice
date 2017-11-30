@@ -9,17 +9,7 @@
         <div class="folderItems">
             <img class="dirImg" width="18" height="18"
                  src="/fonts/icons-buttons/folder.svg" />
-            @Html.ActionLink(
-                item.Name,
-                "Index", "Home", new
-                {
-                    dirId = item.Id
-
-                }, null
-
-                )
-
-
+            @Html.ActionLink(item.Name, "Index", "Home", new { dirId = item.Id }, null)
         </div>
     </div>
    
