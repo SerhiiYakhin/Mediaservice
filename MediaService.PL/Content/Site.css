@@ -382,6 +382,34 @@ a:hover.dropdown-menu-right, a:focus.dropdown-menu-right {
     margin-right: 10px;
 }
 #uploadFileModal {
-width: 420px;
-height: 480px;
+width: 600px;
+height: 680px;
+padding: 0 0 0 0;
+}
+.uploadSuccessImg {
+    margin: 18px 18px 18px 18px;
+}
+
+.uploadFilesRow {
+    border-bottom: 1px;
+    border-bottom-color: grey;
+}
+.tags {
+    color:black;
+    border: none;
+    margin-top:20px;
+    padding-right: 50px;
+}
+
+input.tags:focus::-webkit-input-placeholder {
+    color: transparent;
+    border: none;
+    outline: none;
+}
+
+input.tags:focus,
+select.tags:focus,
+textarea.tags:focus,
+button.tags:focus {
+    outline: none;
 }
