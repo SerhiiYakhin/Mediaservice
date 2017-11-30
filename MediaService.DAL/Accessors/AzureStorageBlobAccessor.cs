@@ -90,7 +90,7 @@ namespace MediaService.DAL.Accessors
 
         #region Download
 
-        public async Task<(Stream blobStream, bool blobExist)> DownloadAsync(string blobName)
+        public async Task<(Stream blobStream, bool blobExist)> DownloadAsync(string blobName, int blobSize)
         {
             var blob = GetBlob(blobName);
             var blobExist = await blob.ExistsAsync();
@@ -98,16 +98,16 @@ namespace MediaService.DAL.Accessors
             if (blobExist)
             {
                 var blobStream = new MemoryStream();
-                await LoadBlobToStream(blobStream, blob);
+                await LoadBlobToStream(blobStream, blob, blobSize);
             }
 
             return (null, false);
         }
 
-        public async Task DownloadAsync(string blobName, Stream blobStream)
+        public async Task DownloadAsync(string blobName, int blobSize, Stream blobStream)
         {
             var blob = GetBlob(blobName);
-            await LoadBlobToStream(blobStream, blob);
+            await LoadBlobToStream(blobStream, blob, blobSize);
         }
 
         public async Task<bool> BlobExistAsync(string blobName)
@@ -120,6 +120,7 @@ namespace MediaService.DAL.Accessors
         public string GetDirectLinkToBlob(string blobName, DateTimeOffset expiryTime, SharedAccessBlobPermissions permissions)
         {
             var blob = GetBlob(blobName);
+
             if (blob.Exists())
             {    
                 var sasConstraints = new SharedAccessBlobPolicy
@@ -153,9 +154,15 @@ namespace MediaService.DAL.Accessors
 
         #region Help Methods
 
-        private static async Task LoadBlobToStream(Stream blobStream, CloudBlockBlob blob)
+        private static async Task LoadBlobToStream(Stream blobStream, CloudBlockBlob blob, int blobSize)
         {
-            var threadCount = (int)Math.Ceiling((double)blob.Properties.Length / BytesToAddThread);
+            //var threadCount = (int)Math.Ceiling((double)blob.Properties.Length / BytesToAddThread);
+            var threadCount = blobSize / BytesToAddThread + 1;
+
+            if (threadCount < 1)
+            {
+                threadCount = 1;
+            }
 
             var requestOptions = new BlobRequestOptions
             {

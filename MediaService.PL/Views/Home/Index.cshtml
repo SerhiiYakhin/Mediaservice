@@ -1,8 +1,7 @@
-﻿@using MediaService.BLL.DTO
-@using MediaService.PL.Models.ObjectViewModels.DirectoryViewModels
+﻿@using MediaService.PL.Models.ObjectViewModels.DirectoryViewModels
 @using MediaService.PL.Models.ObjectViewModels.FileViewModels
+﻿@model MediaService.BLL.DTO.DirectoryEntryDto
 
-﻿@model DirectoryEntryDto
 @{
     ViewBag.Title = "Home Page";
     ViewBag.ChildModel = Model;
@@ -15,7 +14,7 @@
 <div class="container indexMenu">
     <div class="row">
         <div class="col-xs-4">
-            <input type="search" placeholder="Поиск файлов" class="custom-search-input" />
+            <input type="search" placeholder="Поиск файлов" class="custom-search-input"/>
         </div>
         <div class="col-xs-4">
             <h2 class="indexTitle text-center">LuxStorage</h2>
@@ -25,7 +24,7 @@
         </div>
     </div>
 </div>
-<hr />
+<hr/>
 <div class="row customNav">
     <div class="col-xs-7">
         <div class="customBreadcrumb">
@@ -53,13 +52,13 @@
     <div class="col-xs-5">
         <div>
             <a class="pull-right" href="#">
-                <img src="~/fonts/icons-buttons/tile.svg" id="tileImg" />
+                <img src="~/fonts/icons-buttons/tile.svg" id="tileImg"/>
             </a>
             <a class="pull-right" href="#">
-                <img src="~/fonts/icons-buttons/list.svg" id="listImg" />
+                <img src="~/fonts/icons-buttons/list.svg" id="listImg"/>
             </a>
         </div>
-        <img src="~/fonts/icons-buttons/next.svg" class="pull-right" id="dropdownImg" />
+        <img src="~/fonts/icons-buttons/next.svg" class="pull-right" id="dropdownImg"/>
         <a class="pull-right btnLink" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             По дате создания
         </a>
@@ -91,17 +90,17 @@
 
         <div id='files'></div>
 
-        @Html.ActionLink("Back", "Index", "Home", new { dirId = Model.ParentId }, null)
+        @Html.ActionLink("Back", "Index", "Home", new {dirId = Model.ParentId}, null)
     </div>
     <div class="col-xs-3">
         <div id="dirListMenu">
             <a href="#uploadFileModal" class="btn btn-primary  uploadFileBtn pull-right" rel="modal:open">Загрузить файл</a>
-            <div id="uploadFileModal" style="display:none">
-                @{Html.RenderPartial("~/Views/File/_UploadFiles.cshtml", new UploadFilesViewModel { ParentId = Model.Id });}
+            <div id="uploadFileModal" style="display: none">
+                @{ Html.RenderPartial("~/Views/File/_UploadFiles.cshtml", new UploadFilesViewModel {ParentId = Model.Id}); }
             </div>
             <a href="#createDirModal" class="btn btn-primary  createDirBtn pull-right" rel="modal:open">Создать папку</a>
-            <div id="createDirModal" style="display:none">
-                @{Html.RenderPartial("~/Views/Directory/_CreateDirectory.cshtml", new CreateDirectoryViewModel { ParentId = Model.Id });}
+            <div id="createDirModal" style="display: none">
+                @{ Html.RenderPartial("~/Views/Directory/_CreateDirectory.cshtml", new CreateDirectoryViewModel {ParentId = Model.Id}); }
             </div>
 
         </div>
@@ -116,9 +115,8 @@
 @section Scripts {
 
     <script>
-
-        $(document).ready(function () {
-            $("#Upload").click(function () {
+        $(document).ready(function() {
+            $("#Upload").click(function() {
                 var formData = new FormData();
                 var totalFiles = document.getElementById("FileUpload").files.length;
                 for (var i = 0; i < totalFiles; i++) {
@@ -129,7 +127,6 @@
                 }
 
 
-                formData.append("ParentId", $("#ParentId").val());
 
                 $.ajax({
                     type: "POST",
@@ -138,7 +135,7 @@
                     dataType: 'json',
                     contentType: false,
                     processData: false,
-                    success: function (data) {
+                    success: function(data) {
                         $('#files').html(data.html);
 
                     },
@@ -149,7 +146,7 @@
             });
         });
 
-        updateList = function () {
+        updateList = function() {
             var input = document.getElementById('FileUpload');
             var output = document.getElementById('fileList');
 
@@ -157,19 +154,24 @@
 
             for (var i = 0; i < input.files.length; ++i) {
                 output.innerHTML += '<div class="row uploadFilesRow">';
-                output.innerHTML += '<div class="col-xs-8" style="padding: 0"><img src="/fonts/icons-buttons/success.svg" height="20" width="20" class="uploadSuccessImg"/><img src="/fonts/icons-buttons/picture.svg" height="20" width="20" style="margin-right:18px"/>'
-                    + input.files.item(i).name; + '</div>';
+                output.innerHTML +=
+                    '<div class="col-xs-8" style="padding: 0"><img src="/fonts/icons-buttons/success.svg" height="20" width="20" class="uploadSuccessImg"/><img src="/fonts/icons-buttons/picture.svg" height="20" width="20" style="margin-right:18px"/>' +
                 output.innerHTML += '<div class="col-xs-4" style="padding: 0"><input type="text" class="tags" id = "tag' + i + '" placeholder="+Добавить тег""></div >';
-                output.innerHTML += '<div class="col-xs-12" style="padding: 0"><hr /></div>';
+                    '</div>';
+                output.innerHTML +=
+                    '<div class="col-xs-4" style="padding: 0"><input type="text" class="tags" id = "tag' +
+                    i +
+                    '" placeholder="+Добавить тег""></div >';
+                output.innerHTML += '<div class="col-xs-12" style="padding: 0"><hr/></div>';
 
                 output.innerHTML += '</div>';
             }
         }
 
-
+        };
 
         $.ajax({
-            url: '@Url.Action("DirectoriesList", "Directory", new DirectoriesListViewModel{ParentId = Model.Id})',
+            url: '@Url.Action("DirectoriesList", "Directory", new DirectoriesListViewModel {ParentId = Model.Id})',
             type: "GET",
             contentType: "text/html; charset=utf-8",
             success: function(data) {
@@ -177,14 +179,13 @@
             }
         });
         $.ajax({
-            url: '@Url.Action("FilesList", "File", new FilesListViewModel { ParentId = Model.Id })',
+            url: '@Url.Action("FilesList", "File", new FilesListViewModel {ParentId = Model.Id})',
             type: "GET",
             contentType: "text/html; charset=utf-8",
             success: function(data) {
                 $('#files').html(data);
             }
         });
-
         $(function () {
             $.contextMenu({
                 selector: '.directoryEntry',
@@ -216,7 +217,6 @@
                                  }
                              })
                             
-
 
 
                             break;

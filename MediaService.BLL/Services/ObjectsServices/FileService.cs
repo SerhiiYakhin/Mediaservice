@@ -1,19 +1,18 @@
 ﻿#region usings
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Net.Security;
-using System.Threading.Tasks;
-using System.Web;
 using MediaService.BLL.DTO;
 using MediaService.BLL.DTO.Enums;
 using MediaService.BLL.Interfaces;
 using MediaService.DAL.Entities;
 using MediaService.DAL.Interfaces;
 using Microsoft.WindowsAzure.Storage.Blob;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
 
 #endregion
 
@@ -21,12 +20,6 @@ namespace MediaService.BLL.Services.ObjectsServices
 {
     public class FileService : Service<FileEntryDto, FileEntry, Guid>, IFilesService
     {
-        #region Fields
-
-
-
-        #endregion
-
         #region Properties
 
         private IBlobStorage Storage { get; }
@@ -91,9 +84,9 @@ namespace MediaService.BLL.Services.ObjectsServices
             return Storage.GetDirectLinkToBlob($"{fileEntry.Id}{Path.GetExtension(fileEntry.Name)}", expiryTime, SharedAccessBlobPermissions.Read);
         }
 
-        public async Task<IEnumerable<FileEntryDto>> SearchFilesAsync(Guid modelParentId, SearchType modelSearchType, string modelSearchValue)
+        public async Task<IEnumerable<FileEntryDto>> SearchFilesAsync(Guid parentId, SearchType searchType, string searchValue)
         {
-            throw new NotImplementedException();
+            return DtoMapper.Map<IEnumerable<FileEntryDto>>(await SearchFilesHelperAsync(parentId, searchType, searchValue));
         }
 
         #endregion
@@ -187,15 +180,16 @@ namespace MediaService.BLL.Services.ObjectsServices
             if (tagEntry == null)
             {
                 tagEntry = new Tag { Name = tagName };
-                //fileEntry.Tags.Add(tagEntry);
+                tagEntry.FileEntries.Add(fileEntry);
+                await Context.Tags.AddAsync(tagEntry);
             }
-            else if (fileEntry.Tags.Any(t => t.Id == tagEntry.Id))
+            else if (fileEntry.Tags.All(t => t.Id != tagEntry.Id))
             {
-                return;
+                tagEntry.FileEntries.Add(fileEntry);
+                await Context.Tags.UpdateAsync(tagEntry);
             }
-
-            tagEntry.FileEntries.Add(fileEntry);
-            await Context.Tags.AddAsync(tagEntry);
+            //fileEntry.Tags.Add(tagEntry);
+            //await Context.Files.UpdateAsync(fileEntry);
             await Context.SaveChangesAsync();
         }
 
@@ -235,6 +229,14 @@ namespace MediaService.BLL.Services.ObjectsServices
                 throw new InvalidDataException("Can't find user's file with this Id in database");
             }
 
+            foreach (var tag in currFileEntry.Tags)
+            {
+                if (tag.FileEntries.Count == 1)
+                {
+                    await Context.Tags.RemoveAsync(tag);
+                }
+            }
+
             await Context.Files.RemoveAsync(currFileEntry);
             await Storage.DeleteAsync($"{currFileEntry.Id}{Path.GetExtension(currFileEntry.Name)}");
 
@@ -272,7 +274,7 @@ namespace MediaService.BLL.Services.ObjectsServices
                             var zipEntry = archive.CreateEntry(fileEntry.Name);
                             using (var zipEntryStream = zipEntry.Open())
                             {
-                                await Storage.DownloadAsync(blobName, zipEntryStream);
+                                await Storage.DownloadAsync(blobName, fileEntry.Size, zipEntryStream);
                             }
                         }
                     }
@@ -328,6 +330,35 @@ namespace MediaService.BLL.Services.ObjectsServices
             }
 
             return dirs;
+        }
+
+        private async Task<IEnumerable<FileEntry>> SearchFilesHelperAsync(Guid parentId, SearchType searchType, string searchValue)
+        {
+            var childDirs = await Context.Directories.GetDataAsync(f => f.ParentId == parentId);
+
+            IEnumerable<FileEntry> result;
+            switch (searchType)
+            {
+                case SearchType.ByName:
+                    result = await Context.Files.GetDataAsync(f => f.ParentId == parentId && f.Name == searchValue);
+                    break;
+                case SearchType.ByTag:
+                    result = await Context.Files.GetDataAsync(f =>
+                        f.ParentId == parentId && f.Tags.Any(t => t.Name == searchValue));
+                    break;
+                case SearchType.None:
+                    result = await Context.Files.GetDataAsync(f => f.ParentId == parentId);
+                    break;
+                default:
+                    return Enumerable.Empty<FileEntry>();
+            }
+
+            foreach (var directoryEntry in childDirs)
+            {
+                result = result.Concat(await SearchFilesHelperAsync(directoryEntry.Id, searchType, searchValue));
+            }
+
+            return result;
         }
 
         #endregion

@@ -2,17 +2,16 @@
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
-namespace MediaService.PL.Models.ObjectViewModels.DirectoryViewModels
+namespace MediaService.PL.Models.ObjectViewModels.FileViewModels
 {
-    public class DownloadDirectoryViewModel
+    public class RemoveTagViewModel
     {
         [Required]
         [HiddenInput(DisplayValue = false)]
-        public Guid Id { get; set; }
+        public Guid FileId { get; set; }
 
         [Required]
         [HiddenInput(DisplayValue = false)]
-        [StringLength(50)]
-        public string Name { get; set; }
+        public Guid TagId { get; set; }
     }
 }

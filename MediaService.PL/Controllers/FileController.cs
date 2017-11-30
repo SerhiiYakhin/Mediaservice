@@ -5,8 +5,6 @@ using MediaService.BLL.BusinessModels;
 using MediaService.BLL.DTO;
 using MediaService.BLL.DTO.Enums;
 using MediaService.BLL.Interfaces;
-using MediaService.BLL.Services.ObjectsServices;
-using MediaService.PL.Models.IdentityModels.Managers;
 using MediaService.PL.Models.ObjectViewModels.Enums;
 using MediaService.PL.Models.ObjectViewModels.FileViewModels;
 using MediaService.PL.Utils;
@@ -30,15 +28,11 @@ namespace MediaService.PL.Controllers
     {
         #region Fields
 
-        private IUserService _applicationUserService;
-
-        private IDirectoryService _directoryService;
-
         private IFilesService _filesService;
 
-        private IMapper _mapper;
+        private ITagService _tagService;
 
-        private ApplicationUserManager _userManager;
+        private IMapper _mapper;
 
         #endregion
 
@@ -46,16 +40,9 @@ namespace MediaService.PL.Controllers
 
         public FileController() { }
 
-        public FileController(
-            ApplicationUserManager userManager,
-            IUserService applicationUserService,
-            IDirectoryService directoryService,
-            IFilesService filesService
-        )
+        public FileController(IFilesService filesService, ITagService tagService)
         {
-            UserManager = userManager;
-            ApplicationUserService = applicationUserService;
-            DirectoryService = directoryService;
+            TagService = tagService;
             FilesService = filesService;
         }
 
@@ -65,50 +52,44 @@ namespace MediaService.PL.Controllers
 
         private IMapper Mapper => _mapper ?? (_mapper = MapperModule.GetMapper());
 
-        private ApplicationUserManager UserManager
-        {
-            get => _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            set => _userManager = value;
-        }
-
-        private IUserService ApplicationUserService
-        {
-            get => _applicationUserService ?? HttpContext.GetOwinContext().GetUserManager<IUserService>();
-            set => _applicationUserService = value;
-        }
-
-        private IDirectoryService DirectoryService
-        {
-            get => _directoryService ?? HttpContext.GetOwinContext().GetUserManager<IDirectoryService>();
-            set => _directoryService = value;
-        }
-
         private IFilesService FilesService
         {
             get => _filesService ?? HttpContext.GetOwinContext().GetUserManager<IFilesService>();
             set => _filesService = value;
         }
 
+        private ITagService TagService
+        {
+            get => _tagService ?? HttpContext.GetOwinContext().GetUserManager<ITagService>();
+            set => _tagService = value;
+        }
+
         #endregion
 
         #region Actions
-       
+
+        [HttpGet]
+        public ActionResult UploadFiles(Guid folderId)
+        {
+            var model = new UploadFilesViewModel { ParentId = folderId };
+
+            return PartialView("_UploadFiles", model);
+        }
+
         [HttpPost]
         [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
-        public async Task<ActionResult> UploadFilesAsync(Guid ParentId, List<string> Tags)
+        public async Task<ActionResult> UploadFilesAsync(Guid parentId, List<string> tags)
         {
-           
             if (Request.Files.Count > 0)
             {
-                
                 try
                 {
-                    var filesToUpload = GetFilesToUpload(Request.Files, Tags);
+                    var filesToUpload = GetFilesToUpload(Request.Files, tags);
                    
-                    await FilesService.AddRangeAsync(filesToUpload, ParentId);
+                    await FilesService.AddRangeAsync(filesToUpload, parentId);
                     
-                    var FilesListModel = await FilesService.GetByParentIdAsync(ParentId);
-                    var html = PartialView("_FilesList", FilesListModel).RenderToString();
+                    var filesListModel = await FilesService.GetByParentIdAsync(parentId);
+                    var html = PartialView("_FilesList", filesListModel).RenderToString();
                     return Json(new { Success = true, html }, JsonRequestBehavior.AllowGet);
                   
                 }
@@ -119,47 +100,6 @@ namespace MediaService.PL.Controllers
                 }
             }
             return Json(new { success = false }, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpPost]
-        [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
-        public async Task<ActionResult> Search(SearchFilesViewModel model)
-        {
-            try
-            {
-                var files = await FilesService.SearchFilesAsync(model.ParentId, model.SearchType, model.SearchValue);
-
-                switch (model.OrderType)
-                {
-                    case OrderType.BySize:
-                        files = files.OrderBy(d => d.Size);
-                        break;
-                    case OrderType.ByName:
-                        files = files.OrderBy(d => d.Name);
-                        break;
-                    case OrderType.ByCreationTime:
-                        files = files.OrderBy(d => d.Created);
-                        break;
-                    case OrderType.ByUploadingTime:
-                        files = files.OrderBy(d => d.Downloaded);
-                        break;
-                }
-
-                return PartialView("_FilesList", files);
-            }
-            catch (Exception e)
-            {
-                throw new DataException(
-                    "We are sorry, but search function is unavaible in this time, try again later", e);
-            }
-        }
-
-        [HttpGet]
-        public ActionResult UploadFiles(Guid folderId)
-        {
-            var model = new UploadFilesViewModel { ParentId = folderId };
-
-            return PartialView("_UploadFiles", model);
         }
 
         [HttpGet]
@@ -242,6 +182,39 @@ namespace MediaService.PL.Controllers
             }
         }
 
+        [HttpPost]
+        [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
+        public async Task<ActionResult> Search(SearchFilesViewModel model)
+        {
+            try
+            {
+                var files = await FilesService.SearchFilesAsync(model.ParentId, model.SearchType, model.SearchValue);
+
+                switch (model.OrderType)
+                {
+                    case OrderType.BySize:
+                        files = files.OrderBy(d => d.Size);
+                        break;
+                    case OrderType.ByName:
+                        files = files.OrderBy(d => d.Name);
+                        break;
+                    case OrderType.ByCreationTime:
+                        files = files.OrderBy(d => d.Created);
+                        break;
+                    case OrderType.ByUploadingTime:
+                        files = files.OrderBy(d => d.Downloaded);
+                        break;
+                }
+
+                return PartialView("_FilesList", files);
+            }
+            catch (Exception e)
+            {
+                throw new DataException(
+                    "We are sorry, but search function is unavaible in this time, try again later", e);
+            }
+        }
+
         [HttpGet]
         public ActionResult AddTag(Guid fileId)
         {
@@ -269,6 +242,22 @@ namespace MediaService.PL.Controllers
             {
                 throw new DbUpdateException(
                     "We can't add tag to this file at this moment, we're sorry, try again later", e);
+            }
+        }
+
+        [HttpPost]
+        [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
+        public async Task<ActionResult> RemoveTag(RemoveTagViewModel model)
+        {
+            try
+            {
+                await TagService.RemoveAsync(model.FileId, model.TagId);
+                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                throw new DbUpdateException(
+                    "We can't remove tag from this file at this moment, we're sorry, try again later", e);
             }
         }
 
@@ -344,10 +333,10 @@ namespace MediaService.PL.Controllers
 
         #region Helper Methods
 
-        private static List<FileEntryDto> GetFilesToUpload(HttpFileCollectionBase files, List<string> Tags)
+        private static List<FileEntryDto> GetFilesToUpload(HttpFileCollectionBase files, List<string> tags)
         {
-            
             var filesToUpload = new List<FileEntryDto>();
+
             for (int i = 0; i < files.Count; i++)
             {
                 var file = files[i];
@@ -362,16 +351,18 @@ namespace MediaService.PL.Controllers
 
                 string fname = Path.GetFileName(file.FileName);
               
-              
                 var fileEntryDto = new FileEntryDto
                 {
                     Name = fname,
                     Size = file.ContentLength,
                     FileType = fileType,
-                    FileStream = file.InputStream,
-                    
+                    FileStream = file.InputStream
                 };
-              
+
+                if (!string.IsNullOrWhiteSpace(tags[i]))
+                {
+                    fileEntryDto.Tags = new HashSet<TagDto> { new TagDto {Name = tags[i]} };
+                }
 
                 filesToUpload.Add(fileEntryDto);
             }
@@ -387,28 +378,16 @@ namespace MediaService.PL.Controllers
         {
             if (disposing)
             {
-                if (_userManager != null)
-                {
-                    _userManager.Dispose();
-                    _userManager = null;
-                }
-
-                if (_directoryService != null)
-                {
-                    _directoryService.Dispose();
-                    _directoryService = null;
-                }
-
-                if (_applicationUserService != null)
-                {
-                    _applicationUserService.Dispose();
-                    _applicationUserService = null;
-                }
-
                 if (_filesService != null)
                 {
                     _filesService.Dispose();
                     _filesService = null;
+                }
+
+                if (_tagService != null)
+                {
+                    _tagService.Dispose();
+                    _tagService = null;
                 }
             }
 

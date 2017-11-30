@@ -1,0 +1,26 @@
+﻿@model MediaService.BLL.DTO.FileEntryDto
+
+<div>
+    <h4>FileEntryDto</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dd>
+            @Html.DisplayFor(model => model.Size)
+        </dd>
+
+        <dd>
+            @Html.DisplayFor(model => model.FileThumbnailLink)
+        </dd>
+    </dl>
+    @foreach (var tag in Model.Tags)
+    {
+        <p>@tag.Name</p>
+    }
+</div>
+<p>
+    @Html.ActionLink("Download", "Download", "File", new { fileId = Model.Id, fileSize = Model.Size }, null)
+</p>

@@ -28,6 +28,8 @@ namespace MediaService.PL
                 (IDirectoryService) DependencyResolver.Current.GetService(typeof(IDirectoryService)));
             app.CreatePerOwinContext(() =>
                 (IUserProfileService) DependencyResolver.Current.GetService(typeof(IUserProfileService)));
+            app.CreatePerOwinContext(() =>
+                (ITagService)DependencyResolver.Current.GetService(typeof(ITagService)));
 
             app.CreatePerOwinContext(ApplicationDbContext.Create);
             app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
