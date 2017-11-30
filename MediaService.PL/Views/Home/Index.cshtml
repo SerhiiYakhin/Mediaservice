@@ -109,9 +109,13 @@
 <div id="deleteDirectoryModal" style="display:none; width: 500px; height: 500px;">
    
 </div>
-<div id="renameDirectoryModal" style="display:none">
-    @{Html.RenderPartial("~/Views/Directory/_RenameDirectory.cshtml", new RenameDirectoryViewModel { ParentId = Model.Id });}
+<div id="renameDirectoryModal" style="display:none; width: 500px; height: 500px;">
+   
 </div>
+<div id="fileFromLinkModal" style="display:none; width: 500px; height: 500px;">
+    
+</div>
+
 @section Scripts {
 
     <script>
@@ -125,9 +129,6 @@
 
                     formData.append('Tags[' + i + ']', $("#tag" + i).val());
                 }
-
-
-
                 $.ajax({
                     type: "POST",
                     url: '/File/UploadFilesAsync',
@@ -190,22 +191,39 @@
                     var m =  key;
                     switch (m) {
                         case "edit":
-                            $("#renameDirectoryModal").modal();
-                            $('#FolderIdToRename').val(opt.$trigger.attr("id"));
-                            $('#FolderNameToRename').val(opt.$trigger.text());
-                            break;
-                        case "addTag":
-                            alert(opt.$trigger.attr("id"));
-                            break;
-                        case "downloadZip":
                             var Id = opt.$trigger.attr("id");
                             var Name = opt.$trigger.text();
+                             var ParentId = "@Model.Id";
+                            $("#renameDirectoryModal").modal();
+                            $.ajax({
+                                 type: "GET",
+                                 data: Id, Name,
+                                 url: '@Url.Action("Rename", "Directory")?Id=' + Id + '&Name='+ Name +'&ParentId=' + ParentId,
+                                 datatype:'html',
+                                 success: function (data) {
+                                     $('#renameDirectoryModal').html(data);
+                                 }
+                             })
+                            break;
+
+                        case "downloadZip":
+                            var formData = new FormData();
+                            formData.append('Id', opt.$trigger.attr("id"));
+                            formData.append('Name', opt.$trigger.text());
+
+                            $("#fileFromLinkModal").modal();
                             $.ajax({
                                  type: "POST",
-                                 data: Id, Name,
+                                 cache: false,
+                                 contentType: false,
+                                 processData: false,
+                                 data: formData,
                                  url: '@Url.Action("Download", "Directory")',
-                                 
-                              
+                                 success: function (data) {
+                                     $('#fileFromLinkModal').html(data);
+
+                                 }
+
                              })
                             break;
                         case "delete":
@@ -226,14 +244,12 @@
 
                             break;
                         default:
-                            alert("default");
+                            alert("Упс :(");
                     }
                 },
                 items: {
                     "edit": { name: "Переименовать" },
                     "sep1": "---------",
-                    "addTag": { name: "Добавить тег"},
-                    "sep2": "---------",
                     "downloadZip": { name: "Скачать ZIP-архив" },
                     "sep3": "---------",
                     "delete": { name: "Удалить папку" }

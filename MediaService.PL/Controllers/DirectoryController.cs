@@ -197,7 +197,7 @@ namespace MediaService.PL.Controllers
         {
             var model = new RenameDirectoryViewModel { Id = id, ParentId = parentId, Name = name };
 
-            return PartialView("_RenameDirectory", model);
+            return PartialView("~/Views/Directory/_RenameDirectory.cshtml", model);
         }
 
         [HttpPost]
@@ -211,7 +211,7 @@ namespace MediaService.PL.Controllers
                     var editedFolder = Mapper.Map<DirectoryEntryDto>(model);
                     await DirectoryService.RenameAsync(editedFolder);
 
-                    return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                    return RedirectToAction("Index", "Home", new { dirId = model.ParentId });
                 }
 
                 ModelState.AddModelError("Name", "The folder with this name is already exist in this directory");
@@ -222,7 +222,7 @@ namespace MediaService.PL.Controllers
                     "This folder can't be renamed at this moment, we're sorry, try again later", ex);
             }
 
-            return PartialView("_RenameDirectory", model);
+            return PartialView("~/Views/Directory/_RenameDirectory.cshtml", model);
         }
 
         [HttpGet]
