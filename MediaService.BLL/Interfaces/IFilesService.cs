@@ -29,6 +29,6 @@ namespace MediaService.BLL.Interfaces
 
         Task<string> GetPublicLinkToFileAsync(Guid fileId, DateTimeOffset expiryTime);
 
-        Task<IEnumerable<FileEntryDto>> SearchFilesAsync(Guid modelParentId, SearchType modelSearchType, string modelSearchValue);
+        Task<IEnumerable<FileEntryDto>> SearchFilesAsync(Guid parentId, SearchType searchType, string searchValue);
     }
 }

@@ -230,6 +230,7 @@
     <Compile Include="Models\ObjectViewModels\FileViewModels\DeleteFileViewModel.cs" />
     <Compile Include="Models\ObjectViewModels\FileViewModels\DownloadFilesViewModel.cs" />
     <Compile Include="Models\ObjectViewModels\FileViewModels\FilesListViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\FileViewModels\RemoveTagViewModel.cs" />
     <Compile Include="Models\ObjectViewModels\FileViewModels\RenameFileViewModel.cs" />
     <Compile Include="Models\ObjectViewModels\FileViewModels\SearchFilesViewModel.cs" />
     <Compile Include="Models\ObjectViewModels\FileViewModels\UploadFilesViewModel.cs" />
@@ -264,7 +265,6 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Utils\Attributes\ErrorHandler\FailedSetupMiddleware.cs" />
     <Compile Include="Utils\Attributes\ErrorHandler\ErrorHandleAttribute.cs" />
-    <Compile Include="Utils\Attributes\FileContentAttribute.cs" />
     <Compile Include="Utils\MapperModule.cs" />
     <Compile Include="Utils\NinjectDependencyResolver.cs" />
     <Compile Include="Utils\ViewsExtension.cs" />
@@ -407,6 +407,7 @@
     <Content Include="Views\Directory\_DeleteDirectory.cshtml" />
     <Content Include="Views\File\_UploadFiles.cshtml" />
     <Content Include="Views\File\_LoadFileRomLink.cshtml" />
+    <Content Include="Views\File\_Details.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

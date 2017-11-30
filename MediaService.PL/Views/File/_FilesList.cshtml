@@ -1,26 +1,22 @@
 ﻿@using MediaService.BLL.DTO.Enums
 ﻿@model IEnumerable<MediaService.BLL.DTO.FileEntryDto>
 
-
-
-
-    @foreach (var item in Model)
-    {
-        <div class="row">
-            <div class="folderItems">
+@foreach (var item in Model)
+{
+    <div class="row">
+        <div class="folderItems">
            
-                    <img width="15" height="15"
-                         src="@(item.FileType == FileType.Image ? Url.Content("/fonts/icons-buttons/picture.svg") : Url.Content("/fonts/icons-buttons/video-player.svg"))">
+                <img width="15" height="15"
+                        src="@(item.FileType == FileType.Image ? Url.Content("/fonts/icons-buttons/picture.svg") : Url.Content("/fonts/icons-buttons/video-player.svg"))">
 
-                    @Html.DisplayFor(modelItem => item.Name)
+                @Html.DisplayFor(modelItem => item.Name)
             
             
-                    @Html.ActionLink("Add Tag", "AddTag", "File", new { fileId = item.Id }, null) |
-                    @Html.ActionLink("Rename", "Rename", "File", new { fileId = item.Id, parentId = item.ParentId, fileName = item.Name }, null) |
-                    @Html.ActionLink("Delete", "Delete", "File", new { fileId = item.Id }, null) |
-                    @Html.ActionLink("Download", "Download", "File", new { fileId = item.Id, fileSize = item.Size }, null)
+                @Html.ActionLink("Add Tag", "AddTag", "File", new { fileId = item.Id }, null) |
+                @Html.ActionLink("Rename", "Rename", "File", new { fileId = item.Id, parentId = item.ParentId, fileName = item.Name }, null) |
+                @Html.ActionLink("Delete", "Delete", "File", new { fileId = item.Id }, null) |
+                @Html.ActionLink("Download", "Download", "File", new { fileId = item.Id, fileSize = item.Size }, null)
            
-            </div>
         </div>
-    }
-
+    </div>
+}

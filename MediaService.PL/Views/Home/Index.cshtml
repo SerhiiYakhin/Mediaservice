@@ -1,8 +1,7 @@
-﻿@using MediaService.BLL.DTO
-@using MediaService.PL.Models.ObjectViewModels.DirectoryViewModels
+﻿@using MediaService.PL.Models.ObjectViewModels.DirectoryViewModels
 @using MediaService.PL.Models.ObjectViewModels.FileViewModels
+﻿@model MediaService.BLL.DTO.DirectoryEntryDto
 
-﻿@model DirectoryEntryDto
 @{
     ViewBag.Title = "Home Page";
 }
@@ -10,7 +9,7 @@
 <div class="container indexMenu">
     <div class="row">
         <div class="col-xs-4">
-            <input type="search" placeholder="Поиск файлов" class="custom-search-input" />
+            <input type="search" placeholder="Поиск файлов" class="custom-search-input"/>
         </div>
         <div class="col-xs-4">
             <h2 class="indexTitle text-center">LuxStorage</h2>
@@ -20,7 +19,7 @@
         </div>
     </div>
 </div>
-<hr />
+<hr/>
 <div class="row customNav">
     <div class="col-xs-7">
         <p class="customBreadcrumb">Мои файлы</p>
@@ -28,13 +27,13 @@
     <div class="col-xs-5">
         <div>
             <a class="pull-right" href="#">
-                <img src="~/fonts/icons-buttons/tile.svg" id="tileImg" />
+                <img src="~/fonts/icons-buttons/tile.svg" id="tileImg"/>
             </a>
             <a class="pull-right" href="#">
-                <img src="~/fonts/icons-buttons/list.svg" id="listImg" />
+                <img src="~/fonts/icons-buttons/list.svg" id="listImg"/>
             </a>
         </div>
-        <img src="~/fonts/icons-buttons/next.svg" class="pull-right" id="dropdownImg" />
+        <img src="~/fonts/icons-buttons/next.svg" class="pull-right" id="dropdownImg"/>
         <a class="pull-right btnLink" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             По дате создания
         </a>
@@ -52,22 +51,22 @@
 <div class="row dirListView">
     <div class="col-xs-9">
         <div class="row folderList">
-            <div id='directories'></div>
+            <div id="directories"></div>
         </div>
         <div class="row filesList">
-            <div id='files'></div>
+            <div id="files"></div>
         </div>
-        @Html.ActionLink("Back", "Index", "Home", new { dirId = Model.ParentId }, null)
+        @Html.ActionLink("Back", "Index", "Home", new {dirId = Model.ParentId}, null)
     </div>
     <div class="col-xs-3">
         <div id="dirListMenu">
             <a href="#uploadFileModal" class="btn btn-primary  uploadFileBtn pull-right" rel="modal:open">Загрузить файл</a>
-            <div id="uploadFileModal" style="display:none">
-                @{Html.RenderPartial("~/Views/File/_UploadFiles.cshtml", new UploadFilesViewModel { ParentId = Model.Id });}
+            <div id="uploadFileModal" style="display: none">
+                @{ Html.RenderPartial("~/Views/File/_UploadFiles.cshtml", new UploadFilesViewModel {ParentId = Model.Id}); }
             </div>
             <a href="#createDirModal" class="btn btn-primary  createDirBtn pull-right" rel="modal:open">Создать папку</a>
-            <div id="createDirModal" style="display:none">
-                @{Html.RenderPartial("~/Views/Directory/_CreateDirectory.cshtml", new CreateDirectoryViewModel { ParentId = Model.Id });}
+            <div id="createDirModal" style="display: none">
+                @{ Html.RenderPartial("~/Views/Directory/_CreateDirectory.cshtml", new CreateDirectoryViewModel {ParentId = Model.Id}); }
             </div>
         </div>
     </div>
@@ -75,21 +74,19 @@
 
 @section Scripts {
     <script>
-
-        $(document).ready(function () {
-            $("#Upload").click(function () {
+        $(document).ready(function() {
+            $("#Upload").click(function() {
                 var formData = new FormData();
                 var totalFiles = document.getElementById("FileUpload").files.length;
                 for (var i = 0; i < totalFiles; i++) {
                     var file = document.getElementById("FileUpload").files[i];
                     formData.append("FileUpload", file);
-                    
-                    formData.append('Tags[' + i + ']', $("#tag"+i).val());
+
+                    formData.append('tags[' + i + ']', $("#tag" + i).val());
                 }
-                
-               
-                formData.append("ParentId", $("#ParentId").val());
-              
+
+                formData.append("parentId", $("#ParentId").val());
+
                 $.ajax({
                     type: "POST",
                     url: '/File/UploadFilesAsync',
@@ -97,7 +94,7 @@
                     dataType: 'json',
                     contentType: false,
                     processData: false,
-                    success: function (data) {
+                    success: function(data) {
                         $('#files').html(data.html);
 
                     },
@@ -108,23 +105,23 @@
             });
         });
 
-        updateList = function () {
+        updateList = function() {
             var input = document.getElementById('FileUpload');
             var output = document.getElementById('fileList');
 
-          
+
             for (var i = 0; i < input.files.length; ++i) {
                 output.innerHTML += '<div>';
                 output.innerHTML += '<p>' + input.files.item(i).name + '</p>';
-                output.innerHTML += '<input type="text" class="tags" id = "tag' + i +'">';
+                output.innerHTML += '<input type="text" class="tags" id = "tag' + i + '">';
                 output.innerHTML += '</div>';
-                
+
             }
-           
-        }
+
+        };
 
         $.ajax({
-            url: '@Url.Action("DirectoriesList", "Directory", new DirectoriesListViewModel{ParentId = Model.Id})',
+            url: '@Url.Action("DirectoriesList", "Directory", new DirectoriesListViewModel {ParentId = Model.Id})',
             type: "GET",
             contentType: "text/html; charset=utf-8",
             success: function(data) {
@@ -132,14 +129,12 @@
             }
         });
         $.ajax({
-            url: '@Url.Action("FilesList", "File", new FilesListViewModel { ParentId = Model.Id })',
+            url: '@Url.Action("FilesList", "File", new FilesListViewModel {ParentId = Model.Id})',
             type: "GET",
             contentType: "text/html; charset=utf-8",
             success: function(data) {
                 $('#files').html(data);
             }
         });
-
-
     </script>
 }

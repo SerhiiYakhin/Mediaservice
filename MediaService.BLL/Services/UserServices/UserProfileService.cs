@@ -1,6 +1,8 @@
 ﻿#region usings
 
 using System;
+using System.Data;
+using System.IO;
 using System.Threading.Tasks;
 using MediaService.BLL.DTO;
 using MediaService.BLL.Interfaces;
@@ -20,12 +22,48 @@ namespace MediaService.BLL.Services.UserServices
 
         public override void Add(UserProfileDto item)
         {
-            throw new NotImplementedException();
+            var userProfile = DtoMapper.Map<UserProfile>(item);
+            var user = Context.Users.FindByKey(userProfile.User.Id);
+
+            if (user == null)
+            {
+                throw new InvalidDataException("There is no such user in database, adding UserProfile impossible");
+            }
+
+            if(user.UserProfile == null)
+            {
+                userProfile.User = user;
+                Context.UsersProfiles.Add(userProfile);
+                Context.SaveChanges();
+            }
+            else
+            {
+                throw new InvalidExpressionException(
+                    "This user already have an UserProfile, maybe you want to Update it");
+            }
         }
 
-        public override Task AddAsync(UserProfileDto item)
+        public override async Task AddAsync(UserProfileDto item)
         {
-            throw new NotImplementedException();
+            var userProfile = DtoMapper.Map<UserProfile>(item);
+            var user = await Context.Users.FindByKeyAsync(userProfile.User.Id);
+
+            if (user == null)
+            {
+                throw new InvalidDataException("There is no such user in database, adding UserProfile impossible");
+            }
+
+            if (user.UserProfile == null)
+            {
+                userProfile.User = user;
+                await Context.UsersProfiles.AddAsync(userProfile);
+                await Context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new InvalidExpressionException(
+                    "This user already have an UserProfile, maybe you want to Update it");
+            }
         }
     }
 }

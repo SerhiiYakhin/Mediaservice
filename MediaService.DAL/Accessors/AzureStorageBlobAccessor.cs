@@ -120,6 +120,7 @@ namespace MediaService.DAL.Accessors
         public string GetDirectLinkToBlob(string blobName, DateTimeOffset expiryTime, SharedAccessBlobPermissions permissions)
         {
             var blob = GetBlob(blobName);
+
             if (blob.Exists())
             {    
                 var sasConstraints = new SharedAccessBlobPolicy

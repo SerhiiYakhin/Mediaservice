@@ -1,26 +1,14 @@
-﻿@using MediaService.BLL.DTO.Enums
-@using MediaService.PL.Models.ObjectViewModels.DirectoryViewModels
-﻿@model IEnumerable<MediaService.BLL.DTO.DirectoryEntryDto>
+﻿﻿@model IEnumerable<MediaService.BLL.DTO.DirectoryEntryDto>
+
 @ViewBag.parentId
+
 @foreach (var item in Model)
 {
-   
     <div class="row">
         <div class="folderItems">
             <img class="dirImg" width="20" height="20"
-                 src="/fonts/icons-buttons/folder.svg" />
-            @Html.ActionLink(
-                item.Name,
-                "Index", "Home", new
-                {
-                    dirId = item.Id
-
-                }, null
-
-                )
-
-
+                 src="/fonts/icons-buttons/folder.svg"/>
+            @Html.ActionLink(item.Name, "Index", "Home", new { dirId = item.Id }, null)
         </div>
     </div>
-   
 }
