@@ -8,6 +8,10 @@
     ViewBag.ChildModel = Model;
 }
 
+@*-----Context Menu-----*@
+
+
+
 <div class="container indexMenu">
     <div class="row">
         <div class="col-xs-4">
@@ -25,7 +29,7 @@
 <div class="row customNav">
     <div class="col-xs-7">
         <div class="customBreadcrumb">
-          
+
             <ul style="list-style-type:none; white-space: nowrap; float:left ">
                 @Html.ActionLink("Мои файлы", "Index", "Home")
 
@@ -33,15 +37,19 @@
                 {
 
                     <li style="float:right;  display: inline-block">
-                        > @Html.ActionLink((string)ViewBag.ChildModel.Name, "Index", "Home", new { dirId = ViewBag.ChildModel.ParentId }, null)
+                        <img width="10" height="12"
+                             src="/fonts/icons-buttons/next.svg" />
+                        @Html.ActionLink((string)ViewBag.ChildModel.Name, "Index", "Home", new { dirId = ViewBag.ChildModel.Id }, null)
                     </li>
                     ViewBag.ChildModel = ViewBag.ChildModel.Parent;
                 }
+
             </ul>
+            <img width="12" height="10"
+                 src="/fonts/icons-buttons/next.svg" style="transform: rotate(90deg);">
+        </div>
 
-            </div>
-
-</div>
+    </div>
     <div class="col-xs-5">
         <div>
             <a class="pull-right" href="#">
@@ -68,6 +76,15 @@
 </div>
 <div class="row dirListView">
     <div class="col-xs-9">
+        Название
+    </div>
+    <div class="col-xs-3">
+        Теги
+    </div>
+
+</div>
+<div class="row dirListView">
+    <div class="col-xs-9">
 
         <div id='directories'></div>
 
@@ -86,12 +103,20 @@
             <div id="createDirModal" style="display:none">
                 @{Html.RenderPartial("~/Views/Directory/_CreateDirectory.cshtml", new CreateDirectoryViewModel { ParentId = Model.Id });}
             </div>
+
         </div>
     </div>
 </div>
-
+<div id="deleteDirectoryModal" style="display:none; width: 500px; height: 500px;">
+   
+</div>
+<div id="renameDirectoryModal" style="display:none">
+    @{Html.RenderPartial("~/Views/Directory/_RenameDirectory.cshtml", new RenameDirectoryViewModel { ParentId = Model.Id });}
+</div>
 @section Scripts {
+
     <script>
+
         $(document).ready(function () {
             $("#Upload").click(function () {
                 var formData = new FormData();
@@ -129,6 +154,7 @@
             var output = document.getElementById('fileList');
 
 
+
             for (var i = 0; i < input.files.length; ++i) {
                 output.innerHTML += '<div class="row uploadFilesRow">';
                 output.innerHTML += '<div class="col-xs-8" style="padding: 0"><img src="/fonts/icons-buttons/success.svg" height="20" width="20" class="uploadSuccessImg"/><img src="/fonts/icons-buttons/picture.svg" height="20" width="20" style="margin-right:18px"/>'
@@ -159,6 +185,58 @@
             }
         });
 
+        $(function () {
+            $.contextMenu({
+                selector: '.directoryEntry',
+                callback: function (key, opt) {
+                    var m =  key;
+                    switch (m) {
+                        case "edit":
+                            $("#renameDirectoryModal").modal();
+                            $('#FolderIdToRename').val(opt.$trigger.attr("id"));
+                            $('#FolderNameToRename').val(opt.$trigger.text());
+                            break;
+                        case "addTag":
+                            alert(opt.$trigger.attr("id"));
+                            break;
+                        case "downloadZip":
+                            alert("downloadZip");
+                            break;
+                        case "delete":
+                            var Id = opt.$trigger.attr("id");
+                            var ParentId = "@Model.Id";
+                            $("#deleteDirectoryModal").modal();
+                            $.ajax({
+                                 type: "GET",
+                                 data: Id, ParentId, 
+                                 url: '@Url.Action("Delete", "Directory")?Id=' + Id + '&ParentId=' + ParentId,
+                                 datatype:'html',
+                                 success: function (data) {
+                                     $('#deleteDirectoryModal').html(data);
+                                 }
+                             })
+                            
 
+
+
+                            break;
+                        default:
+                            alert("default");
+                    }
+                },
+                items: {
+                    "edit": { name: "Переименовать" },
+                    "sep1": "---------",
+                    "addTag": { name: "Добавить тег"},
+                    "sep2": "---------",
+                    "downloadZip": { name: "Скачать ZIP-архив" },
+                    "sep3": "---------",
+                    "delete": { name: "Удалить папку" }
+
+
+                }
+            });
+
+        });
     </script>
 }
