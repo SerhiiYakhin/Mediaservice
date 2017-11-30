@@ -154,21 +154,18 @@
 
             for (var i = 0; i < input.files.length; ++i) {
                 output.innerHTML += '<div class="row uploadFilesRow">';
-                output.innerHTML +=
-                    '<div class="col-xs-8" style="padding: 0"><img src="/fonts/icons-buttons/success.svg" height="20" width="20" class="uploadSuccessImg"/><img src="/fonts/icons-buttons/picture.svg" height="20" width="20" style="margin-right:18px"/>' +
+                output.innerHTML += '<div class="col-xs-8" style="padding: 0"><img src="/fonts/icons-buttons/success.svg" height="20" width="20" class="uploadSuccessImg"/><img src="/fonts/icons-buttons/picture.svg" height="20" width="20" style="margin-right:18px"/>';
                 output.innerHTML += '<div class="col-xs-4" style="padding: 0"><input type="text" class="tags" id = "tag' + i + '" placeholder="+Добавить тег""></div >';
-                    '</div>';
-                output.innerHTML +=
-                    '<div class="col-xs-4" style="padding: 0"><input type="text" class="tags" id = "tag' +
-                    i +
-                    '" placeholder="+Добавить тег""></div >';
+                output.innerHTML += '</div>';
+                output.innerHTML += '<div class="col-xs-4" style="padding: 0"><input type="text" class="tags" id = "tag' +
+                    i +'" placeholder="+Добавить тег""></div >';
                 output.innerHTML += '<div class="col-xs-12" style="padding: 0"><hr/></div>';
 
                 output.innerHTML += '</div>';
             }
         }
 
-        };
+
 
         $.ajax({
             url: '@Url.Action("DirectoriesList", "Directory", new DirectoriesListViewModel {ParentId = Model.Id})',
@@ -201,7 +198,15 @@
                             alert(opt.$trigger.attr("id"));
                             break;
                         case "downloadZip":
-                            alert("downloadZip");
+                            var Id = opt.$trigger.attr("id");
+                            var Name = opt.$trigger.text();
+                            $.ajax({
+                                 type: "POST",
+                                 data: Id, Name,
+                                 url: '@Url.Action("Download", "Directory")',
+                                 
+                              
+                             })
                             break;
                         case "delete":
                             var Id = opt.$trigger.attr("id");
@@ -209,14 +214,14 @@
                             $("#deleteDirectoryModal").modal();
                             $.ajax({
                                  type: "GET",
-                                 data: Id, ParentId, 
+                                 data: Id, ParentId,
                                  url: '@Url.Action("Delete", "Directory")?Id=' + Id + '&ParentId=' + ParentId,
                                  datatype:'html',
                                  success: function (data) {
                                      $('#deleteDirectoryModal').html(data);
                                  }
                              })
-                            
+
 
 
                             break;
