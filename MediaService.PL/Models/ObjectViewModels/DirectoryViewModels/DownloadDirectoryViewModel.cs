@@ -11,6 +11,7 @@ namespace MediaService.PL.Models.ObjectViewModels.DirectoryViewModels
         public Guid Id { get; set; }
 
         [Required]
+        [HiddenInput(DisplayValue = false)]
         [StringLength(50)]
         public string Name { get; set; }
     }

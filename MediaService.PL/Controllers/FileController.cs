@@ -80,7 +80,6 @@ namespace MediaService.PL.Controllers
         [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
         public async Task<ActionResult> UploadFilesAsync(Guid parentId, List<string> tags)
         {
-           
             if (Request.Files.Count > 0)
             {
                 try
@@ -357,9 +356,13 @@ namespace MediaService.PL.Controllers
                     Name = fname,
                     Size = file.ContentLength,
                     FileType = fileType,
-                    FileStream = file.InputStream,
-                    Tags = new HashSet<TagDto> { new TagDto { Name = tags[i] } }
+                    FileStream = file.InputStream
                 };
+
+                if (!string.IsNullOrWhiteSpace(tags[i]))
+                {
+                    fileEntryDto.Tags = new HashSet<TagDto> { new TagDto {Name = tags[i]} };
+                }
 
                 filesToUpload.Add(fileEntryDto);
             }

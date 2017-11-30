@@ -274,7 +274,7 @@ namespace MediaService.BLL.Services.ObjectsServices
                             var zipEntry = archive.CreateEntry(fileEntry.Name);
                             using (var zipEntryStream = zipEntry.Open())
                             {
-                                await Storage.DownloadAsync(blobName, zipEntryStream);
+                                await Storage.DownloadAsync(blobName, fileEntry.Size, zipEntryStream);
                             }
                         }
                     }

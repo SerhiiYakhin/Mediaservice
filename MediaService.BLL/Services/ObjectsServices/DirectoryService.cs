@@ -235,8 +235,10 @@ namespace MediaService.BLL.Services.ObjectsServices
             }
 
             var zipName = $"{zipId}.zip";
+            string tempDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string tempPath = $"{tempDir}\\{zipName}";
 
-            using (var fs = new FileStream(zipName, FileMode.OpenOrCreate))
+            using (var fs = new FileStream(tempPath, FileMode.OpenOrCreate))
             {
                 using (ZipArchive archive = new ZipArchive(fs, ZipArchiveMode.Create, false))
                 {
@@ -252,7 +254,7 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public async Task<(Stream blobStream, bool blobExist)> DownloadZip(string zipName)
         {
-            return await Storage.DownloadAsync(zipName);
+            return await Storage.DownloadAsync(zipName, 1);
         }
 
         #endregion
@@ -274,7 +276,7 @@ namespace MediaService.BLL.Services.ObjectsServices
 
                     using (var zipEntryStream = zipEntry.Open())
                     {
-                        await Storage.DownloadAsync(blobName, zipEntryStream);
+                        await Storage.DownloadAsync(blobName, file.Size, zipEntryStream);
                     }
                 }
             }
