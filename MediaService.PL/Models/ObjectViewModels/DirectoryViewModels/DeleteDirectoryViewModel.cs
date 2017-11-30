@@ -9,5 +9,8 @@ namespace MediaService.PL.Models.ObjectViewModels.DirectoryViewModels
         [Required]
         [HiddenInput(DisplayValue = false)]
         public Guid Id { get; set; }
+
+        [HiddenInput(DisplayValue = false)]
+        public Guid ParentId { get; set; }
     }
 }

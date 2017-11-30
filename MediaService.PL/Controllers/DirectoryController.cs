@@ -226,9 +226,9 @@ namespace MediaService.PL.Controllers
         }
 
         [HttpGet]
-        public ActionResult Delete(Guid id)
+        public ActionResult Delete(Guid id, Guid parentId)
         {
-            var model = new DeleteDirectoryViewModel { Id = id };
+            var model = new DeleteDirectoryViewModel { Id = id, ParentId = parentId };
 
             return PartialView("_DeleteDirectory", model);
         }
@@ -239,9 +239,10 @@ namespace MediaService.PL.Controllers
         {
             try
             {
-                await DirectoryService.DeleteWithJobAsync(model.Id);
+                await DirectoryService.DeleteAsync(model.Id);
 
-                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+
+                return RedirectToAction("Index", "Home", new { dirId = model.ParentId });
             }
             catch (Exception ex)
             {

@@ -4,7 +4,12 @@
 
 @{
     ViewBag.Title = "Home Page";
+    ViewBag.ChildModel = Model;
 }
+
+@*-----Context Menu-----*@
+
+
 
 <div class="container indexMenu">
     <div class="row">
@@ -22,7 +27,27 @@
 <hr/>
 <div class="row customNav">
     <div class="col-xs-7">
-        <p class="customBreadcrumb">Мои файлы</p>
+        <div class="customBreadcrumb">
+
+            <ul style="list-style-type:none; white-space: nowrap; float:left ">
+                @Html.ActionLink("Мои файлы", "Index", "Home")
+
+                @while (ViewBag.ChildModel.ParentId != null)
+                {
+
+                    <li style="float:right;  display: inline-block">
+                        <img width="10" height="12"
+                             src="/fonts/icons-buttons/next.svg" />
+                        @Html.ActionLink((string)ViewBag.ChildModel.Name, "Index", "Home", new { dirId = ViewBag.ChildModel.Id }, null)
+                    </li>
+                    ViewBag.ChildModel = ViewBag.ChildModel.Parent;
+                }
+
+            </ul>
+            <img width="12" height="10"
+                 src="/fonts/icons-buttons/next.svg" style="transform: rotate(90deg);">
+        </div>
+
     </div>
     <div class="col-xs-5">
         <div>
@@ -50,8 +75,21 @@
 </div>
 <div class="row dirListView">
     <div class="col-xs-9">
-        <div id="directories"></div>
-        <div id="files"></div>
+        Название
+    </div>
+    <div class="col-xs-3">
+        Теги
+    </div>
+
+</div>
+<div class="row dirListView">
+    <div class="col-xs-9">
+
+        <div id='directories'></div>
+
+
+        <div id='files'></div>
+
         @Html.ActionLink("Back", "Index", "Home", new {dirId = Model.ParentId}, null)
     </div>
     <div class="col-xs-3">
@@ -64,11 +102,18 @@
             <div id="createDirModal" style="display: none">
                 @{ Html.RenderPartial("~/Views/Directory/_CreateDirectory.cshtml", new CreateDirectoryViewModel {ParentId = Model.Id}); }
             </div>
+
         </div>
     </div>
 </div>
-
+<div id="deleteDirectoryModal" style="display:none; width: 500px; height: 500px;">
+   
+</div>
+<div id="renameDirectoryModal" style="display:none">
+    @{Html.RenderPartial("~/Views/Directory/_RenameDirectory.cshtml", new RenameDirectoryViewModel { ParentId = Model.Id });}
+</div>
 @section Scripts {
+
     <script>
         $(document).ready(function() {
             $("#Upload").click(function() {
@@ -78,10 +123,10 @@
                     var file = document.getElementById("FileUpload").files[i];
                     formData.append("FileUpload", file);
 
-                    formData.append('tags[' + i + ']', $("#tag" + i).val());
+                    formData.append('Tags[' + i + ']', $("#tag" + i).val());
                 }
 
-                formData.append("parentId", $("#ParentId").val());
+
 
                 $.ajax({
                     type: "POST",
@@ -94,7 +139,7 @@
                         $('#files').html(data.html);
 
                     },
-                    error: function(error) {
+                    error: function (error) {
                         alert("errror");
                     }
                 });
@@ -105,11 +150,13 @@
             var input = document.getElementById('FileUpload');
             var output = document.getElementById('fileList');
 
+
+
             for (var i = 0; i < input.files.length; ++i) {
                 output.innerHTML += '<div class="row uploadFilesRow">';
                 output.innerHTML +=
                     '<div class="col-xs-8" style="padding: 0"><img src="/fonts/icons-buttons/success.svg" height="20" width="20" class="uploadSuccessImg"/><img src="/fonts/icons-buttons/picture.svg" height="20" width="20" style="margin-right:18px"/>' +
-                    input.files.item(i).name +
+                output.innerHTML += '<div class="col-xs-4" style="padding: 0"><input type="text" class="tags" id = "tag' + i + '" placeholder="+Добавить тег""></div >';
                     '</div>';
                 output.innerHTML +=
                     '<div class="col-xs-4" style="padding: 0"><input type="text" class="tags" id = "tag' +
@@ -119,6 +166,8 @@
 
                 output.innerHTML += '</div>';
             }
+        }
+
         };
 
         $.ajax({
@@ -136,6 +185,58 @@
             success: function(data) {
                 $('#files').html(data);
             }
+        });
+        $(function () {
+            $.contextMenu({
+                selector: '.directoryEntry',
+                callback: function (key, opt) {
+                    var m =  key;
+                    switch (m) {
+                        case "edit":
+                            $("#renameDirectoryModal").modal();
+                            $('#FolderIdToRename').val(opt.$trigger.attr("id"));
+                            $('#FolderNameToRename').val(opt.$trigger.text());
+                            break;
+                        case "addTag":
+                            alert(opt.$trigger.attr("id"));
+                            break;
+                        case "downloadZip":
+                            alert("downloadZip");
+                            break;
+                        case "delete":
+                            var Id = opt.$trigger.attr("id");
+                            var ParentId = "@Model.Id";
+                            $("#deleteDirectoryModal").modal();
+                            $.ajax({
+                                 type: "GET",
+                                 data: Id, ParentId, 
+                                 url: '@Url.Action("Delete", "Directory")?Id=' + Id + '&ParentId=' + ParentId,
+                                 datatype:'html',
+                                 success: function (data) {
+                                     $('#deleteDirectoryModal').html(data);
+                                 }
+                             })
+                            
+
+
+                            break;
+                        default:
+                            alert("default");
+                    }
+                },
+                items: {
+                    "edit": { name: "Переименовать" },
+                    "sep1": "---------",
+                    "addTag": { name: "Добавить тег"},
+                    "sep2": "---------",
+                    "downloadZip": { name: "Скачать ZIP-архив" },
+                    "sep3": "---------",
+                    "delete": { name: "Удалить папку" }
+
+
+                }
+            });
+
         });
     </script>
 }
