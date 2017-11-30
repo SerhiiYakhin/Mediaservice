@@ -50,12 +50,8 @@
 </div>
 <div class="row dirListView">
     <div class="col-xs-9">
-        <div class="row folderList">
-            <div id="directories"></div>
-        </div>
-        <div class="row filesList">
-            <div id="files"></div>
-        </div>
+        <div id="directories"></div>
+        <div id="files"></div>
         @Html.ActionLink("Back", "Index", "Home", new {dirId = Model.ParentId}, null)
     </div>
     <div class="col-xs-3">
@@ -109,15 +105,20 @@
             var input = document.getElementById('FileUpload');
             var output = document.getElementById('fileList');
 
-
             for (var i = 0; i < input.files.length; ++i) {
-                output.innerHTML += '<div>';
-                output.innerHTML += '<p>' + input.files.item(i).name + '</p>';
-                output.innerHTML += '<input type="text" class="tags" id = "tag' + i + '">';
+                output.innerHTML += '<div class="row uploadFilesRow">';
+                output.innerHTML +=
+                    '<div class="col-xs-8" style="padding: 0"><img src="/fonts/icons-buttons/success.svg" height="20" width="20" class="uploadSuccessImg"/><img src="/fonts/icons-buttons/picture.svg" height="20" width="20" style="margin-right:18px"/>' +
+                    input.files.item(i).name +
+                    '</div>';
+                output.innerHTML +=
+                    '<div class="col-xs-4" style="padding: 0"><input type="text" class="tags" id = "tag' +
+                    i +
+                    '" placeholder="+Добавить тег""></div >';
+                output.innerHTML += '<div class="col-xs-12" style="padding: 0"><hr/></div>';
+
                 output.innerHTML += '</div>';
-
             }
-
         };
 
         $.ajax({
