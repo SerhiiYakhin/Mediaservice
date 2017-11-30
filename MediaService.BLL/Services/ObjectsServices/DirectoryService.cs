@@ -183,6 +183,12 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public async Task DeleteAsync(Guid entryId)
         {
+            await DeleteHelperAsync(entryId);
+            await Context.SaveChangesAsync();
+        }
+
+        private async Task DeleteHelperAsync(Guid entryId)
+        {
             var currDirectoryEntry = await Context.Directories.FindByKeyAsync(entryId);
 
             if (currDirectoryEntry == null)
@@ -191,8 +197,7 @@ namespace MediaService.BLL.Services.ObjectsServices
             }
 
             var childFiles = await Context.Files.GetDataAsync(f => f.ParentId == entryId);
-            var childDirs = await Context.Directories.GetDataAsync(f => f.ParentId == entryId);
-
+            var childDirs = await Context.Directories.GetDataAsync(d => d.ParentId == entryId);
 
             foreach (var file in childFiles)
             {
@@ -202,12 +207,10 @@ namespace MediaService.BLL.Services.ObjectsServices
 
             foreach (var dir in childDirs)
             {
-                await DeleteAsync(dir.Id);
+                await DeleteHelperAsync(dir.Id);
             }
 
             await Context.Directories.RemoveAsync(currDirectoryEntry);
-
-            await Context.SaveChangesAsync();
         }
 
         public async Task DeleteWithJobAsync(Guid entryId)
@@ -244,12 +247,14 @@ namespace MediaService.BLL.Services.ObjectsServices
                 {
                     await WriteToFolderAsync(directoryId, archive, currDirectoryEntry.Name);
                 }
+            }
 
-                fs.Position = 0;
+            using (var fs = new FileStream(tempPath, FileMode.OpenOrCreate))
+            {
                 await Storage.UploadFileInBlocksAsync(fs, zipName, "application/zip");
             }
 
-            File.Delete(zipName);
+            File.Delete(tempPath);
         }
 
         public async Task<(Stream blobStream, bool blobExist)> DownloadZip(string zipName)
@@ -264,7 +269,7 @@ namespace MediaService.BLL.Services.ObjectsServices
         private async Task WriteToFolderAsync(Guid dirId, ZipArchive archive, string path)
         {
             var files = await Context.Files.GetDataAsync(f => f.ParentId == dirId);
-            var dirs = await Context.Files.GetDataAsync(f => f.ParentId == dirId);
+            var dirs = await Context.Directories.GetDataAsync(d => d.ParentId == dirId);
 
             foreach (var file in files)
             {

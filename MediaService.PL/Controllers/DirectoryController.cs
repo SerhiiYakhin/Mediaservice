@@ -157,8 +157,18 @@ namespace MediaService.PL.Controllers
             {
                 var zipId = Guid.NewGuid();
                 await DirectoryService.DownloadWithJobAsync(model.Id, zipId);
+                var link = FilesService.GetLinkToZip($"{zipId}.zip");
 
-                return Json(new { success = true, zipId, zipName = model.Name }, JsonRequestBehavior.AllowGet);
+                if (link == null)
+                {
+                    return HttpNotFound();
+                }
+
+                ViewBag.Link = link;
+
+                return PartialView("_LoadFileFromLink");
+
+                //return Json(new { success = true, zipId, zipName = model.Name }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {

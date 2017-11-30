@@ -69,7 +69,7 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public string GetLinkToZip(string fileName)
         {
-            return Storage.GetDirectLinkToBlob(fileName, DateTimeOffset.Now.AddDays(1), SharedAccessBlobPermissions.Read);
+            return Storage.GetDirectLinkToBlob(fileName, DateTimeOffset.Now.AddDays(1), SharedAccessBlobPermissions.Read | SharedAccessBlobPermissions.List);
         }
 
         public async Task<string> GetPublicLinkToFileAsync(Guid fileId, DateTimeOffset expiryTime)

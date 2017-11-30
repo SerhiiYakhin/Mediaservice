@@ -118,7 +118,7 @@ namespace MediaService.PL.Controllers
 
             ViewBag.Link = link;
 
-            return PartialView("_LoadFileRomLink");
+            return PartialView("_LoadFileFromLink");
         }
 
         [HttpPost]
