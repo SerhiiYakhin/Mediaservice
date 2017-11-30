@@ -7,7 +7,8 @@
         <div class="folderItems">
             <img width="18" height="18"
                  src="@(item.FileType == FileType.Image ? Url.Content("/fonts/icons-buttons/picture.svg") : Url.Content("/fonts/icons-buttons/video-player.svg"))">
-            @Html.DisplayFor(modelItem => item.Name)
+            <a href="#" class="fileEntry" id="@item.Id">@item.Name</a>
+            
                    
                     @Html.Name(item.Name)
               
