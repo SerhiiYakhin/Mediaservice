@@ -406,8 +406,9 @@
     <Content Include="Views\Directory\_RenameDirectory.cshtml" />
     <Content Include="Views\Directory\_DeleteDirectory.cshtml" />
     <Content Include="Views\File\_UploadFiles.cshtml" />
-    <Content Include="Views\File\_LoadFileRomLink.cshtml" />
+    <Content Include="Views\File\_LoadFileFromLink.cshtml" />
     <Content Include="Views\File\_Details.cshtml" />
+    <Content Include="Views\Directory\_LoadFileFromLink.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

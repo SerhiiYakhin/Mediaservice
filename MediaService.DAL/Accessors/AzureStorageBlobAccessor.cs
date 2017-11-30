@@ -240,7 +240,12 @@ namespace MediaService.DAL.Accessors
             var storageAccount = CloudStorageAccount.Parse(_connectionString);
             var blobClient = storageAccount.CreateCloudBlobClient();
             var container = blobClient.GetContainerReference(ContainerName);
-
+            container.SetPermissionsAsync(
+                new BlobContainerPermissions()
+                {
+                    PublicAccess = BlobContainerPublicAccessType.Off
+                }
+                );
             container.CreateIfNotExists();
 
             return container;

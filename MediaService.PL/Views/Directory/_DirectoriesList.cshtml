@@ -13,12 +13,19 @@
             @Html.ActionLink("Rename", "Rename", "Directory", new { id = item.Id, parentId = item.ParentId, name = item.Name }, null) |
             @Html.ActionLink("Delete", "Delete", "Directory", new { id = item.Id }, null) |
 
-            @using (Ajax.BeginForm("Download", "Directory", new AjaxOptions { HttpMethod = "Post"}))
+            @using (Html.BeginForm("Download", "Directory", FormMethod.Post))
             {
                 @Html.Hidden("Id", item.Id)
                 @Html.Hidden("Name", item.Name)
                 <input type="submit" value="Загрузить Zip-архив" />
             }
+
+            @*@using (Ajax.BeginForm("Download", "Directory", new AjaxOptions { HttpMethod = "Post"}))
+            {
+                @Html.Hidden("Id", item.Id)
+                @Html.Hidden("Name", item.Name)
+                <input type="submit" value="Загрузить Zip-архив" />
+            }*@
         </div>
     </div>
 }
