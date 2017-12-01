@@ -234,6 +234,7 @@
     <Compile Include="Models\ObjectViewModels\FileViewModels\RenameFileViewModel.cs" />
     <Compile Include="Models\ObjectViewModels\FileViewModels\SearchFilesViewModel.cs" />
     <Compile Include="Models\ObjectViewModels\FileViewModels\UploadFilesViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\ObjectsListViewModel.cs" />
     <Compile Include="Utils\Attributes\ErrorHandler\AiHandleErrorAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

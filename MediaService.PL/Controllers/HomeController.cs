@@ -2,11 +2,13 @@
 
 using MediaService.BLL.DTO;
 using MediaService.BLL.Interfaces;
+using MediaService.PL.Models.ObjectViewModels;
 using MediaService.PL.Utils.Attributes.ErrorHandler;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlTypes;
 using System.Threading.Tasks;
 using System.Web;
@@ -49,15 +51,16 @@ namespace MediaService.PL.Controllers
         #region Actions
 
         [HttpGet]
-        [ErrorHandle(ExceptionType = typeof(SqlNullValueException), View = "Errors/Error")]
-        public async Task<ActionResult> Index(Guid? dirId)
+        [ErrorHandle(ExceptionType = typeof(DataException), View = "Errors/Error")]
+        public async Task<ActionResult> Index(ObjectsListViewModel model)
         {
             DirectoryEntryDto rootDir;
             try
             {
-                if (dirId.HasValue)
+                ViewBag.OrderType = model.OrderType;
+                if (model.ParentId.HasValue)
                 {
-                    rootDir = await DirectoryService.FindByIdAsync(dirId.Value);
+                    rootDir = await DirectoryService.FindByIdAsync(model.ParentId.Value);
                     return View(rootDir);
                 }
 

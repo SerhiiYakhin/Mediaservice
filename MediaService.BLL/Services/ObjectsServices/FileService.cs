@@ -318,6 +318,20 @@ namespace MediaService.BLL.Services.ObjectsServices
             await DownloadAsync(filesIds, zipId);
         }
 
+        public async Task<Stream> DownloadAsync(Guid fileId)
+        {
+            var fileEntry = await Context.Files.FindByKeyAsync(fileId);
+
+            if (fileEntry == null)
+            {
+                throw new InvalidDataException("There is no such file in database to download");
+            }
+
+            (var blobStream, _) = await Storage.DownloadAsync(fileEntry.Name, fileEntry.Size);
+
+            return blobStream;
+        }
+
         public async Task DownloadAsync(IEnumerable<Guid> filesIds, Guid zipId)
         {
             var filesEntries = (await Context.Files.GetDataAsync(f => filesIds.Contains(f.Id))).ToList();

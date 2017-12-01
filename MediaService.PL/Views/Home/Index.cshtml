@@ -1,5 +1,8 @@
 ﻿@using MediaService.PL.Models.ObjectViewModels.DirectoryViewModels
 @using MediaService.PL.Models.ObjectViewModels.FileViewModels
+@using MediaService.PL.Models.ObjectViewModels
+@using MediaService.PL.Models.ObjectViewModels.Enums
+
 ﻿@model MediaService.BLL.DTO.DirectoryEntryDto
 
 @{
@@ -9,34 +12,31 @@
 
 @*-----Context Menu-----*@
 
-
-
-
 <div class="container indexMenu">
     <div class="row">
         <div class="col-xs-4">
             <table>
-            <tr class="custom-search-input">
-                <td>  <img src="~/fonts/icons-buttons/search.svg" id="searchImg" /></td>
-                <td> <input type="search" id="searchInput" placeholder="Поиск файлов" /></td>
-</tr>
-                </table>
-</div>
+                <tr class="custom-search-input">
+                    <td>  <img src="~/fonts/icons-buttons/search.svg" id="searchImg" /></td>
+                    <td> <input type="search" id="searchInput" placeholder="Поиск файлов" /></td>
+                </tr>
+            </table>
+        </div>
         <div class="col-xs-4">
-            <h2 class="indexTitle text-center">LuxStorage</h2>
+            <h2 class="indexTitle text-center">LuxGate</h2>
         </div>
         <div class="col-xs-4">
             @Html.Partial("_LoginPartial")
         </div>
     </div>
 </div>
-<hr/>
+<hr />
 <div class="row customNav">
     <div class="col-xs-7">
         <div class="customBreadcrumb">
 
             <ul style="list-style-type:none; white-space: nowrap; float:left ">
-                @Html.ActionLink("Мои файлы", "Index", "Home")
+                @Html.ActionLink("Мои файлы", "Index", "Home", new ObjectsListViewModel { })
 
                 @while (ViewBag.ChildModel.ParentId != null)
                 {
@@ -44,7 +44,7 @@
                     <li style="float:right;  display: inline-block">
                         <img width="10" height="12"
                              src="/fonts/icons-buttons/next.svg" />
-                        @Html.ActionLink((string)ViewBag.ChildModel.Name, "Index", "Home", new { dirId = ViewBag.ChildModel.Id }, null)
+                        @Html.ActionLink((string)ViewBag.ChildModel.Name, "Index", "Home", new ObjectsListViewModel { ParentId = ViewBag.ChildModel.Id }, null)
                     </li>
                     ViewBag.ChildModel = ViewBag.ChildModel.Parent;
                 }
@@ -58,20 +58,20 @@
     <div class="col-xs-5">
         <div>
             <a class="pull-right" href="#">
-                <img src="~/fonts/icons-buttons/tile.svg" id="tileImg"/>
+                <img src="~/fonts/icons-buttons/tile.svg" id="tileImg" />
             </a>
             <a class="pull-right" href="#">
-                <img src="~/fonts/icons-buttons/list.svg" id="listImg"/>
+                <img src="~/fonts/icons-buttons/list.svg" id="listImg" />
             </a>
         </div>
-        <img src="~/fonts/icons-buttons/next.svg" class="pull-right" id="dropdownImg"/>
+        <img src="~/fonts/icons-buttons/next.svg" class="pull-right" id="dropdownImg" />
         <a class="pull-right btnLink" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             По дате создания
         </a>
         <ul class="dropdown-menu dropdown-menu-right pull-right" aria-labelledby="navbarDropdownMenuLink">
             <li>
                 <a class="dropdown-item" href="#">По дате добавления</a>
-                @Html.ActionLink("По дате добавления", "Index", "Home", new { dirId = Model.ParentId }, new { @class =  "dropdown-item" })
+                @Html.ActionLink("По дате добавления", "Index", "Home", new ObjectsListViewModel { ParentId = Model.ParentId, OrderType = OrderType.ByCreationTime }, new { @class = "dropdown-item" })
             </li>
             <li>
                 <a class="dropdown-item" href="#">По размеру</a>
@@ -90,24 +90,24 @@
 
 </div>
 <div class="row dirListView">
-    <div class="col-xs-9" >
+    <div class="col-xs-9">
 
         <div id='directories'></div>
 
-        <div id="selectable"> 
-        <div id='files'></div>
-    </div>
-        @Html.ActionLink("Back", "Index", "Home", new {dirId = Model.ParentId}, null)
+        <div id="selectable">
+            <div id='files'></div>
+        </div>
+        @Html.ActionLink("Back", "Index", "Home", new ObjectsListViewModel { ParentId = Model.ParentId }, null)
     </div>
     <div class="col-xs-3">
         <div id="dirListMenu">
             <a href="#uploadFileModal" class="btn btn-primary  uploadFileBtn pull-right" rel="modal:open">Загрузить файл</a>
             <div id="uploadFileModal" style="display: none">
-                @{ Html.RenderPartial("~/Views/File/_UploadFiles.cshtml", new UploadFilesViewModel {ParentId = Model.Id}); }
+                @{ Html.RenderPartial("~/Views/File/_UploadFiles.cshtml", new UploadFilesViewModel { ParentId = Model.Id }); }
             </div>
             <a href="#createDirModal" class="btn btn-primary  createDirBtn pull-right" rel="modal:open">Создать папку</a>
             <div id="createDirModal" style="display: none">
-                @{ Html.RenderPartial("~/Views/Directory/_CreateDirectory.cshtml", new CreateDirectoryViewModel {ParentId = Model.Id}); }
+                @{ Html.RenderPartial("~/Views/Directory/_CreateDirectory.cshtml", new CreateDirectoryViewModel { ParentId = Model.Id }); }
             </div>
 
         </div>
@@ -116,7 +116,7 @@
 <div id="deleteDirectoryModal" style="display:none; width: 500px; height: 500px;">
 </div>
 
-<div id="renameDirectoryModal" style="display:none; width: 500px; height: 500px;">   
+<div id="renameDirectoryModal" style="display:none; width: 500px; height: 500px;">
 </div>
 
 <div id="fileFromLinkModal" style="display:none; width: 500px; height: 500px;">
@@ -177,13 +177,11 @@
                 output.innerHTML += '<div class="col-xs-12" style="padding: 0"><hr /></div>';
 
                 output.innerHTML += '</div>';
-
-
             }
         }
 
         $.ajax({
-            url: '@Url.Action("DirectoriesList", "Directory", new DirectoriesListViewModel {ParentId = Model.Id})',
+            url: '@Url.Action("DirectoriesList", "Directory", new DirectoriesListViewModel {ParentId = Model.Id, OrderType = ViewBag.OrderType })',
             type: "GET",
             contentType: "text/html; charset=utf-8",
             success: function(data) {
@@ -192,13 +190,14 @@
         });
 
         $.ajax({
-            url: '@Url.Action("FilesList", "File", new FilesListViewModel {ParentId = Model.Id})',
+            url: '@Url.Action("FilesList", "File", new FilesListViewModel {ParentId = Model.Id, OrderType = ViewBag.OrderType })',
             type: "GET",
             contentType: "text/html; charset=utf-8",
             success: function(data) {
                 $('#files').html(data);
             }
         });
+
         @*------------------ Directory Context Menu-------------------------*@
         $(function () {
             $.contextMenu({
@@ -348,14 +347,9 @@
                     "download": { name: "Скачать файл" },
                     "sep3": "---------",
                     "delete": { name: "Удалить файл" }
-
-
                 }
             });
-
         });
-
-
 
         $(function () {
             $("#selectable").selectable({
@@ -368,6 +362,7 @@
                 }
             });
         });
+
         @*----search submit---*@
         $("#searchImg").click(function () {
             var SearchValue = $("#searchInput").val();

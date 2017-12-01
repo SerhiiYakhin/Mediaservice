@@ -25,6 +25,8 @@ namespace MediaService.BLL.Interfaces
 
         Task DownloadAsync(IEnumerable<Guid> filesIds, Guid zipId);
 
+        Task<Stream> DownloadAsync(Guid fileId);
+
         string GetLinkToZip(string fileName);
 
         Task<string> GetPublicLinkToFileAsync(Guid fileId, DateTimeOffset expiryTime);

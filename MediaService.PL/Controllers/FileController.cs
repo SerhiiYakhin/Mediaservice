@@ -70,6 +70,39 @@ namespace MediaService.PL.Controllers
         #region Actions
 
         [HttpGet]
+        [ErrorHandle(ExceptionType = typeof(DataException), View = "Errors/Error")]
+        public async Task<ActionResult> FilesList(FilesListViewModel model)
+        {
+            try
+            {
+                var files = await FilesService.GetByParentIdAsync(model.ParentId);
+
+                switch (model.OrderType)
+                {
+                    case OrderType.BySize:
+                        files = files.OrderBy(f => f.Size);
+                        break;
+                    case OrderType.ByName:
+                        files = files.OrderBy(f => f.Name);
+                        break;
+                    case OrderType.ByCreationTime:
+                        files = files.OrderBy(f => f.Created);
+                        break;
+                    case OrderType.ByUploadingTime:
+                        files = files.OrderBy(f => f.Downloaded);
+                        break;
+                }
+
+                return PartialView("~/Views/File/_FilesList.cshtml", files);
+            }
+            catch (Exception e)
+            {
+                throw new DataException(
+                    "Your files can't be displayed at this moment, we're sorry, try again later", e);
+            }
+        }
+
+        [HttpGet]
         public ActionResult UploadFiles(Guid folderId)
         {
             var model = new UploadFilesViewModel { ParentId = folderId };
@@ -108,7 +141,7 @@ namespace MediaService.PL.Controllers
         {
             var linkExpirationTime = fileSize / 10;
             var link = await FilesService.GetPublicLinkToFileAsync(fileId, DateTimeOffset.Now.AddMilliseconds(linkExpirationTime));
-            
+         
             //return link == null
             //    ? Json(new { success = false }, JsonRequestBehavior.AllowGet)
             //    : Json(new { success = true, link }, JsonRequestBehavior.AllowGet);
@@ -120,6 +153,19 @@ namespace MediaService.PL.Controllers
             ViewBag.Link = link;
 
             return PartialView("~/Views/File/_LoadFileFromLink.cshtml");
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> Download(Guid fileId, string fileName)
+        {
+            var fileStream = await FilesService.DownloadAsync(fileId);
+
+            if (fileStream == null)
+            {
+                return HttpNotFound();
+            }
+
+            return File(fileStream, "image/jpeg", fileName);
         }
 
         [HttpPost]
@@ -148,39 +194,6 @@ namespace MediaService.PL.Controllers
             return link == null
                 ? Json(new { success = false }, JsonRequestBehavior.AllowGet)
                 : Json(new { success = true, link }, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpGet]
-        [ErrorHandle(ExceptionType = typeof(DataException), View = "Errors/Error")]
-        public async Task<ActionResult> FilesList(FilesListViewModel model)
-        {
-            try
-            {
-                var files = await FilesService.GetByParentIdAsync(model.ParentId);
-
-                switch (model.OrderType)
-                {
-                    case OrderType.BySize:
-                        files = files.OrderBy(f => f.Size);
-                        break;
-                    case OrderType.ByName:
-                        files = files.OrderBy(f => f.Name);
-                        break;
-                    case OrderType.ByCreationTime:
-                        files = files.OrderBy(f => f.Created);
-                        break;
-                    case OrderType.ByUploadingTime:
-                        files = files.OrderBy(f => f.Downloaded);
-                        break;
-                }
-
-                return PartialView("~/Views/File/_FilesList.cshtml", files);
-            }
-            catch (Exception e)
-            {
-                throw new DataException(
-                    "Your files can't be displayed at this moment, we're sorry, try again later", e);
-            }
         }
 
         [HttpPost]

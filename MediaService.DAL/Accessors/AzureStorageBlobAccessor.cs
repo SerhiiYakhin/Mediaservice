@@ -99,7 +99,7 @@ namespace MediaService.DAL.Accessors
             {
                 var blobStream = new MemoryStream();
                 await LoadBlobToStream(blobStream, blob, blobSize);
-
+                var x = blob.Properties.ContentType;
                 return (blobStream, true);
             }
 
