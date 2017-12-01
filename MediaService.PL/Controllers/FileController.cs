@@ -19,6 +19,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.UI;
 
 #endregion
 
@@ -28,7 +29,7 @@ namespace MediaService.PL.Controllers
     {
         #region Fields
 
-        private IFilesService _filesService;
+        private IFileService _filesService;
 
         private ITagService _tagService;
 
@@ -40,7 +41,7 @@ namespace MediaService.PL.Controllers
 
         public FileController() { }
 
-        public FileController(IFilesService filesService, ITagService tagService)
+        public FileController(IFileService filesService, ITagService tagService)
         {
             TagService = tagService;
             FilesService = filesService;
@@ -52,9 +53,9 @@ namespace MediaService.PL.Controllers
 
         private IMapper Mapper => _mapper ?? (_mapper = MapperModule.GetMapper());
 
-        private IFilesService FilesService
+        private IFileService FilesService
         {
-            get => _filesService ?? HttpContext.GetOwinContext().GetUserManager<IFilesService>();
+            get => _filesService ?? HttpContext.GetOwinContext().GetUserManager<IFileService>();
             set => _filesService = value;
         }
 
@@ -327,6 +328,16 @@ namespace MediaService.PL.Controllers
                 throw new DbUpdateException(
                     "This file can't be deleted this file at this moment, we're sorry, try again later", e);
             }
+        }
+
+        [HttpGet]
+        [OutputCache(Duration = 300, Location = OutputCacheLocation.Downstream)]
+        public async Task<string> GetThumnailLink(Guid fileId)
+        {
+            var link = await FilesService.GetLinkToFileThumbnailAsync(fileId);
+            return link == null
+                ? Url.Content("~fonts/icons-buttons/picture-pink.svg")
+                : link;
         }
 
         #endregion

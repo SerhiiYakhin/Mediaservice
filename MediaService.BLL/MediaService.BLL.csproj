@@ -59,6 +59,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Spatial, Version=5.8.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -87,11 +88,17 @@
     <Compile Include="Infrastructure\ValidationException.cs" />
     <Compile Include="Interfaces\IUserService.cs" />
     <Compile Include="Interfaces\IDirectoryService.cs" />
-    <Compile Include="Interfaces\IFilesService.cs" />
+    <Compile Include="Interfaces\IFileService.cs" />
     <Compile Include="Interfaces\IObjectService.cs" />
     <Compile Include="Interfaces\IService.cs" />
     <Compile Include="Interfaces\ITagService.cs" />
     <Compile Include="Interfaces\IUserProfileService.cs" />
+    <Compile Include="Models\Enums\OperationType.cs" />
+    <Compile Include="Models\QueueMessages\CreateMessageInfo.cs" />
+    <Compile Include="Models\QueueMessages\DeleteMessageInfo.cs" />
+    <Compile Include="Models\QueueMessages\DownloadMessageInfo.cs" />
+    <Compile Include="Models\QueueMessages\ThumbnailMessageInfo.cs" />
+    <Compile Include="Models\QueueMessages\UpdateMessageInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\UserServices\UserService.cs" />
     <Compile Include="Services\ObjectsServices\DirectoryService.cs" />
@@ -99,6 +106,7 @@
     <Compile Include="Services\Service.cs" />
     <Compile Include="Services\ObjectsServices\TagService.cs" />
     <Compile Include="Services\UserServices\UserProfileService.cs" />
+    <Compile Include="Models\MessageInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MediaService.DAL\MediaService.DAL.csproj">
@@ -110,9 +118,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ViewModels\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

@@ -2,8 +2,10 @@
 {
     public enum QueueJob
     {
-        None,
         Download,
-        DataOperation
+        GenerateThumbnails,
+        Delete,
+        Create,
+        Update
     }
 }

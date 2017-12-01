@@ -23,7 +23,7 @@ namespace MediaService.PL
 
             app.CreatePerOwinContext(() => (IUserService) DependencyResolver.Current.GetService(typeof(IUserService)));
             app.CreatePerOwinContext(() =>
-                (IFilesService) DependencyResolver.Current.GetService(typeof(IFilesService)));
+                (IFileService) DependencyResolver.Current.GetService(typeof(IFileService)));
             app.CreatePerOwinContext(() =>
                 (IDirectoryService) DependencyResolver.Current.GetService(typeof(IDirectoryService)));
             app.CreatePerOwinContext(() =>

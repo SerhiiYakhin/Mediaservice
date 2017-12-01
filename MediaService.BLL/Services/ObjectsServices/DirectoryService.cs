@@ -2,8 +2,13 @@
 
 using MediaService.BLL.DTO;
 using MediaService.BLL.Interfaces;
+using MediaService.BLL.Models;
+using MediaService.BLL.Models.Enums;
+using MediaService.BLL.Models.QueueMessages;
+using MediaService.DAL.Accessors.Enums;
 using MediaService.DAL.Entities;
 using MediaService.DAL.Interfaces;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -187,35 +192,12 @@ namespace MediaService.BLL.Services.ObjectsServices
             await Context.SaveChangesAsync();
         }
 
-        private async Task DeleteHelperAsync(Guid entryId)
-        {
-            var currDirectoryEntry = await Context.Directories.FindByKeyAsync(entryId);
-
-            if (currDirectoryEntry == null)
-            {
-                throw new InvalidDataException("Can't find parent folder user with this Id in database");
-            }
-
-            var childFiles = await Context.Files.GetDataAsync(f => f.ParentId == entryId);
-            var childDirs = await Context.Directories.GetDataAsync(d => d.ParentId == entryId);
-
-            foreach (var file in childFiles)
-            {
-                await Context.Files.RemoveAsync(file);
-                await Storage.DeleteAsync($"{file.Id}{Path.GetExtension(file.Name)}");
-            }
-
-            foreach (var dir in childDirs)
-            {
-                await DeleteHelperAsync(dir.Id);
-            }
-
-            await Context.Directories.RemoveAsync(currDirectoryEntry);
-        }
-
         public async Task DeleteWithJobAsync(Guid entryId)
         {
-            await DeleteAsync(entryId);
+            var messageInfo = new DeleteMessageInfo { OperationType = OperationType.DeleteFolder, EntryId = entryId };
+
+            await Queue.AddMessageAsync(JsonConvert.SerializeObject(messageInfo), QueueJob.Delete);
+            //await DeleteAsync(entryId);
         }
 
         #endregion
@@ -224,8 +206,15 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public async Task DownloadWithJobAsync(Guid directoryId, Guid zipId)
         {
-            await DownloadAsync(directoryId, zipId);
-            //await Queue.AddMessageAsync(directoryId.ToString(), QueueJob.DataOperation);
+            var messageInfo = new DownloadMessageInfo
+            {
+                OperationType = OperationType.DownloadFolder,
+                EntriesIds = new List<Guid> { directoryId },
+                ZipId = zipId
+            };
+
+            await Queue.AddMessageAsync(JsonConvert.SerializeObject(messageInfo), QueueJob.Download);
+            //await DownloadAsync(directoryId, zipId);
         }
 
         public async Task DownloadAsync(Guid directoryId, Guid zipId)
@@ -266,6 +255,32 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         #region Helper Methods
 
+        private async Task DeleteHelperAsync(Guid entryId)
+        {
+            var currDirectoryEntry = await Context.Directories.FindByKeyAsync(entryId);
+
+            if (currDirectoryEntry == null)
+            {
+                throw new InvalidDataException("Can't find parent folder user with this Id in database");
+            }
+
+            var childFiles = await Context.Files.GetDataAsync(f => f.ParentId == entryId);
+            var childDirs = await Context.Directories.GetDataAsync(d => d.ParentId == entryId);
+
+            foreach (var file in childFiles)
+            {
+                await Context.Files.RemoveAsync(file);
+                await Storage.DeleteAsync($"{file.Id}{Path.GetExtension(file.Name)}");
+            }
+
+            foreach (var dir in childDirs)
+            {
+                await DeleteHelperAsync(dir.Id);
+            }
+
+            await Context.Directories.RemoveAsync(currDirectoryEntry);
+        }
+
         private async Task WriteToFolderAsync(Guid dirId, ZipArchive archive, string path)
         {
             var files = await Context.Files.GetDataAsync(f => f.ParentId == dirId);
@@ -281,7 +296,7 @@ namespace MediaService.BLL.Services.ObjectsServices
 
                     using (var zipEntryStream = zipEntry.Open())
                     {
-                        await Storage.DownloadAsync(blobName, file.Size, zipEntryStream);
+                        await Storage.DownloadAsync(zipEntryStream, blobName, file.Size);
                     }
                 }
             }

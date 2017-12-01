@@ -3,11 +3,18 @@
 using MediaService.BLL.DTO;
 using MediaService.BLL.DTO.Enums;
 using MediaService.BLL.Interfaces;
+using MediaService.BLL.Models;
+using MediaService.BLL.Models.Enums;
+using MediaService.BLL.Models.QueueMessages;
+using MediaService.DAL.Accessors.Enums;
 using MediaService.DAL.Entities;
 using MediaService.DAL.Interfaces;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -18,7 +25,7 @@ using System.Web;
 
 namespace MediaService.BLL.Services.ObjectsServices
 {
-    public class FileService : Service<FileEntryDto, FileEntry, Guid>, IFilesService
+    public class FileService : Service<FileEntryDto, FileEntry, Guid>, IFileService
     {
         #region Properties
 
@@ -69,7 +76,7 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public string GetLinkToZip(string fileName)
         {
-            return Storage.GetDirectLinkToBlob(fileName, DateTimeOffset.Now.AddDays(1), SharedAccessBlobPermissions.Read | SharedAccessBlobPermissions.List);
+            return Storage.GetDirectLinkToBlob(fileName, DateTimeOffset.Now.AddHours(1), SharedAccessBlobPermissions.Read);
         }
 
         public async Task<string> GetPublicLinkToFileAsync(Guid fileId, DateTimeOffset expiryTime)
@@ -82,6 +89,18 @@ namespace MediaService.BLL.Services.ObjectsServices
             }
 
             return Storage.GetDirectLinkToBlob($"{fileEntry.Id}{Path.GetExtension(fileEntry.Name)}", expiryTime, SharedAccessBlobPermissions.Read);
+        }
+
+        public async Task<string> GetLinkToFileThumbnailAsync(Guid fileId)
+        {
+            var fileEntry = await Context.Files.FindByKeyAsync(fileId);
+
+            if (fileEntry == null)
+            {
+                throw new InvalidDataException("Can't find this file in database");
+            }
+
+            return Storage.GetDirectLinkToBlob($"thumbnail-{fileEntry.Id}{Path.GetExtension(fileEntry.Name)}", DateTimeOffset.Now.AddMinutes(5), SharedAccessBlobPermissions.Read);
         }
 
         public async Task<IEnumerable<FileEntryDto>> SearchFilesAsync(Guid parentId, SearchType searchType, string searchValue)
@@ -104,18 +123,28 @@ namespace MediaService.BLL.Services.ObjectsServices
 
             parentDir.Modified = DateTime.Now;
 
+            var filesNames = new List<string>();
+
             foreach (var fileDto in filesDto)
             {
                 var fileEntry = DtoMapper.Map<FileEntry>(fileDto);
                 var mimeType = MimeMapping.GetMimeMapping(fileEntry.Name);
+
                 fileEntry.Downloaded = fileEntry.Created = fileEntry.Modified = DateTime.Now;
                 fileEntry.Owner = parentDir.Owner;
                 fileEntry.Parent = parentDir;
                
                 await Context.Files.AddAsync(fileEntry);
-                await Context.SaveChangesAsync();
                 await Storage.UploadAsync(fileDto.FileStream, $"{fileEntry.Id}{Path.GetExtension(fileEntry.Name)}", mimeType);
+
+                filesNames.Add(fileEntry.Name);
             }
+
+            await Context.SaveChangesAsync();
+
+            var messageInfo = new ThumbnailMessageInfo { OperationType = OperationType.GenerateThumbnail, FilesNames = filesNames};
+
+            await Queue.AddMessageAsync(JsonConvert.SerializeObject(messageInfo), QueueJob.Download);
         }
 
         public override void Add(FileEntryDto item)
@@ -193,6 +222,23 @@ namespace MediaService.BLL.Services.ObjectsServices
             await Context.SaveChangesAsync();
         }
 
+        public async Task GenerateThumbnailsToFilesAsync(IEnumerable<string> filesNames)
+        {
+            foreach (var fileName in filesNames)
+            {
+                (var blobStream, var blobExist) = await Storage.DownloadAsync(fileName);
+
+                if (blobExist)
+                {
+                    var thumb = Image.FromStream(blobStream).GetThumbnailImage(250, 180, () => false, IntPtr.Zero);
+                    var thumbnailStream = new MemoryStream();
+
+                    thumb.Save(thumbnailStream, ImageFormat.Png);
+                    await Storage.UploadAsync(thumbnailStream, $"thumbnail-{fileName}", "image/png");
+                }
+            }
+        }
+
         #endregion
 
         #region Update Methods
@@ -249,7 +295,11 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public async Task DownloadWithJobAsync(IEnumerable<Guid> filesIds, Guid zipId)
         {
-            await DownloadAsync(filesIds, zipId);
+            var messageInfo = new DownloadMessageInfo { OperationType = OperationType.DownloadFiles, EntriesIds = filesIds.ToList(), ZipId = zipId };
+
+            await Queue.AddMessageAsync(JsonConvert.SerializeObject(messageInfo), QueueJob.Download);
+
+            //await DownloadAsync(filesIds, zipId);
         }
 
         public async Task DownloadAsync(IEnumerable<Guid> filesIds, Guid zipId)
@@ -262,6 +312,7 @@ namespace MediaService.BLL.Services.ObjectsServices
             }
 
             var zipName = $"{zipId}.zip";
+
             using (var fs = new FileStream(zipName, FileMode.OpenOrCreate))
             {
                 using (ZipArchive archive = new ZipArchive(fs, ZipArchiveMode.Create, false))
@@ -274,7 +325,7 @@ namespace MediaService.BLL.Services.ObjectsServices
                             var zipEntry = archive.CreateEntry(fileEntry.Name);
                             using (var zipEntryStream = zipEntry.Open())
                             {
-                                await Storage.DownloadAsync(blobName, fileEntry.Size, zipEntryStream);
+                                await Storage.DownloadAsync(zipEntryStream, blobName, fileEntry.Size);
                             }
                         }
                     }

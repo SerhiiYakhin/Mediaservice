@@ -11,7 +11,7 @@ using MediaService.BLL.DTO.Enums;
 
 namespace MediaService.BLL.Interfaces
 {
-    public interface IFilesService : IObjectService<FileEntryDto>
+    public interface IFileService : IObjectService<FileEntryDto>
     {
         Task AddRangeAsync(IEnumerable<FileEntryDto> files, Guid parentId);
 
@@ -30,5 +30,9 @@ namespace MediaService.BLL.Interfaces
         Task<string> GetPublicLinkToFileAsync(Guid fileId, DateTimeOffset expiryTime);
 
         Task<IEnumerable<FileEntryDto>> SearchFilesAsync(Guid parentId, SearchType searchType, string searchValue);
+
+        Task<string> GetLinkToFileThumbnailAsync(Guid fileId);
+
+        Task GenerateThumbnailsToFilesAsync(IEnumerable<string> filesNames);
     }
 }

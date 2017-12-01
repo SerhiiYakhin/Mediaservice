@@ -23,7 +23,7 @@ namespace MediaServiceBLLJob
         private void ConfigureNinject()
         {
             var kernel = new StandardKernel(new DIServiceModule("DefaultConnection", CloudConfigurationManager.GetSetting("StorageConnectionString")));
-            //var kernel = new StandardKernel(new ServiceModule("AzureDbConnection", CloudConfigurationManager.GetSetting("AzureStorageConnectionString")));
+
             try
             {
                 kernel.Bind<Func<IKernel>>().ToMethod(ctx => () => new Bootstrapper().Kernel);
@@ -37,6 +37,11 @@ namespace MediaServiceBLLJob
                 DependencyResolver.SetResolver(new DependencyResolver());
                 throw new Exception("Error while setting NinjectDependencyResolver", ex);
             }
+        }
+
+        public IDependencyResolver GetCurrect()
+        {
+            return DependencyResolver.Current;
         }
     }
 }

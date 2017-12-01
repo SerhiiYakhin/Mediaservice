@@ -1,18 +1,25 @@
-﻿using System;
+﻿using MediaServiceBLLJob.App_Start.DependencyInjection;
 using Microsoft.Azure.WebJobs;
+using System;
+//using Microsoft.Azure.WebJobs.Extensions;
 
-namespace MediaServiceBLLJob
+namespace MediaServiceBLLJob.Program
 {
     class Program
     {
         static void Main()
         {
-            var startup = new Startup();
-            var config = new JobHostConfiguration();
+            var container = SimpleInjectorInitializer.Initialize();
+
+            var config = new JobHostConfiguration
+            {
+                JobActivator = new JobActivator(container),
+            };
 
             config.Queues.BatchSize = 8;
             config.Queues.MaxDequeueCount = 2;
             config.Queues.MaxPollingInterval = TimeSpan.FromSeconds(15);
+            config.Queues.VisibilityTimeout = TimeSpan.FromMinutes(2);
 
             if (config.IsDevelopment)
             {
@@ -20,7 +27,6 @@ namespace MediaServiceBLLJob
             }
 
             var host = new JobHost(config);
-            // The following code ensures that the WebJob will be running continuously
             host.RunAndBlock();
         }
     }

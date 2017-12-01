@@ -90,7 +90,7 @@ namespace MediaService.DAL.Accessors
 
         #region Download
 
-        public async Task<(Stream blobStream, bool blobExist)> DownloadAsync(string blobName, int blobSize)
+        public async Task<(Stream blobStream, bool blobExist)> DownloadAsync(string blobName, int? blobSize = null)
         {
             var blob = GetBlob(blobName);
             var blobExist = await blob.ExistsAsync();
@@ -104,7 +104,7 @@ namespace MediaService.DAL.Accessors
             return (null, false);
         }
 
-        public async Task DownloadAsync(string blobName, int blobSize, Stream blobStream)
+        public async Task DownloadAsync(Stream blobStream, string blobName, int? blobSize = null)
         {
             var blob = GetBlob(blobName);
             await LoadBlobToStream(blobStream, blob, blobSize);
@@ -154,14 +154,13 @@ namespace MediaService.DAL.Accessors
 
         #region Help Methods
 
-        private static async Task LoadBlobToStream(Stream blobStream, CloudBlockBlob blob, int blobSize)
+        private static async Task LoadBlobToStream(Stream blobStream, CloudBlockBlob blob, int? blobSize)
         {
-            //var threadCount = (int)Math.Ceiling((double)blob.Properties.Length / BytesToAddThread);
-            var threadCount = blobSize / BytesToAddThread + 1;
+            int threadCount = 1;
 
-            if (threadCount < 1)
+            if (blobSize.HasValue && blobSize.Value > BytesToAddThread)
             {
-                threadCount = 1;
+               threadCount = blobSize.Value / BytesToAddThread + 1;
             }
 
             var requestOptions = new BlobRequestOptions
