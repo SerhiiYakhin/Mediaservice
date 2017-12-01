@@ -4,6 +4,7 @@
 
 @{
     ViewBag.Title = "Home Page";
+    ViewBag.Search = "ByName";
     ViewBag.ChildModel = Model;
 }
 
@@ -18,7 +19,7 @@
             <table>
             <tr class="custom-search-input">
                 <td>  <img src="~/fonts/icons-buttons/search.svg" id="searchImg" /></td>
-                <td> <input type="search" id="searchInput" placeholder="Поиск файлов" /></td>
+                <td> <input type="search"  id="searchInput" placeholder="Поиск файлов" data-SearchType="@ViewBag.Search"/></td>
 </tr>
                 </table>
 </div>
@@ -369,11 +370,40 @@
             });
         });
         @*----search submit---*@
-        $("#searchImg").click(function () {
-            var SearchValue = $("#searchInput").val();
+                $(function () {
+            $.contextMenu({
+                selector: '#searchInput',
+                callback: function (key, opt) {
+                    var m =  key;
+                    switch (m) {
+                        case "byName":
+
+                            document.getElementById('searchInput').setAttribute("data-searchtype", "ByName")
+                            break;
+                        case "byTag":
+                            document.getElementById('searchInput').setAttribute("data-searchtype", "ByTag")
+                            break;
+                        default:
+                            alert("Упс :(");
+                    }
+                },
+                items: {
+                    "byName": { name: "По названию" },
+                    "sep1": "---------",
+                    "byTag": { name: "По тегам" },
+
+
+
+                }
+            });
+
+        });
+                $('#searchInput').keypress(function (e) {
+                    if (e.which == 13) {
+                        var SearchValue = $("#searchInput").val();
             var formData = new FormData();
             var OrderType = "ByName";
-            var SearchType = "ByName";
+            var SearchType = $("#searchInput").attr("data-searchtype");
             formData.append('SearchValue', SearchValue);
             formData.append('ParentId', '@Model.Id');
             formData.append('OrderType', OrderType);
@@ -394,6 +424,10 @@
                     alert("errror");
                 }
             });
-        });
+                        return false;    //<---- Add this line
+                    }
+                });
+
+       
     </script>
 }

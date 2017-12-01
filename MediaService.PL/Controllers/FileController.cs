@@ -206,8 +206,9 @@ namespace MediaService.PL.Controllers
                         files = files.OrderBy(d => d.Downloaded);
                         break;
                 }
-
-                return PartialView("~/Views/File/_FilesList.cshtml", files);
+                var html = PartialView("~/Views/File/_FilesList.cshtml", files).RenderToString();
+                return Json(new { Success = true, html }, JsonRequestBehavior.AllowGet);
+                //return PartialView("~/Views/File/_FilesList.cshtml", files);
             }
             catch (Exception e)
             {
