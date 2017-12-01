@@ -38,7 +38,7 @@ namespace MediaService.BLL.Services.ObjectsServices
 
             if (tagEntry == null)
             {
-                tagEntry = new Tag {Name = item.Name};
+                tagEntry = new Tag { Name = item.Name };
                 foreach (var fileEntryDto in item.FileEntries)
                 {
                     var fileEntry = Context.Files.FindByKey(fileEntryDto.Id);
@@ -60,7 +60,7 @@ namespace MediaService.BLL.Services.ObjectsServices
 
             if (tagEntry == null)
             {
-                tagEntry = new Tag {Name = item.Name};
+                tagEntry = new Tag { Name = item.Name };
                 foreach (var fileEntryDto in item.FileEntries)
                 {
                     var fileEntry = await Context.Files.FindByKeyAsync(fileEntryDto.Id);
