@@ -21,6 +21,5 @@ namespace MediaService.BLL.Interfaces
         void Add(TDto item);
 
         Task AddAsync(TDto item);
-
     }
 }

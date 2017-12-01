@@ -1,20 +1,15 @@
 ﻿#region usings
 
-using MediaService.BLL.DTO;
-using MediaService.BLL.Interfaces;
-using MediaService.BLL.Models;
-using MediaService.BLL.Models.Enums;
-using MediaService.BLL.Models.QueueMessages;
-using MediaService.DAL.Accessors.Enums;
-using MediaService.DAL.Entities;
-using MediaService.DAL.Interfaces;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
+using MediaService.BLL.DTO;
+using MediaService.BLL.Interfaces;
+using MediaService.DAL.Entities;
+using MediaService.DAL.Interfaces;
 
 #endregion
 
@@ -22,14 +17,6 @@ namespace MediaService.BLL.Services.ObjectsServices
 {
     public class DirectoryService : Service<DirectoryEntryDto, DirectoryEntry, Guid>, IDirectoryService
     {
-        #region Properties
-
-        private IBlobStorage Storage { get; }
-
-        private IQueueStorage Queue { get; }
-
-        #endregion
-
         #region Constructor
 
         public DirectoryService(IUnitOfWork uow, IBlobStorage storage, IQueueStorage queue) : base(uow)
@@ -38,6 +25,14 @@ namespace MediaService.BLL.Services.ObjectsServices
             Queue = queue;
             Repository = uow.Directories;
         }
+
+        #endregion
+
+        #region Properties
+
+        private IBlobStorage Storage { get; }
+
+        private IQueueStorage Queue { get; }
 
         #endregion
 
@@ -74,7 +69,8 @@ namespace MediaService.BLL.Services.ObjectsServices
         /// <exception cref="InvalidDataException">Thrown when user with given Id or his root folder doesn't exist in the Database</exception>
         public async Task<DirectoryEntryDto> GetRootAsync(string ownerId)
         {
-            var root = (await Context.Directories.GetDataAsync(d => d.Owner.Id == ownerId && d.Name == "root")).SingleOrDefault();
+            var root = (await Context.Directories.GetDataAsync(d => d.Owner.Id == ownerId && d.Name == "root"))
+                .SingleOrDefault();
 
             if (root == null)
             {
@@ -106,7 +102,7 @@ namespace MediaService.BLL.Services.ObjectsServices
             var dir = DtoMapper.Map<DirectoryEntry>(directoryEntryDto);
             dir.Owner = parentDir.Owner;
             dir.Parent = parentDir;
-            dir.NodeLevel = (short)(parentDir.NodeLevel + 1);
+            dir.NodeLevel = (short) (parentDir.NodeLevel + 1);
             dir.Modified = dir.Created = dir.Downloaded = DateTime.Now;
 
             Context.Directories.Add(dir);
@@ -132,7 +128,7 @@ namespace MediaService.BLL.Services.ObjectsServices
             var dir = DtoMapper.Map<DirectoryEntry>(directoryEntryDto);
             dir.Owner = parentDir.Owner;
             dir.Parent = parentDir;
-            dir.NodeLevel = (short)(parentDir.NodeLevel + 1);
+            dir.NodeLevel = (short) (parentDir.NodeLevel + 1);
             dir.Modified = dir.Created = dir.Downloaded = DateTime.Now;
 
             await Context.Directories.AddAsync(dir);
@@ -227,12 +223,12 @@ namespace MediaService.BLL.Services.ObjectsServices
             }
 
             var zipName = $"{zipId}.zip";
-            string tempDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string tempPath = $"{tempDir}\\{zipName}";
+            var tempDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var tempPath = $"{tempDir}\\{zipName}";
 
             using (var fs = new FileStream(tempPath, FileMode.OpenOrCreate))
             {
-                using (ZipArchive archive = new ZipArchive(fs, ZipArchiveMode.Create, false))
+                using (var archive = new ZipArchive(fs, ZipArchiveMode.Create, false))
                 {
                     await WriteToFolderAsync(directoryId, archive, currDirectoryEntry.Name);
                 }

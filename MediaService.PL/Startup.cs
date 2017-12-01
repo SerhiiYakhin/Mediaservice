@@ -2,7 +2,6 @@
 
 using System;
 using MediaService.PL;
-using MediaService.PL.Utils.Attributes.ErrorHandler;
 using Microsoft.Owin;
 using NLog;
 using Owin;

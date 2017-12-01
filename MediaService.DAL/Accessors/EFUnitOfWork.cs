@@ -1,10 +1,10 @@
 ﻿#region usings
 
+using System;
+using System.Threading.Tasks;
 using MediaService.DAL.EF;
 using MediaService.DAL.Entities;
 using MediaService.DAL.Interfaces;
-using System;
-using System.Threading.Tasks;
 
 #endregion
 
@@ -12,6 +12,15 @@ namespace MediaService.DAL.Accessors
 {
     public class EFUnitOfWork : IUnitOfWork
     {
+        #region Constructors
+
+        public EFUnitOfWork(string connectionString)
+        {
+            _db = new DatabaseContext(connectionString);
+        }
+
+        #endregion
+
         #region Fields
 
         private readonly DatabaseContext _db;
@@ -48,15 +57,6 @@ namespace MediaService.DAL.Accessors
             _usersProfiles ?? (_usersProfiles = new EFRepository<UserProfile, Guid>(_db));
 
         public IRepository<User, string> Users => _users ?? (_users = new EFRepository<User, string>(_db));
-
-        #endregion
-
-        #region Constructors
-
-        public EFUnitOfWork(string connectionString)
-        {
-            _db = new DatabaseContext(connectionString);
-        }
 
         #endregion
 

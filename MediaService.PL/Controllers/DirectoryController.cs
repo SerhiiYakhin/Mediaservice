@@ -1,4 +1,13 @@
-﻿using AutoMapper;
+﻿#region usings
+
+using System;
+using System.Data;
+using System.Data.Entity.Infrastructure;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+using AutoMapper;
 using MediaService.BLL.DTO;
 using MediaService.BLL.Interfaces;
 using MediaService.PL.Models.IdentityModels.Managers;
@@ -7,18 +16,49 @@ using MediaService.PL.Models.ObjectViewModels.Enums;
 using MediaService.PL.Utils;
 using MediaService.PL.Utils.Attributes.ErrorHandler;
 using Microsoft.AspNet.Identity.Owin;
-using System;
-using System.Data;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+
+#endregion
 
 namespace MediaService.PL.Controllers
 {
     public class DirectoryController : Controller
     {
+        #region Overrided Methods
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_userManager != null)
+                {
+                    _userManager.Dispose();
+                    _userManager = null;
+                }
+
+                if (_directoryService != null)
+                {
+                    _directoryService.Dispose();
+                    _directoryService = null;
+                }
+
+                if (_applicationUserService != null)
+                {
+                    _applicationUserService.Dispose();
+                    _applicationUserService = null;
+                }
+
+                if (_filesService != null)
+                {
+                    _filesService.Dispose();
+                    _filesService = null;
+                }
+            }
+
+            base.Dispose(disposing);
+        }
+
+        #endregion
+
         #region Fields
 
         private IUserService _applicationUserService;
@@ -119,7 +159,7 @@ namespace MediaService.PL.Controllers
         [HttpGet]
         public ActionResult Create(Guid parentId)
         {
-            var model = new CreateDirectoryViewModel { ParentId = parentId };
+            var model = new CreateDirectoryViewModel {ParentId = parentId};
 
             return PartialView("~/Views/Directory/_CreateDirectory.cshtml", model);
         }
@@ -136,7 +176,7 @@ namespace MediaService.PL.Controllers
                     await DirectoryService.AddAsync(newFolder);
                     //return Json(new { success = true }, JsonRequestBehavior.AllowGet);
 
-                    return RedirectToAction("Index", "Home", new { dirId = model.ParentId});
+                    return RedirectToAction("Index", "Home", new {dirId = model.ParentId});
                 }
                 ModelState.AddModelError("Name", "The folder with this name is already exist in this directory");
             }
@@ -188,14 +228,14 @@ namespace MediaService.PL.Controllers
             var link = FilesService.GetLinkToZip($"{zipId}.zip");
 
             return link == null
-                ? Json(new { success = false }, JsonRequestBehavior.AllowGet)
-                : Json(new { success = true, link }, JsonRequestBehavior.AllowGet);
+                ? Json(new {success = false}, JsonRequestBehavior.AllowGet)
+                : Json(new {success = true, link}, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
         public ActionResult Rename(Guid id, Guid parentId, string name)
         {
-            var model = new RenameDirectoryViewModel { Id = id, ParentId = parentId, Name = name };
+            var model = new RenameDirectoryViewModel {Id = id, ParentId = parentId, Name = name};
 
             return PartialView("~/Views/Directory/_RenameDirectory.cshtml", model);
         }
@@ -211,7 +251,7 @@ namespace MediaService.PL.Controllers
                     var editedFolder = Mapper.Map<DirectoryEntryDto>(model);
                     await DirectoryService.RenameAsync(editedFolder);
 
-                    return RedirectToAction("Index", "Home", new { dirId = model.ParentId });
+                    return RedirectToAction("Index", "Home", new {dirId = model.ParentId});
                 }
 
                 ModelState.AddModelError("Name", "The folder with this name is already exist in this directory");
@@ -228,7 +268,7 @@ namespace MediaService.PL.Controllers
         [HttpGet]
         public ActionResult Delete(Guid id, Guid parentId)
         {
-            var model = new DeleteDirectoryViewModel { Id = id, ParentId = parentId };
+            var model = new DeleteDirectoryViewModel {Id = id, ParentId = parentId};
 
             return PartialView("_DeleteDirectory", model);
         }
@@ -242,7 +282,7 @@ namespace MediaService.PL.Controllers
                 await DirectoryService.DeleteWithJobAsync(model.Id);
 
 
-                return RedirectToAction("Index", "Home", new { dirId = model.ParentId });
+                return RedirectToAction("Index", "Home", new {dirId = model.ParentId});
             }
             catch (Exception ex)
             {
@@ -254,44 +294,6 @@ namespace MediaService.PL.Controllers
         #endregion
 
         #region Helper Methods
-
-        
-
-        #endregion
-
-        #region Overrided Methods
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (_userManager != null)
-                {
-                    _userManager.Dispose();
-                    _userManager = null;
-                }
-
-                if (_directoryService != null)
-                {
-                    _directoryService.Dispose();
-                    _directoryService = null;
-                }
-
-                if (_applicationUserService != null)
-                {
-                    _applicationUserService.Dispose();
-                    _applicationUserService = null;
-                }
-
-                if (_filesService != null)
-                {
-                    _filesService.Dispose();
-                    _filesService = null;
-                }
-            }
-
-            base.Dispose(disposing);
-        }
 
         #endregion
     }

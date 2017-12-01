@@ -49,7 +49,8 @@ namespace MediaService.BLL.Services.ObjectsServices
             }
             else
             {
-                throw new InvalidExpressionException("Tag already exist in database, maybe you wan't to use command Update");
+                throw new InvalidExpressionException(
+                    "Tag already exist in database, maybe you wan't to use command Update");
             }
         }
 
@@ -59,7 +60,7 @@ namespace MediaService.BLL.Services.ObjectsServices
 
             if (tagEntry == null)
             {
-                tagEntry = new Tag { Name = item.Name };
+                tagEntry = new Tag {Name = item.Name};
                 foreach (var fileEntryDto in item.FileEntries)
                 {
                     var fileEntry = await Context.Files.FindByKeyAsync(fileEntryDto.Id);
@@ -70,7 +71,8 @@ namespace MediaService.BLL.Services.ObjectsServices
             }
             else
             {
-                throw new InvalidExpressionException("Tag already exist in database, maybe you wan't to use command Update");
+                throw new InvalidExpressionException(
+                    "Tag already exist in database, maybe you wan't to use command Update");
             }
         }
 

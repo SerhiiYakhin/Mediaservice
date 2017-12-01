@@ -1,20 +1,67 @@
-﻿using MediaService.BLL.Interfaces;
+﻿#region usings
+
+using System;
+using System.IO;
+using System.Threading.Tasks;
+using MediaService.BLL.Interfaces;
 using MediaService.BLL.Models.Enums;
 using MediaService.BLL.Models.QueueMessages;
 using MediaService_BLL_Job.DependencyInjection;
 using Microsoft.Azure.WebJobs;
 using Newtonsoft.Json;
-using System;
-using System.IO;
-using System.Threading.Tasks;
+
+#endregion
 
 namespace MediaService_BLL_Job
 {
     /// <summary>
-    /// This is a listener functions
+    ///     This is a listener functions
     /// </summary>
     public class Functions : FunctionBase
     {
+        #region Constructor
+
+        /// <summary>
+        ///     Initializes a new instance of <see cref="Functions" />.
+        /// </summary>
+        /// <param name="fileService">
+        ///     Dependency injected <see cref="IFileService" /> that provides methods for interacting with
+        ///     user files.
+        /// </param>
+        /// <param name="directoryService">
+        ///     Dependency injected <see cref="IDirectoryService" /> that provides methods for
+        ///     interacting with user folders.
+        /// </param>
+        public Functions(IFileService fileService, IDirectoryService directoryService)
+        {
+            _fileService = fileService;
+            _directoryService = directoryService;
+        }
+
+        #endregion
+
+        #region Overrided Methods
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_directoryService != null)
+                {
+                    _directoryService.Dispose();
+                }
+
+                if (_fileService != null)
+                {
+                    _fileService.Dispose();
+                }
+            }
+
+            base.Dispose(disposing);
+        }
+
+        #endregion
+
         #region Fields
 
         private const string DownloadQueueName = "download";
@@ -28,36 +75,21 @@ namespace MediaService_BLL_Job
         private const string UpdateQueueName = "update";
 
         /// <summary>
-        /// Dependency injected <see cref="IFileService"/> that provides methods for interacting with user files.
+        ///     Dependency injected <see cref="IFileService" /> that provides methods for interacting with user files.
         /// </summary>
         private readonly IFileService _fileService;
 
         /// <summary>
-        /// Dependency injected <see cref="IFileService"/> that provides methods for interacting with user files.
+        ///     Dependency injected <see cref="IFileService" /> that provides methods for interacting with user files.
         /// </summary>
         private readonly IDirectoryService _directoryService;
-
-        #endregion
-
-        #region Constructor
-
-        /// <summary>
-        /// Initializes a new instance of <see cref="Functions"/>.
-        /// </summary>
-        /// <param name="fileService">Dependency injected <see cref="IFileService"/> that provides methods for interacting with user files.</param>
-        /// <param name="directoryService">Dependency injected <see cref="IDirectoryService"/> that provides methods for interacting with user folders.</param>
-        public Functions(IFileService fileService, IDirectoryService directoryService) : base()
-        {
-            _fileService = fileService;
-            _directoryService = directoryService;
-        }
 
         #endregion
 
         #region Listeners
 
         /// <summary>
-        /// Listen download queue.
+        ///     Listen download queue.
         /// </summary>
         /// <param name="message">Incoming message to process.</param>
         /// <param name="log">A logging binder.</param>
@@ -87,11 +119,12 @@ namespace MediaService_BLL_Job
         }
 
         /// <summary>
-        /// Listen thumbnail queue.
+        ///     Listen thumbnail queue.
         /// </summary>
         /// <param name="message">Incoming message to process.</param>
         /// <param name="log">A logging binder.</param>
-        public async Task ProcessThumbnailsQueueMessage([QueueTrigger(ThumbnailsQueueName)] string message, TextWriter log)
+        public async Task ProcessThumbnailsQueueMessage([QueueTrigger(ThumbnailsQueueName)] string message,
+            TextWriter log)
         {
             log.WriteLine(message);
             try
@@ -114,7 +147,7 @@ namespace MediaService_BLL_Job
         }
 
         /// <summary>
-        /// Listen delete queue.
+        ///     Listen delete queue.
         /// </summary>
         /// <param name="message">Incoming message to process.</param>
         /// <param name="log">A logging binder.</param>
@@ -140,7 +173,7 @@ namespace MediaService_BLL_Job
         }
 
         /// <summary>
-        /// Listen create queue.
+        ///     Listen create queue.
         /// </summary>
         /// <param name="message">Incoming message to process.</param>
         /// <param name="log">A logging binder.</param>
@@ -150,35 +183,13 @@ namespace MediaService_BLL_Job
         }
 
         /// <summary>
-        /// Listen update queue.
+        ///     Listen update queue.
         /// </summary>
         /// <param name="message">Incoming message to process.</param>
         /// <param name="log">A logging binder.</param>
         public async Task ProcessUpdateQueueMessage([QueueTrigger(UpdateQueueName)] string message, TextWriter log)
         {
             log.WriteLine(message);
-        }
-
-        #endregion
-
-        #region Overrided Methods
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (_directoryService != null)
-                {
-                    _directoryService.Dispose();
-                }
-
-                if (_fileService != null)
-                {
-                    _fileService.Dispose();
-                }
-            }
-
-            base.Dispose(disposing);
         }
 
         #endregion

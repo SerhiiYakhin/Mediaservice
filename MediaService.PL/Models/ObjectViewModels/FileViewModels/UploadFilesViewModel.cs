@@ -1,8 +1,12 @@
-﻿using System;
+﻿#region usings
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web;
 using System.Web.Mvc;
+
+#endregion
 
 namespace MediaService.PL.Models.ObjectViewModels.FileViewModels
 {
@@ -15,7 +19,7 @@ namespace MediaService.PL.Models.ObjectViewModels.FileViewModels
         [Required]
         public List<HttpPostedFileBase> Files { get; set; }
 
-        
+
         public List<string> Tags { get; set; }
     }
 }

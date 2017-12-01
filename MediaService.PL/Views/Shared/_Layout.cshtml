@@ -3,13 +3,13 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,600,800,900" rel="stylesheet" type="text/css" />
+
+    <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,600,800,900" rel="stylesheet" type="text/css"/>
     <title>@ViewBag.Title - LuxGate</title>
-    
-        @Styles.Render("~/Content/css")
-        @Scripts.Render("~/bundles/modernizr")
-        @Scripts.Render("~/bundles/appinsight")
+
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/appinsight")
 </head>
 <body>
 @*<div class="navbar navbar-inverse navbar-fixed-top">
@@ -35,7 +35,7 @@
     </div>*@
 
 <div class="container body-content">
-    
+
 
 
     @RenderBody()
@@ -46,13 +46,13 @@
 </div>
 
 @Scripts.Render("~/bundles/jquery")
-    
+
 @Scripts.Render("~/bundles/jqueryval")
 @Scripts.Render("~/bundles/jqueryajax")
 @Scripts.Render("~/bundles/jquerycontext")
 @Scripts.Render("~/bundles/bootstrap")
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css"/>
 
 @RenderSection("Scripts", false)
 </body>

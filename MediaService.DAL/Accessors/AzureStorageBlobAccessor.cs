@@ -1,13 +1,13 @@
 ﻿#region usings
 
-using MediaService.DAL.Interfaces;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using MediaService.DAL.Interfaces;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.RetryPolicies;
 
 #endregion
 
@@ -15,6 +15,15 @@ namespace MediaService.DAL.Accessors
 {
     public class AzureStorageBlobAccessor : IBlobStorage
     {
+        #region Constructors
+
+        public AzureStorageBlobAccessor(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
+
+        #endregion
+
         #region Fields
 
         private const string ContainerName = "files";
@@ -34,15 +43,6 @@ namespace MediaService.DAL.Accessors
         private const int BytesToAddThread = 268_435_456;
 
         private static string _connectionString;
-
-        #endregion
-
-        #region Constructors
-
-        public AzureStorageBlobAccessor(string connectionString)
-        {
-            _connectionString = connectionString;
-        }
 
         #endregion
 
@@ -114,16 +114,17 @@ namespace MediaService.DAL.Accessors
         public async Task<bool> BlobExistAsync(string blobName)
         {
             return await GetContainerReference()
-                        .GetBlockBlobReference(blobName)
-                        .ExistsAsync();
+                .GetBlockBlobReference(blobName)
+                .ExistsAsync();
         }
 
-        public string GetDirectLinkToBlob(string blobName, DateTimeOffset expiryTime, SharedAccessBlobPermissions permissions)
+        public string GetDirectLinkToBlob(string blobName, DateTimeOffset expiryTime,
+            SharedAccessBlobPermissions permissions)
         {
             var blob = GetBlob(blobName);
 
             if (blob.Exists())
-            {    
+            {
                 var sasConstraints = new SharedAccessBlobPolicy
                 {
                     SharedAccessStartTime = DateTime.UtcNow.AddMinutes(-5),
@@ -157,16 +158,16 @@ namespace MediaService.DAL.Accessors
 
         private static async Task LoadBlobToStream(Stream blobStream, CloudBlockBlob blob, int? blobSize)
         {
-            int threadCount = 1;
+            var threadCount = 1;
 
             if (blobSize.HasValue && blobSize.Value > BytesToAddThread)
             {
-               threadCount = blobSize.Value / BytesToAddThread + 1;
+                threadCount = blobSize.Value / BytesToAddThread + 1;
             }
 
             var requestOptions = new BlobRequestOptions
             {
-                SingleBlobUploadThresholdInBytes = (long)(blob.StreamWriteSizeInBytes * 1.6),
+                SingleBlobUploadThresholdInBytes = (long) (blob.StreamWriteSizeInBytes * 1.6),
                 ParallelOperationThreadCount = threadCount,
                 RetryPolicy = new ExponentialRetry(TimeSpan.FromSeconds(2), MaxAttempts)
             };
@@ -183,16 +184,17 @@ namespace MediaService.DAL.Accessors
             return blob;
         }
 
-        private static void PrepareBlobToUploadInBlocks(long fileLenght, string fileName, string contentType, out CloudBlockBlob blob, out BlobRequestOptions requestOptions)
+        private static void PrepareBlobToUploadInBlocks(long fileLenght, string fileName, string contentType,
+            out CloudBlockBlob blob, out BlobRequestOptions requestOptions)
         {
             blob = PrepapreBlobToUpload(fileName, contentType);
             blob.StreamWriteSizeInBytes = GetBlockSize(fileLenght);
 
-            var threadCount = (int)Math.Ceiling((double)fileLenght / BytesToAddThread);
+            var threadCount = (int) Math.Ceiling((double) fileLenght / BytesToAddThread);
 
             requestOptions = new BlobRequestOptions
             {
-                SingleBlobUploadThresholdInBytes = (long)(blob.StreamWriteSizeInBytes * 1.6),
+                SingleBlobUploadThresholdInBytes = (long) (blob.StreamWriteSizeInBytes * 1.6),
                 ParallelOperationThreadCount = threadCount,
                 RetryPolicy = new ExponentialRetry(TimeSpan.FromSeconds(2), MaxAttempts)
             };
@@ -201,7 +203,7 @@ namespace MediaService.DAL.Accessors
         private static int GetBlockSize(long fileSize)
         {
             long blocksize = 1_024_000;
-            long blockCount = GetBlockCount(fileSize, blocksize);
+            var blockCount = GetBlockCount(fileSize, blocksize);
 
             while (blockCount > MaxBlocksCount - 1)
             {
@@ -214,12 +216,12 @@ namespace MediaService.DAL.Accessors
                 throw new ArgumentException("Blob too big to upload.");
             }
 
-            return (int)blocksize;
+            return (int) blocksize;
         }
 
         private static long GetBlockCount(long fileSize, long blocksize)
         {
-            return (int)Math.Ceiling((double)fileSize / blocksize);
+            return (int) Math.Ceiling((double) fileSize / blocksize);
         }
 
         private static string GetBase64BlockId(int blockId)
@@ -241,11 +243,11 @@ namespace MediaService.DAL.Accessors
             var blobClient = storageAccount.CreateCloudBlobClient();
             var container = blobClient.GetContainerReference(ContainerName);
             container.SetPermissionsAsync(
-                new BlobContainerPermissions()
+                new BlobContainerPermissions
                 {
                     PublicAccess = BlobContainerPublicAccessType.Off
                 }
-                );
+            );
             container.CreateIfNotExists();
 
             return container;

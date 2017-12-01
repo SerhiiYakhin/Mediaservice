@@ -1,5 +1,7 @@
 ﻿#region usings
 
+using System;
+using System.Web.Mvc;
 using MediaService.BLL.Interfaces;
 using MediaService.PL.Models.IdentityModels;
 using MediaService.PL.Models.IdentityModels.Managers;
@@ -9,8 +11,6 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
 using Owin;
-using System;
-using System.Web.Mvc;
 
 #endregion
 
@@ -20,7 +20,6 @@ namespace MediaService.PL
     {
         private void ConfigureAuth(IAppBuilder app)
         {
-
             app.CreatePerOwinContext(() => (IUserService) DependencyResolver.Current.GetService(typeof(IUserService)));
             app.CreatePerOwinContext(() =>
                 (IFileService) DependencyResolver.Current.GetService(typeof(IFileService)));
@@ -29,7 +28,7 @@ namespace MediaService.PL
             app.CreatePerOwinContext(() =>
                 (IUserProfileService) DependencyResolver.Current.GetService(typeof(IUserProfileService)));
             app.CreatePerOwinContext(() =>
-                (ITagService)DependencyResolver.Current.GetService(typeof(ITagService)));
+                (ITagService) DependencyResolver.Current.GetService(typeof(ITagService)));
 
             app.CreatePerOwinContext(ApplicationDbContext.Create);
             app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);

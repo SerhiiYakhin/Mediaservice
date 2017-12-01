@@ -1,6 +1,5 @@
 ﻿#region usings
 
-using MediaService.PL.Controllers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 #endregion

@@ -1,6 +1,10 @@
-﻿using System;
+﻿#region usings
+
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+
+#endregion
 
 namespace MediaService.PL.Models.ObjectViewModels.DirectoryViewModels
 {

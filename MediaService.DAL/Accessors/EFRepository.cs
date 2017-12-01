@@ -14,14 +14,6 @@ namespace MediaService.DAL.Accessors
 {
     public class EFRepository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntity : class
     {
-        #region Fields
-
-        private readonly DbContext _context;
-
-        private readonly DbSet<TEntity> _dbSet;
-
-        #endregion
-
         #region Constructor
 
         public EFRepository(DbContext context)
@@ -36,6 +28,14 @@ namespace MediaService.DAL.Accessors
         {
             return await _dbSet.AnyAsync(predicate);
         }
+
+        #region Fields
+
+        private readonly DbContext _context;
+
+        private readonly DbSet<TEntity> _dbSet;
+
+        #endregion
 
         #region Select Methods
 

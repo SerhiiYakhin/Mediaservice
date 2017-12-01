@@ -17,6 +17,30 @@ namespace MediaService.PL.Controllers
     [Authorize]
     public class ManageController : Controller
     {
+        #region Overrided Methods
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_userManager != null)
+                {
+                    _userManager.Dispose();
+                    _userManager = null;
+                }
+
+                if (_signInManager != null)
+                {
+                    _signInManager.Dispose();
+                    _signInManager = null;
+                }
+            }
+
+            base.Dispose(disposing);
+        }
+
+        #endregion
+
         #region Managers
 
         private ApplicationSignInManager _signInManager;
@@ -141,7 +165,7 @@ namespace MediaService.PL.Controllers
                 await UserManager.SmsService.SendAsync(message);
             }
 
-            return RedirectToAction("VerifyPhoneNumber", new { PhoneNumber = model.Number });
+            return RedirectToAction("VerifyPhoneNumber", new {PhoneNumber = model.Number});
         }
 
         [HttpPost]
@@ -220,7 +244,7 @@ namespace MediaService.PL.Controllers
 
             if (!result.Succeeded)
             {
-                return RedirectToAction("Index", new { Message = ManageMessageId.Error });
+                return RedirectToAction("Index", new {Message = ManageMessageId.Error});
             }
 
             var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
@@ -333,7 +357,7 @@ namespace MediaService.PL.Controllers
                 provider,
                 Url.Action("LinkLoginCallback", "Manage"),
                 User.Identity.GetUserId()
-                );
+            );
         }
 
         public async Task<ActionResult> LinkLoginCallback()
@@ -342,14 +366,14 @@ namespace MediaService.PL.Controllers
 
             if (loginInfo == null)
             {
-                return RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
+                return RedirectToAction("ManageLogins", new {Message = ManageMessageId.Error});
             }
 
             var result = await UserManager.AddLoginAsync(User.Identity.GetUserId(), loginInfo.Login);
 
             return result.Succeeded
                 ? RedirectToAction("ManageLogins")
-                : RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
+                : RedirectToAction("ManageLogins", new {Message = ManageMessageId.Error});
         }
 
         #endregion
@@ -391,30 +415,6 @@ namespace MediaService.PL.Controllers
             RemoveLoginSuccess,
             RemovePhoneSuccess,
             Error
-        }
-
-        #endregion
-
-        #region Overrided Methods
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (_userManager != null)
-                {
-                    _userManager.Dispose();
-                    _userManager = null;
-                }
-
-                if (_signInManager != null)
-                {
-                    _signInManager.Dispose();
-                    _signInManager = null;
-                }
-            }
-
-            base.Dispose(disposing);
         }
 
         #endregion

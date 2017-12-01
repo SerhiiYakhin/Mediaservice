@@ -9,11 +9,11 @@
                 <img width="18" height="18"
                      src="@(item.FileType == FileType.Image ? Url.Content("/fonts/icons-buttons/picture.svg") : Url.Content("/fonts/icons-buttons/video-player.svg"))">
 
-               @*<img src="@Url.Action("GetThumnailLink", "File", new { fileId = item.Id})">*@
+                @*<img src="@Url.Action("GetThumnailLink", "File", new { fileId = item.Id})">*@
                 <a href="#" class="fileEntry customLink" id="@item.Id">@item.Name</a>
             </div>
 
-            <div class="col-xs-5" style="overflow:hidden; max-height:44px">
+            <div class="col-xs-5" style="max-height: 44px; overflow: hidden;">
                 @foreach (var tag in item.Tags)
                 {
                     @: #@Html.DisplayFor(modelItem => tag.Name)

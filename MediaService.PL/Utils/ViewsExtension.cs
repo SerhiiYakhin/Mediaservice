@@ -1,11 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region usings
+
+using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.UI;
+
+#endregion
 
 public static class ViewExtensions
 {
@@ -20,7 +22,8 @@ public static class ViewExtensions
 
         var controllerName = httpContext.Request.RequestContext.RouteData.Values["controller"].ToString();
 
-        var controller = (ControllerBase)ControllerBuilder.Current.GetControllerFactory().CreateController(httpContext.Request.RequestContext, controllerName);
+        var controller = (ControllerBase) ControllerBuilder.Current.GetControllerFactory()
+            .CreateController(httpContext.Request.RequestContext, controllerName);
 
         var controllerContext = new ControllerContext(httpContext.Request.RequestContext, controller);
 
@@ -32,7 +35,8 @@ public static class ViewExtensions
         {
             using (var tw = new HtmlTextWriter(sw))
             {
-                view.Render(new ViewContext(controllerContext, view, partialView.ViewData, partialView.TempData, tw), tw);
+                view.Render(new ViewContext(controllerContext, view, partialView.ViewData, partialView.TempData, tw),
+                    tw);
             }
         }
 

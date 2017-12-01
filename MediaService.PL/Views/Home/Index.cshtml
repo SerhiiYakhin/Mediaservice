@@ -11,15 +11,17 @@
 @*-----Context Menu-----*@
 
 
-
-
 <div class="container indexMenu">
     <div class="row">
         <div class="col-xs-4">
             <table>
                 <tr class="custom-search-input">
-                    <td>  <img src="~/fonts/icons-buttons/search.svg" id="searchImg" /></td>
-                    <td> <input type="search" id="searchInput" placeholder="Поиск файлов" data-SearchType="@ViewBag.Search" /></td>
+                    <td>
+                        <img src="~/fonts/icons-buttons/search.svg" id="searchImg"/>
+                    </td>
+                    <td>
+                        <input type="search" id="searchInput" placeholder="Поиск файлов" data-SearchType="@ViewBag.Search"/>
+                    </td>
                 </tr>
             </table>
         </div>
@@ -31,20 +33,19 @@
         </div>
     </div>
 </div>
-<hr />
+<hr/>
 <div class="row customNav">
     <div class="col-xs-7">
         <div class="customBreadcrumb">
-            <ul style="list-style-type:none; white-space: nowrap; float:left ">
-                @Html.ActionLink("Мои файлы", "Index", "Home", new { @class = "customLink" })
+            <ul style="float: left; list-style-type: none; white-space: nowrap;">
+                @Html.ActionLink("Мои файлы", "Index", "Home", new {@class = "customLink"})
 
                 @while (ViewBag.ChildModel.ParentId != null)
                 {
-
-                    <li style="float:right;  display: inline-block">
+                    <li style="display: inline-block; float: right;">
                         <img width="10" height="12"
-                             src="/fonts/icons-buttons/next.svg" />
-                        @Html.ActionLink((string)ViewBag.ChildModel.Name, "Index", "Home", new { dirId = ViewBag.ChildModel.Id }, new { @class = "customLink" })
+                             src="/fonts/icons-buttons/next.svg"/>
+                        @Html.ActionLink((string) ViewBag.ChildModel.Name, "Index", "Home", new {dirId = ViewBag.ChildModel.Id}, new {@class = "customLink"})
                     </li>
                     ViewBag.ChildModel = ViewBag.ChildModel.Parent;
                 }
@@ -58,23 +59,23 @@
     <div class="col-xs-5">
         <div>
             <a class="pull-right" href="#">
-               
+
                 <img src="~/fonts/icons-buttons/tile.svg" id="tileImg" data-view="true"/>
             </a>
             <a class="pull-right" href="#">
-              
+
                 <img src="~/fonts/icons-buttons/list.svg" id="listImg" data-view="false"/>
             </a>
-           @ViewBag.ListView
+            @ViewBag.ListView
         </div>
-        <img src="~/fonts/icons-buttons/next.svg" class="pull-right" id="dropdownImg" />
+        <img src="~/fonts/icons-buttons/next.svg" class="pull-right" id="dropdownImg"/>
         <a class="pull-right btnLink" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             По дате создания
         </a>
         <ul class="dropdown-menu dropdown-menu-right pull-right" aria-labelledby="navbarDropdownMenuLink">
             <li>
                 <a class="dropdown-item" href="#">По дате добавления</a>
-                @Html.ActionLink("Сортировка", "Index", "Home", new { dirId = Model.ParentId }, new { @class = "dropdown-item" })
+                @Html.ActionLink("Сортировка", "Index", "Home", new {dirId = Model.ParentId}, new {@class = "dropdown-item"})
             </li>
             <li>
                 <a class="dropdown-item" href="#">По размеру</a>
@@ -96,22 +97,22 @@
 <div class="row dirListView">
     <div class="col-xs-9">
 
-        <div id='directories'></div>
+        <div id="directories"></div>
 
         <div id="selectable">
-            <div id='files'></div>
+            <div id="files"></div>
         </div>
-       
+
     </div>
     <div class="col-xs-3">
         <div id="dirListMenu">
             <a href="#uploadFileModal" class="btn btn-primary  uploadFileBtn pull-right" rel="modal:open">Загрузить файл</a>
             <div id="uploadFileModal" class="customModal">
-                @{ Html.RenderPartial("~/Views/File/_UploadFiles.cshtml", new UploadFilesViewModel { ParentId = Model.Id }); }
+                @{ Html.RenderPartial("~/Views/File/_UploadFiles.cshtml", new UploadFilesViewModel {ParentId = Model.Id}); }
             </div>
             <a href="#createDirModal" class="btn btn-primary  createDirBtn pull-right" rel="modal:open">Создать папку</a>
             <div id="createDirModal" class="customModal">
-                @{ Html.RenderPartial("~/Views/Directory/_CreateDirectory.cshtml", new CreateDirectoryViewModel { ParentId = Model.Id }); }
+                @{ Html.RenderPartial("~/Views/Directory/_CreateDirectory.cshtml", new CreateDirectoryViewModel {ParentId = Model.Id}); }
             </div>
 
         </div>
@@ -150,7 +151,7 @@
                     formData.append("FileUpload", file);
                     formData.append('Tags[' + i + ']', $("#tag" + i).val());
                 }
-                formData.append("ParentId","@Model.Id");
+                formData.append("ParentId", "@Model.Id");
                 $.ajax({
                     type: "POST",
                     url: '/File/UploadFilesAsync',
@@ -162,7 +163,7 @@
                         $('#files').html(data.html);
 
                     },
-                    error: function (error) {
+                    error: function(error) {
                         alert("errror");
                     }
                 });
@@ -177,16 +178,21 @@
             output.innerHTML = '';
             for (var i = 0; i < input.files.length; ++i) {
                 output.innerHTML += '<div class="row uploadFilesRow">';
-                output.innerHTML += '<div class="col-xs-8" style="padding: 0"><img src="/fonts/icons-buttons/success.svg" height="20" width="20" class="uploadSuccessImg"/><img src="/fonts/icons-buttons/picture.svg" height="20" width="20" style="margin-right:18px"/>'
-                    + input.files.item(i).name; + '</div>';
-                output.innerHTML += '<div class="col-xs-4" style="padding: 0"><input type="text" class="tags" id = "tag' + i + '" placeholder="+Добавить тег""></div >';
-                output.innerHTML += '<div class="col-xs-12" style="padding: 0"><hr /></div>';
+                output.innerHTML +=
+                    '<div class="col-xs-8" style="padding: 0"><img src="/fonts/icons-buttons/success.svg" height="20" width="20" class="uploadSuccessImg"/><img src="/fonts/icons-buttons/picture.svg" height="20" width="20" style="margin-right:18px"/>' +
+                    input.files.item(i).name;
+                + '</div>';
+                output.innerHTML +=
+                    '<div class="col-xs-4" style="padding: 0"><input type="text" class="tags" id = "tag' +
+                    i +
+                    '" placeholder="+Добавить тег""></div >';
+                output.innerHTML += '<div class="col-xs-12" style="padding: 0"><hr/></div>';
 
                 output.innerHTML += '</div>';
 
 
             }
-        }
+        };
 
         $.ajax({
             url: '@Url.Action("DirectoriesList", "Directory", new DirectoriesListViewModel {ParentId = Model.Id})',
@@ -206,62 +212,69 @@
             }
         });
         @*------------------ Directory Context Menu-------------------------*@
-        $(function () {
+        $(function() {
             $.contextMenu({
                 selector: '.directoryEntry',
-                callback: function (key, opt) {
-                    var m =  key;
+                callback: function(key, opt) {
+                    var m = key;
                     switch (m) {
-                        case "edit":
-                            var Id = opt.$trigger.attr("id");
-                            var Name = opt.$trigger.text();
-                             var ParentId = "@Model.Id";
-                            $("#renameDirectoryModal").modal();
-                            $.ajax({
-                                 type: "GET",
-                                 data: Id, Name,
-                                 url: '@Url.Action("Rename", "Directory")?Id=' + Id + '&Name='+ Name +'&ParentId=' + ParentId,
-                                 datatype:'html',
-                                 success: function (data) {
-                                     $('#renameDirectoryModal').html(data);
-                                 }
-                             })
-                            break;
+                    case "edit":
+                        var Id = opt.$trigger.attr("id");
+                        var Name = opt.$trigger.text();
+                        var ParentId = "@Model.Id";
+                        $("#renameDirectoryModal").modal();
+                        $.ajax({
+                            type: "GET",
+                            data: Id,
+                            Name,
+                            url: '@Url.Action("Rename", "Directory")?Id=' +
+                                Id +
+                                '&Name=' +
+                                Name +
+                                '&ParentId=' +
+                                ParentId,
+                            datatype: 'html',
+                            success: function(data) {
+                                $('#renameDirectoryModal').html(data);
+                            }
+                        });
+                        break;
 
-                        case "downloadZip":
-                            var formData = new FormData();
-                            formData.append('Id', opt.$trigger.attr("id"));
-                            formData.append('Name', opt.$trigger.text());
-                            $("#fileFromLinkModal").modal();
-                            $.ajax({
-                                 type: "POST",
-                                 cache: false,
-                                 contentType: false,
-                                 processData: false,
-                                 data: formData,
-                                 url: '@Url.Action("Download", "Directory")',
-                                 success: function (data) {
-                                     $('#fileFromLinkModal').html(data);
-                                 }
-                             })
-                            break;
+                    case "downloadZip":
+                        var formData = new FormData();
+                        formData.append('Id', opt.$trigger.attr("id"));
+                        formData.append('Name', opt.$trigger.text());
+                        $("#fileFromLinkModal").modal();
+                        $.ajax({
+                            type: "POST",
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+                            data: formData,
+                            url: '@Url.Action("Download", "Directory")',
+                            success: function(data) {
+                                $('#fileFromLinkModal').html(data);
+                            }
+                        });
+                        break;
 
-                        case "delete":
-                            var Id = opt.$trigger.attr("id");
-                            var ParentId = "@Model.Id";
-                            $("#deleteDirectoryModal").modal();
-                            $.ajax({
-                                 type: "GET",
-                                 data: Id, ParentId,
-                                 url: '@Url.Action("Delete", "Directory")?Id=' + Id + '&ParentId=' + ParentId,
-                                 datatype:'html',
-                                 success: function (data) {
-                                     $('#deleteDirectoryModal').html(data);
-                                 }
-                             })
-                            break;
-                        default:
-                            alert("Упс :(");
+                    case "delete":
+                        var Id = opt.$trigger.attr("id");
+                        var ParentId = "@Model.Id";
+                        $("#deleteDirectoryModal").modal();
+                        $.ajax({
+                            type: "GET",
+                            data: Id,
+                            ParentId,
+                            url: '@Url.Action("Delete", "Directory")?Id=' + Id + '&ParentId=' + ParentId,
+                            datatype: 'html',
+                            success: function(data) {
+                                $('#deleteDirectoryModal').html(data);
+                            }
+                        });
+                        break;
+                    default:
+                        alert("Упс :(");
                     }
                 },
                 items: {
@@ -277,73 +290,83 @@
 
         });
         @*------------------ Files Context Menu-------------------------*@
-        $(function () {
+        $(function() {
             $.contextMenu({
                 selector: '.fileEntry',
-                callback: function (key, opt) {
-                    var m =  key;
+                callback: function(key, opt) {
+                    var m = key;
                     switch (m) {
-                        case "edit":
-                            var Id = opt.$trigger.attr("id");
-                            var Name = opt.$trigger.text();
-                            var ParentId = "@Model.Id";
-                            $("#renameFileModal").modal();
-                            $.ajax({
-                                 type: "GET",
-                                 data: Id, Name,
-                                 url: '@Url.Action("Rename", "File")?Id=' + Id + '&Name='+ Name +'&ParentId=' + ParentId,
-                                 datatype:'html',
-                                 success: function (data) {
-                                     $('#renameFileModal').html(data);
-                                 }
-                             })
-                            break;
-                        case "addTag":
-                            var FileId = opt.$trigger.attr("id");
-                            var Name = opt.$trigger.text();
-                            var ParentId = "@Model.Id";
-                            $("#addTagModal").modal();
-                            $.ajax({
-                                 type: "GET",
-                                 data: FileId, Name, ParentId,
-                                 url: '@Url.Action("AddTag", "File")?FileId=' + FileId + '&Name=' + Name + '&ParentId=' + ParentId,
-                                 datatype:'html',
-                                 success: function (data) {
-                                     $('#addTagModal').html(data);
-                                 }
-                             })
-                            break;
-                        case "download":
-                            var FileId = opt.$trigger.attr("id");
-                            var FileSize = 100000;
-                            $("#downloadFileModal").modal();
-                            $.ajax({
-                                 type: "GET",
-                                 data: FileId, FileSize,
-                                 url: '@Url.Action("Download", "File")?FileId=' + FileId + '&FileSize=' + FileSize,
-                                 datatype:'html',
-                                 success: function (data) {
-                                     $('#downloadFileModal').html(data);
-                                 }
-                             })
-                            break;
+                    case "edit":
+                        var Id = opt.$trigger.attr("id");
+                        var Name = opt.$trigger.text();
+                        var ParentId = "@Model.Id";
+                        $("#renameFileModal").modal();
+                        $.ajax({
+                            type: "GET",
+                            data: Id,
+                            Name,
+                            url: '@Url.Action("Rename", "File")?Id=' + Id + '&Name=' + Name + '&ParentId=' + ParentId,
+                            datatype: 'html',
+                            success: function(data) {
+                                $('#renameFileModal').html(data);
+                            }
+                        });
+                        break;
+                    case "addTag":
+                        var FileId = opt.$trigger.attr("id");
+                        var Name = opt.$trigger.text();
+                        var ParentId = "@Model.Id";
+                        $("#addTagModal").modal();
+                        $.ajax({
+                            type: "GET",
+                            data: FileId,
+                            Name,
+                            ParentId,
+                            url: '@Url.Action("AddTag", "File")?FileId=' +
+                                FileId +
+                                '&Name=' +
+                                Name +
+                                '&ParentId=' +
+                                ParentId,
+                            datatype: 'html',
+                            success: function(data) {
+                                $('#addTagModal').html(data);
+                            }
+                        });
+                        break;
+                    case "download":
+                        var FileId = opt.$trigger.attr("id");
+                        var FileSize = 100000;
+                        $("#downloadFileModal").modal();
+                        $.ajax({
+                            type: "GET",
+                            data: FileId,
+                            FileSize,
+                            url: '@Url.Action("Download", "File")?FileId=' + FileId + '&FileSize=' + FileSize,
+                            datatype: 'html',
+                            success: function(data) {
+                                $('#downloadFileModal').html(data);
+                            }
+                        });
+                        break;
 
-                       case "delete":
-                            var FileId = opt.$trigger.attr("id");
-                            var ParentId = "@Model.Id";
-                            $("#deleteFileModal").modal();
-                            $.ajax({
-                                 type: "GET",
-                                 data: FileId, ParentId,
-                                 url: '@Url.Action("Delete", "File")?FileId=' + FileId + '&ParentId=' + ParentId,
-                                 datatype:'html',
-                                 success: function (data) {
-                                     $('#deleteFileModal').html(data);
-                                 }
-                             })
-                            break;
-                        default:
-                            alert("Упс :(");
+                    case "delete":
+                        var FileId = opt.$trigger.attr("id");
+                        var ParentId = "@Model.Id";
+                        $("#deleteFileModal").modal();
+                        $.ajax({
+                            type: "GET",
+                            data: FileId,
+                            ParentId,
+                            url: '@Url.Action("Delete", "File")?FileId=' + FileId + '&ParentId=' + ParentId,
+                            datatype: 'html',
+                            success: function(data) {
+                                $('#deleteFileModal').html(data);
+                            }
+                        });
+                        break;
+                    default:
+                        alert("Упс :(");
                     }
                 },
                 items: {
@@ -362,34 +385,33 @@
         });
 
 
-
-        $(function () {
+        $(function() {
             $("#selectable").selectable({
-                stop: function () {
+                stop: function() {
                     var result = $("#select-result").empty();
-                    $(".ui-selected.folderItems").each(function () {
-                        var ids = $("a.ui-selected.folderItems").attr("id")
-                        result.append(" #"+ ids);
+                    $(".ui-selected.folderItems").each(function() {
+                        var ids = $("a.ui-selected.folderItems").attr("id");
+                        result.append(" #" + ids);
                     });
                 }
             });
         });
         @*----search submit---*@
-                $(function () {
+        $(function() {
             $.contextMenu({
                 selector: '#searchInput',
-                callback: function (key, opt) {
-                    var m =  key;
+                callback: function(key, opt) {
+                    var m = key;
                     switch (m) {
-                        case "byName":
+                    case "byName":
 
-                            document.getElementById('searchInput').setAttribute("data-searchtype", "ByName")
-                            break;
-                        case "byTag":
-                            document.getElementById('searchInput').setAttribute("data-searchtype", "ByTag")
-                            break;
-                        default:
-                            alert("Упс :(");
+                        document.getElementById('searchInput').setAttribute("data-searchtype", "ByName");
+                        break;
+                    case "byTag":
+                        document.getElementById('searchInput').setAttribute("data-searchtype", "ByTag");
+                        break;
+                    default:
+                        alert("Упс :(");
                     }
                 },
                 items: {
@@ -398,40 +420,38 @@
                     "byTag": { name: "По тегам" },
 
 
-
                 }
             });
 
         });
-                $('#searchInput').keypress(function (e) {
-                    if (e.which == 13) {
-                        var SearchValue = $("#searchInput").val();
-            var formData = new FormData();
-            var OrderType = "ByName";
-            var SearchType = $("#searchInput").attr("data-searchtype");
-            formData.append('SearchValue', SearchValue);
-            formData.append('ParentId', '@Model.Id');
-            formData.append('OrderType', OrderType);
-            formData.append('SearchType', SearchType);
-            $.ajax({
+        $('#searchInput').keypress(function(e) {
+            if (e.which == 13) {
+                var SearchValue = $("#searchInput").val();
+                var formData = new FormData();
+                var OrderType = "ByName";
+                var SearchType = $("#searchInput").attr("data-searchtype");
+                formData.append('SearchValue', SearchValue);
+                formData.append('ParentId', '@Model.Id');
+                formData.append('OrderType', OrderType);
+                formData.append('SearchType', SearchType);
+                $.ajax({
+                    type: "POST",
+                    url: '/File/Search',
+                    data: formData,
+                    dataType: 'json',
+                    contentType: false,
+                    processData: false,
+                    success: function(data) {
+                        $('#files').html(data.html);
 
-                type: "POST",
-                url: '/File/Search',
-                data: formData,
-                dataType: 'json',
-                contentType: false,
-                processData: false,
-                success: function (data) {
-                    $('#files').html(data.html);
-
-                },
-                error: function (error) {
-                    alert("errror");
-                }
-            });
-                        return false;
+                    },
+                    error: function(error) {
+                        alert("errror");
                     }
                 });
+                return false;
+            }
+        });
 
 
     </script>

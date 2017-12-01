@@ -1,11 +1,11 @@
 ﻿#region usings
 
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoMapper;
 using MediaService.BLL.Infrastructure;
 using MediaService.BLL.Interfaces;
 using MediaService.DAL.Interfaces;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 #endregion
 
@@ -21,6 +21,15 @@ namespace MediaService.BLL.Services
 
         #endregion
 
+        #region Constructor
+
+        protected Service(IUnitOfWork uow)
+        {
+            Context = uow;
+        }
+
+        #endregion
+
         #region Properties
 
         protected IUnitOfWork Context { get; }
@@ -28,15 +37,6 @@ namespace MediaService.BLL.Services
         protected IRepository<TEntity, TId> Repository { get; set; }
 
         protected IMapper DtoMapper => _mapper ?? (_mapper = MapperModule.GetMapper());
-
-        #endregion
-
-        #region Constructor
-
-        protected Service(IUnitOfWork uow)
-        {
-            Context = uow;
-        }
 
         #endregion
 

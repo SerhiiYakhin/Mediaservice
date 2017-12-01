@@ -1,5 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿#region usings
+
+using System.Threading.Tasks;
 using MediaService.DAL.Accessors.Enums;
+
+#endregion
 
 namespace MediaService.DAL.Interfaces
 {

@@ -1,16 +1,5 @@
 ﻿#region usings
 
-using MediaService.BLL.DTO;
-using MediaService.BLL.DTO.Enums;
-using MediaService.BLL.Interfaces;
-using MediaService.BLL.Models;
-using MediaService.BLL.Models.Enums;
-using MediaService.BLL.Models.QueueMessages;
-using MediaService.DAL.Accessors.Enums;
-using MediaService.DAL.Entities;
-using MediaService.DAL.Interfaces;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -20,6 +9,12 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using MediaService.BLL.DTO;
+using MediaService.BLL.DTO.Enums;
+using MediaService.BLL.Interfaces;
+using MediaService.DAL.Entities;
+using MediaService.DAL.Interfaces;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 #endregion
 
@@ -27,14 +22,6 @@ namespace MediaService.BLL.Services.ObjectsServices
 {
     public class FileService : Service<FileEntryDto, FileEntry, Guid>, IFileService
     {
-        #region Properties
-
-        private IBlobStorage Storage { get; }
-
-        private IQueueStorage Queue { get; }
-
-        #endregion
-
         #region Constructor
 
         public FileService(IUnitOfWork uow, IBlobStorage storage, IQueueStorage queue) : base(uow)
@@ -43,6 +30,14 @@ namespace MediaService.BLL.Services.ObjectsServices
             Queue = queue;
             Repository = uow.Files;
         }
+
+        #endregion
+
+        #region Properties
+
+        private IBlobStorage Storage { get; }
+
+        private IQueueStorage Queue { get; }
 
         #endregion
 
@@ -76,7 +71,8 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public string GetLinkToZip(string fileName)
         {
-            return Storage.GetDirectLinkToBlob(fileName, DateTimeOffset.Now.AddHours(1), SharedAccessBlobPermissions.Read);
+            return Storage.GetDirectLinkToBlob(fileName, DateTimeOffset.Now.AddHours(1),
+                SharedAccessBlobPermissions.Read);
         }
 
         public async Task<string> GetPublicLinkToFileAsync(Guid fileId, DateTimeOffset expiryTime)
@@ -88,7 +84,8 @@ namespace MediaService.BLL.Services.ObjectsServices
                 throw new InvalidDataException("Can't find this file in database");
             }
 
-            return Storage.GetDirectLinkToBlob($"{fileEntry.Id}{Path.GetExtension(fileEntry.Name)}", expiryTime, SharedAccessBlobPermissions.Read);
+            return Storage.GetDirectLinkToBlob($"{fileEntry.Id}{Path.GetExtension(fileEntry.Name)}", expiryTime,
+                SharedAccessBlobPermissions.Read);
         }
 
         public async Task<string> GetLinkToFileThumbnailAsync(Guid fileId)
@@ -100,12 +97,15 @@ namespace MediaService.BLL.Services.ObjectsServices
                 throw new InvalidDataException("Can't find this file in database");
             }
 
-            return Storage.GetDirectLinkToBlob($"thumbnail-{fileEntry.Id}.png", DateTimeOffset.Now.AddMinutes(5), SharedAccessBlobPermissions.Read);
+            return Storage.GetDirectLinkToBlob($"thumbnail-{fileEntry.Id}.png", DateTimeOffset.Now.AddMinutes(5),
+                SharedAccessBlobPermissions.Read);
         }
 
-        public async Task<IEnumerable<FileEntryDto>> SearchFilesAsync(Guid parentId, SearchType searchType, string searchValue)
+        public async Task<IEnumerable<FileEntryDto>> SearchFilesAsync(Guid parentId, SearchType searchType,
+            string searchValue)
         {
-            return DtoMapper.Map<IEnumerable<FileEntryDto>>(await SearchFilesHelperAsync(parentId, searchType, searchValue));
+            return DtoMapper.Map<IEnumerable<FileEntryDto>>(await SearchFilesHelperAsync(parentId, searchType,
+                searchValue));
         }
 
         #endregion
@@ -133,7 +133,7 @@ namespace MediaService.BLL.Services.ObjectsServices
                 fileEntry.Downloaded = fileEntry.Created = fileEntry.Modified = DateTime.Now;
                 fileEntry.Owner = parentDir.Owner;
                 fileEntry.Parent = parentDir;
-               
+
                 await Context.Files.AddAsync(fileEntry);
                 await Context.SaveChangesAsync();
 
@@ -211,7 +211,7 @@ namespace MediaService.BLL.Services.ObjectsServices
             var tagEntry = (await Context.Tags.GetDataAsync(t => t.Name == tagName)).FirstOrDefault();
             if (tagEntry == null)
             {
-                tagEntry = new Tag { Name = tagName };
+                tagEntry = new Tag {Name = tagName};
                 tagEntry.FileEntries.Add(fileEntry);
                 await Context.Tags.AddAsync(tagEntry);
             }
@@ -238,7 +238,8 @@ namespace MediaService.BLL.Services.ObjectsServices
 
                     thumb.Save(thumbnailStream, ImageFormat.Png);
                     thumbnailStream.Position = 0;
-                    await Storage.UploadAsync(thumbnailStream, $"thumbnail-{Path.GetFileNameWithoutExtension(fileName)}.png", "image/png");
+                    await Storage.UploadAsync(thumbnailStream,
+                        $"thumbnail-{Path.GetFileNameWithoutExtension(fileName)}.png", "image/png");
                 }
             }
         }
@@ -279,13 +280,12 @@ namespace MediaService.BLL.Services.ObjectsServices
                 throw new InvalidDataException("Can't find user's file with this Id in database");
             }
             var x = currFileEntry.Tags.ToList();
-            for (int i = 0; i < x.Count; i++)
+            for (var i = 0; i < x.Count; i++)
             {
                 if (x[i].FileEntries.Count == 1)
                 {
                     await Context.Tags.RemoveAsync(x[i]);
                 }
-
             }
 
             var tagsToDelete = new List<Tag>();
@@ -343,7 +343,7 @@ namespace MediaService.BLL.Services.ObjectsServices
 
             using (var fs = new FileStream(zipName, FileMode.OpenOrCreate))
             {
-                using (ZipArchive archive = new ZipArchive(fs, ZipArchiveMode.Create, false))
+                using (var archive = new ZipArchive(fs, ZipArchiveMode.Create, false))
                 {
                     foreach (var fileEntry in filesEntries)
                     {
@@ -411,7 +411,8 @@ namespace MediaService.BLL.Services.ObjectsServices
             return dirs;
         }
 
-        private async Task<IEnumerable<FileEntry>> SearchFilesHelperAsync(Guid parentId, SearchType searchType, string searchValue)
+        private async Task<IEnumerable<FileEntry>> SearchFilesHelperAsync(Guid parentId, SearchType searchType,
+            string searchValue)
         {
             var childDirs = await Context.Directories.GetDataAsync(f => f.ParentId == parentId);
 

@@ -1,18 +1,16 @@
 ﻿#region usings
 
-using MediaService.BLL.DTO;
-using MediaService.BLL.Interfaces;
-using MediaService.PL.Models.ObjectViewModels;
-using MediaService.PL.Utils.Attributes.ErrorHandler;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlTypes;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using MediaService.BLL.DTO;
+using MediaService.BLL.Interfaces;
+using MediaService.PL.Utils.Attributes.ErrorHandler;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
 
 #endregion
 
@@ -24,17 +22,6 @@ namespace MediaService.PL.Controllers
         #region Fields
 
         private IDirectoryService _directoryService;
-
-        #endregion
-
-        #region Constructors
-
-        public HomeController() { }
-
-        public HomeController(IDirectoryService directoryService)
-        {
-            DirectoryService = directoryService;
-        }
 
         #endregion
 
@@ -75,8 +62,6 @@ namespace MediaService.PL.Controllers
             return View(rootDir);
         }
 
-
-
         #endregion
 
         #region Overrided Methods
@@ -93,6 +78,19 @@ namespace MediaService.PL.Controllers
             }
 
             base.Dispose(disposing);
+        }
+
+        #endregion
+
+        #region Constructors
+
+        public HomeController()
+        {
+        }
+
+        public HomeController(IDirectoryService directoryService)
+        {
+            DirectoryService = directoryService;
         }
 
         #endregion

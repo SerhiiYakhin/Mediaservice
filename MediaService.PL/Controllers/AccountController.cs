@@ -1,5 +1,12 @@
 ﻿#region usings
 
+using System;
+using System.Data.Entity.Infrastructure;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+using AutoMapper;
 using MediaService.BLL.Interfaces;
 using MediaService.PL.Models.AccountViewModels;
 using MediaService.PL.Models.IdentityModels;
@@ -9,13 +16,6 @@ using MediaService.PL.Utils.Attributes.ErrorHandler;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
-using System;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
-using AutoMapper;
 
 #endregion
 
@@ -24,6 +24,36 @@ namespace MediaService.PL.Controllers
     [Authorize]
     public class AccountController : Controller
     {
+        #region Overrided Methods
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_userManager != null)
+                {
+                    _userManager.Dispose();
+                    _userManager = null;
+                }
+
+                if (_signInManager != null)
+                {
+                    _signInManager.Dispose();
+                    _signInManager = null;
+                }
+
+                if (_directoryService != null)
+                {
+                    _directoryService.Dispose();
+                    _directoryService = null;
+                }
+            }
+
+            base.Dispose(disposing);
+        }
+
+        #endregion
+
         #region Services
 
         private IUserService _applicationUserService;
@@ -40,7 +70,9 @@ namespace MediaService.PL.Controllers
 
         #region Constructors
 
-        public AccountController() { }
+        public AccountController()
+        {
+        }
 
         public AccountController(
             ApplicationUserManager userManager,
@@ -348,7 +380,7 @@ namespace MediaService.PL.Controllers
             }
 
             return RedirectToAction("VerifyCode",
-                new { Provider = model.SelectedProvider, model.ReturnUrl, model.RememberMe });
+                new {Provider = model.SelectedProvider, model.ReturnUrl, model.RememberMe});
         }
 
         [AllowAnonymous]
@@ -376,7 +408,7 @@ namespace MediaService.PL.Controllers
                     ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
 
                     return View("ExternalLoginConfirmation",
-                        new ExternalLoginConfirmationViewModel { Email = loginInfo.Email });
+                        new ExternalLoginConfirmationViewModel {Email = loginInfo.Email});
             }
         }
 
@@ -417,7 +449,7 @@ namespace MediaService.PL.Controllers
                     }
 
                     result = await UserManager.AddLoginAsync(user.Id, info.Login);
-                    
+
                     if (result.Succeeded)
                     {
                         await SignInManager.SignInAsync(user, false, false);
@@ -499,36 +531,6 @@ namespace MediaService.PL.Controllers
 
                 context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
             }
-        }
-
-        #endregion
-    
-        #region Overrided Methods
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (_userManager != null)
-                {
-                    _userManager.Dispose();
-                    _userManager = null;
-                }
-
-                if (_signInManager != null)
-                {
-                    _signInManager.Dispose();
-                    _signInManager = null;
-                }
-
-                if (_directoryService != null)
-                {
-                    _directoryService.Dispose();
-                    _directoryService = null;
-                }
-            }
-
-            base.Dispose(disposing);
         }
 
         #endregion

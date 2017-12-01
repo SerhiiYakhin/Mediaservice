@@ -1,8 +1,12 @@
-﻿using System;
+﻿#region usings
+
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using MediaService.BLL.DTO.Enums;
 using MediaService.PL.Models.ObjectViewModels.Enums;
+
+#endregion
 
 namespace MediaService.PL.Models.ObjectViewModels.FileViewModels
 {

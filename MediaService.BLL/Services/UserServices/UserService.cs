@@ -1,5 +1,6 @@
 ﻿#region usings
 
+using System;
 using System.Threading.Tasks;
 using MediaService.BLL.DTO;
 using MediaService.BLL.Interfaces;
@@ -19,12 +20,12 @@ namespace MediaService.BLL.Services.UserServices
 
         public override void Add(UserDto item)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public override Task AddAsync(UserDto item)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

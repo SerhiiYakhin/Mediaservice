@@ -1,18 +1,22 @@
-﻿using MediaService_BLL_Job.DependencyInjection;
-using Microsoft.Azure.WebJobs;
+﻿#region usings
+
 using System;
+using MediaService_BLL_Job.DependencyInjection;
+using Microsoft.Azure.WebJobs;
+
+#endregion
 
 namespace MediaService_BLL_Job
 {
-    class Program
+    internal class Program
     {
-        static void Main()
+        private static void Main()
         {
             var container = SimpleInjectorInitializer.Initialize();
 
             var config = new JobHostConfiguration
             {
-                JobActivator = new JobActivator(container),
+                JobActivator = new JobActivator(container)
             };
 
             config.Queues.BatchSize = 8;

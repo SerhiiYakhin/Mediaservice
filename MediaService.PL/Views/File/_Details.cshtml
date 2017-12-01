@@ -2,7 +2,7 @@
 
 <div>
     <h4>FileEntryDto</h4>
-    <hr />
+    <hr/>
     <dl class="dl-horizontal">
         <dd>
             @Html.DisplayFor(model => model.Name)
@@ -22,5 +22,5 @@
     }
 </div>
 <p>
-    @Html.ActionLink("Download", "Download", "File", new { fileId = Model.Id, fileSize = Model.Size }, null)
+    @Html.ActionLink("Download", "Download", "File", new {fileId = Model.Id, fileSize = Model.Size}, null)
 </p>

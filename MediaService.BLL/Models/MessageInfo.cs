@@ -1,6 +1,10 @@
-﻿using MediaService.BLL.Models.Enums;
+﻿#region usings
+
 using System;
 using System.Collections.Generic;
+using MediaService.BLL.Models.Enums;
+
+#endregion
 
 namespace MediaService.BLL.Models
 {

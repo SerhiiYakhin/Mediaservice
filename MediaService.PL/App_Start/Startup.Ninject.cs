@@ -1,13 +1,13 @@
 ﻿#region usings
 
+using System;
+using System.Web;
+using System.Web.Mvc;
 using MediaService.BLL.Infrastructure;
 using MediaService.PL.Utils;
 using Microsoft.Azure;
 using Ninject;
 using Ninject.Web.Common;
-using System;
-using System.Web;
-using System.Web.Mvc;
 
 #endregion
 
@@ -17,7 +17,8 @@ namespace MediaService.PL
     {
         private void ConfigureNinject()
         {
-            var kernel = new StandardKernel(new DIServiceModule("DefaultConnection", CloudConfigurationManager.GetSetting("StorageConnectionString")));
+            var kernel = new StandardKernel(new DIServiceModule("DefaultConnection",
+                CloudConfigurationManager.GetSetting("StorageConnectionString")));
             try
             {
                 kernel.Bind<Func<IKernel>>().ToMethod(ctx => () => new Bootstrapper().Kernel);

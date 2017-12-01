@@ -1,10 +1,10 @@
 ﻿#region usings
 
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 #endregion
 

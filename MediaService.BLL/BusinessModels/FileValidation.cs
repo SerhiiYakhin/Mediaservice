@@ -1,6 +1,10 @@
-﻿using System.Linq;
+﻿#region usings
+
+using System.Linq;
 using System.Web;
 using MediaService.BLL.DTO.Enums;
+
+#endregion
 
 namespace MediaService.BLL.BusinessModels
 {
@@ -18,9 +22,10 @@ namespace MediaService.BLL.BusinessModels
 
         static FileValidation()
         {
-            PicturesAllowRule = (2_097_152, new[] { "image/png", "image/jpg", "image/jpeg" }, FileType.Image);
-            VidieosAllowRule = (52_428_800, new[] { "video/quicktime", "video/x-msvideo", "video/x-matroska" }, FileType.Video);
-            FileValidationRules = new[] { PicturesAllowRule, VidieosAllowRule };
+            PicturesAllowRule = (2_097_152, new[] {"image/png", "image/jpg", "image/jpeg"}, FileType.Image);
+            VidieosAllowRule =
+                (52_428_800, new[] {"video/quicktime", "video/x-msvideo", "video/x-matroska"}, FileType.Video);
+            FileValidationRules = new[] {PicturesAllowRule, VidieosAllowRule};
         }
 
         public static bool FileIsValid(HttpPostedFileBase file)

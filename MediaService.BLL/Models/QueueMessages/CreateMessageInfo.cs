@@ -1,5 +1,9 @@
-﻿using MediaService.BLL.Models.Enums;
+﻿#region usings
+
 using System.Runtime.Serialization;
+using MediaService.BLL.Models.Enums;
+
+#endregion
 
 namespace MediaService.BLL.Models.QueueMessages
 {

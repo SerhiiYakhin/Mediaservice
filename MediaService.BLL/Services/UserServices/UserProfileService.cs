@@ -30,7 +30,7 @@ namespace MediaService.BLL.Services.UserServices
                 throw new InvalidDataException("There is no such user in database, adding UserProfile impossible");
             }
 
-            if(user.UserProfile == null)
+            if (user.UserProfile == null)
             {
                 userProfile.User = user;
                 Context.UsersProfiles.Add(userProfile);
