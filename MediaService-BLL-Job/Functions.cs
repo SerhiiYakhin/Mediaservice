@@ -1,18 +1,14 @@
-﻿#region usings
-
-using MediaService.BLL.Interfaces;
+﻿using MediaService.BLL.Interfaces;
 using MediaService.BLL.Models.Enums;
 using MediaService.BLL.Models.QueueMessages;
-using MediaServiceBLLJob.App_Start.DependencyInjection;
+using MediaService_BLL_Job.DependencyInjection;
 using Microsoft.Azure.WebJobs;
 using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Threading.Tasks;
 
-#endregion
-
-namespace MediaServiceBLLJob.Program
+namespace MediaService_BLL_Job
 {
     /// <summary>
     /// This is a listener functions
