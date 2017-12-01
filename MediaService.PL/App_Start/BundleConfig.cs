@@ -24,7 +24,9 @@ namespace MediaService.PL
 
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
                 "~/Scripts/modernizr-*"));
+
             bundles.Add(new ScriptBundle("~/bundles/jquerycontext").Include(
+                "~/Scripts/jquery-ui.js",
                   "~/Scripts/jquery.ui.position.js",
                   "~/Scripts/jquery.contextMenu.js"));
 
@@ -34,7 +36,8 @@ namespace MediaService.PL
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                 "~/Content/bootstrap.css",
-                "~/Scripts/jquery.contextMenu.css",
+                 "~/Content/jquery.contextMenu.css",
+                "~/Content/jquery-ui.css",
                 "~/Content/site.css"));
         }
     }

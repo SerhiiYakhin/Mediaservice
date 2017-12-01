@@ -14,5 +14,8 @@ namespace MediaService.PL.Models.ObjectViewModels.FileViewModels
 
         [Required]
         public List<HttpPostedFileBase> Files { get; set; }
+
+        
+        public List<string> Tags { get; set; }
     }
 }
