@@ -90,7 +90,7 @@ namespace MediaService.PL.Controllers
                     await FilesService.AddRangeAsync(filesToUpload, model.ParentId);
                     
                     var filesListModel = await FilesService.GetByParentIdAsync(model.ParentId);
-                    var html = PartialView("_FilesList", filesListModel).RenderToString();
+                    var html = PartialView("~/Views/File/_FilesList.cshtml", filesListModel).RenderToString();
                     return Json(new { Success = true, html }, JsonRequestBehavior.AllowGet);
                   
                 }
@@ -119,7 +119,7 @@ namespace MediaService.PL.Controllers
 
             ViewBag.Link = link;
 
-            return PartialView("_LoadFileFromLink");
+            return PartialView("~/Views/File/_LoadFileFromLink.cshtml");
         }
 
         [HttpPost]

@@ -121,7 +121,7 @@ namespace MediaService.PL.Controllers
         {
             var model = new CreateDirectoryViewModel { ParentId = parentId };
 
-            return PartialView("_CreateDirectory", model);
+            return PartialView("~/Views/Directory/_CreateDirectory.cshtml", model);
         }
 
         [HttpPost]
@@ -166,7 +166,7 @@ namespace MediaService.PL.Controllers
 
                 ViewBag.Link = link;
 
-                return PartialView("_LoadFileFromLink");
+                return PartialView("~/Views/Directory/_LoadFileFromLink.cshtml");
 
                 //return Json(new { success = true, zipId, zipName = model.Name }, JsonRequestBehavior.AllowGet);
             }
