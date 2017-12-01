@@ -229,9 +229,9 @@ namespace MediaService.BLL.Services.ObjectsServices
         {
             foreach (var fileName in filesNames)
             {
-                (var blobStream, var blobExist) = await Storage.DownloadAsync(fileName);
+                (var blobStream, _) = await Storage.DownloadAsync(fileName);
 
-                if (blobExist)
+                if (blobStream != null)
                 {
                     var thumb = Image.FromStream(blobStream).GetThumbnailImage(250, 180, () => false, IntPtr.Zero);
                     var thumbnailStream = new MemoryStream();
@@ -318,7 +318,7 @@ namespace MediaService.BLL.Services.ObjectsServices
             await DownloadAsync(filesIds, zipId);
         }
 
-        public async Task<Stream> DownloadAsync(Guid fileId)
+        public async Task<(Stream blobStream, string contentType)> DownloadAsync(Guid fileId)
         {
             var fileEntry = await Context.Files.FindByKeyAsync(fileId);
 
@@ -327,9 +327,7 @@ namespace MediaService.BLL.Services.ObjectsServices
                 throw new InvalidDataException("There is no such file in database to download");
             }
 
-            (var blobStream, _) = await Storage.DownloadAsync(fileEntry.Name, fileEntry.Size);
-
-            return blobStream;
+            return await Storage.DownloadAsync(fileEntry.Name, fileEntry.Size);
         }
 
         public async Task DownloadAsync(IEnumerable<Guid> filesIds, Guid zipId)

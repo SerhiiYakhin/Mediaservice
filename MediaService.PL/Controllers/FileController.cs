@@ -10,6 +10,7 @@ using MediaService.PL.Models.ObjectViewModels.FileViewModels;
 using MediaService.PL.Utils;
 using MediaService.PL.Utils.Attributes.ErrorHandler;
 using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -158,14 +159,14 @@ namespace MediaService.PL.Controllers
         [HttpGet]
         public async Task<ActionResult> Download(Guid fileId, string fileName)
         {
-            var fileStream = await FilesService.DownloadAsync(fileId);
+            var blob = await FilesService.DownloadAsync(fileId);
 
-            if (fileStream == null)
+            if (blob.blobStream == null)
             {
                 return HttpNotFound();
             }
 
-            return File(fileStream, "image/jpeg", fileName);
+            return File(blob.blobStream, blob.contentType, $"{Path.GetFileNameWithoutExtension(fileName)}{GetDefaultExtension(blob.contentType)}");
         }
 
         [HttpPost]
@@ -219,8 +220,9 @@ namespace MediaService.PL.Controllers
                         files = files.OrderBy(d => d.Downloaded);
                         break;
                 }
-
-                return PartialView("~/Views/File/_FilesList.cshtml", files);
+                var html = PartialView("~/Views/File/_FilesList.cshtml", files).RenderToString();
+                return Json(new { Success = true, html }, JsonRequestBehavior.AllowGet);
+                //return PartialView("~/Views/File/_FilesList.cshtml", files);
             }
             catch (Exception e)
             {
@@ -357,6 +359,19 @@ namespace MediaService.PL.Controllers
         #endregion
 
         #region Helper Methods
+
+        private static string GetDefaultExtension(string mimeType)
+        {
+            string result;
+            RegistryKey key;
+            object value;
+
+            key = Registry.ClassesRoot.OpenSubKey(@"MIME\Database\Content Type\" + mimeType, false);
+            value = key != null ? key.GetValue("Extension", null) : null;
+            result = value != null ? value.ToString() : string.Empty;
+
+            return result;
+        }
 
         private static List<FileEntryDto> GetFilesToUpload(HttpFileCollectionBase files, List<string> tags)
         {

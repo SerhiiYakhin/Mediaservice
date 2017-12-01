@@ -246,7 +246,7 @@ namespace MediaService.BLL.Services.ObjectsServices
             File.Delete(tempPath);
         }
 
-        public async Task<(Stream blobStream, bool blobExist)> DownloadZip(string zipName)
+        public async Task<(Stream blobStream, string blobContentType)> DownloadZip(string zipName)
         {
             return await Storage.DownloadAsync(zipName, 1);
         }

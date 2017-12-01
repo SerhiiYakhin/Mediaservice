@@ -25,6 +25,6 @@ namespace MediaService.BLL.Interfaces
 
         Task DownloadAsync(Guid directoryId, Guid zipId);
 
-        Task<(Stream blobStream, bool blobExist)> DownloadZip(string zipName);
+        Task<(Stream blobStream, string blobContentType)> DownloadZip(string zipName);
     }
 }

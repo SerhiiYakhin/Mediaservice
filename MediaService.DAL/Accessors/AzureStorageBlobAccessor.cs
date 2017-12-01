@@ -90,7 +90,7 @@ namespace MediaService.DAL.Accessors
 
         #region Download
 
-        public async Task<(Stream blobStream, bool blobExist)> DownloadAsync(string blobName, int? blobSize = null)
+        public async Task<(Stream blobStream, string contentType)> DownloadAsync(string blobName, int? blobSize = null)
         {
             var blob = GetBlob(blobName);
             var blobExist = await blob.ExistsAsync();
@@ -99,11 +99,10 @@ namespace MediaService.DAL.Accessors
             {
                 var blobStream = new MemoryStream();
                 await LoadBlobToStream(blobStream, blob, blobSize);
-                var x = blob.Properties.ContentType;
-                return (blobStream, true);
+                return (blobStream, blob.Properties.ContentType);
             }
 
-            return (null, false);
+            return (null, null);
         }
 
         public async Task DownloadAsync(Stream blobStream, string blobName, int? blobSize = null)

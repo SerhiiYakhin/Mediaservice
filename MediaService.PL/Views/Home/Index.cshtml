@@ -7,6 +7,7 @@
 
 @{
     ViewBag.Title = "Home Page";
+    ViewBag.Search = "ByName";
     ViewBag.ChildModel = Model;
 }
 
@@ -17,13 +18,13 @@
         <div class="col-xs-4">
             <table>
                 <tr class="custom-search-input">
-                    <td>  <img src="~/fonts/icons-buttons/search.svg" id="searchImg" /></td>
-                    <td> <input type="search" id="searchInput" placeholder="Поиск файлов" /></td>
+                    <td><img src="~/fonts/icons-buttons/search.svg" id="searchImg" /></td>
+                    <td><input type="search" id="searchInput" placeholder="Поиск файлов" data-SearchType="@ViewBag.Search" /></td>
                 </tr>
             </table>
         </div>
         <div class="col-xs-4">
-            <h2 class="indexTitle text-center">LuxGate</h2>
+            <h2 class="indexTitle text-center">LuxStorage</h2>
         </div>
         <div class="col-xs-4">
             @Html.Partial("_LoginPartial")
@@ -48,7 +49,6 @@
                     </li>
                     ViewBag.ChildModel = ViewBag.ChildModel.Parent;
                 }
-
             </ul>
             <img width="12" height="10"
                  src="/fonts/icons-buttons/next.svg" style="transform: rotate(90deg);">
@@ -91,7 +91,6 @@
 </div>
 <div class="row dirListView">
     <div class="col-xs-9">
-
         <div id='directories'></div>
 
         <div id="selectable">
@@ -99,6 +98,7 @@
         </div>
         @Html.ActionLink("Back", "Index", "Home", new ObjectsListViewModel { ParentId = Model.ParentId }, null)
     </div>
+
     <div class="col-xs-3">
         <div id="dirListMenu">
             <a href="#uploadFileModal" class="btn btn-primary  uploadFileBtn pull-right" rel="modal:open">Загрузить файл</a>
@@ -109,9 +109,9 @@
             <div id="createDirModal" style="display: none">
                 @{ Html.RenderPartial("~/Views/Directory/_CreateDirectory.cshtml", new CreateDirectoryViewModel { ParentId = Model.Id }); }
             </div>
-
         </div>
     </div>
+
 </div>
 <div id="deleteDirectoryModal" style="display:none; width: 500px; height: 500px;">
 </div>
@@ -132,8 +132,8 @@
 </div>
 <div id="downloadFileModal" style="display:none; width: 500px; height: 500px;">
 </div>
-@section Scripts {
 
+@section Scripts {
     <script>
         $(document).ready(function() {
             $("#Upload").click(function() {
@@ -154,7 +154,6 @@
                     processData: false,
                     success: function(data) {
                         $('#files').html(data.html);
-
                     },
                     error: function (error) {
                         alert("errror");
@@ -167,7 +166,6 @@
             var input = document.getElementById('FileUpload');
             var output = document.getElementById('fileList');
 
-
             output.innerHTML = '';
             for (var i = 0; i < input.files.length; ++i) {
                 output.innerHTML += '<div class="row uploadFilesRow">';
@@ -175,13 +173,12 @@
                     + input.files.item(i).name; + '</div>';
                 output.innerHTML += '<div class="col-xs-4" style="padding: 0"><input type="text" class="tags" id = "tag' + i + '" placeholder="+Добавить тег""></div >';
                 output.innerHTML += '<div class="col-xs-12" style="padding: 0"><hr /></div>';
-
                 output.innerHTML += '</div>';
             }
         }
 
         $.ajax({
-            url: '@Url.Action("DirectoriesList", "Directory", new DirectoriesListViewModel {ParentId = Model.Id, OrderType = ViewBag.OrderType })',
+            url: '@Url.Action("DirectoriesList", "Directory", new DirectoriesListViewModel {ParentId = Model.Id})',
             type: "GET",
             contentType: "text/html; charset=utf-8",
             success: function(data) {
@@ -190,7 +187,7 @@
         });
 
         $.ajax({
-            url: '@Url.Action("FilesList", "File", new FilesListViewModel {ParentId = Model.Id, OrderType = ViewBag.OrderType })',
+            url: '@Url.Action("FilesList", "File", new FilesListViewModel {ParentId = Model.Id})',
             type: "GET",
             contentType: "text/html; charset=utf-8",
             success: function(data) {
@@ -263,12 +260,10 @@
                     "downloadZip": { name: "Скачать ZIP-архив" },
                     "sep3": "---------",
                     "delete": { name: "Удалить папку" }
-
-
                 }
             });
-
         });
+
         @*------------------ Files Context Menu-------------------------*@
         $(function () {
             $.contextMenu({
@@ -364,11 +359,36 @@
         });
 
         @*----search submit---*@
-        $("#searchImg").click(function () {
-            var SearchValue = $("#searchInput").val();
+                $(function () {
+            $.contextMenu({
+                selector: '#searchInput',
+                callback: function (key, opt) {
+                    var m =  key;
+                    switch (m) {
+                        case "byName":
+
+                            document.getElementById('searchInput').setAttribute("data-searchtype", "ByName")
+                            break;
+                        case "byTag":
+                            document.getElementById('searchInput').setAttribute("data-searchtype", "ByTag")
+                            break;
+                        default:
+                            alert("Упс :(");
+                    }
+                },
+                items: {
+                    "byName": { name: "По названию" },
+                    "sep1": "---------",
+                    "byTag": { name: "По тегам" },
+                }
+            });
+        });
+                $('#searchInput').keypress(function (e) {
+                    if (e.which == 13) {
+                        var SearchValue = $("#searchInput").val();
             var formData = new FormData();
             var OrderType = "ByName";
-            var SearchType = "ByName";
+            var SearchType = $("#searchInput").attr("data-searchtype");
             formData.append('SearchValue', SearchValue);
             formData.append('ParentId', '@Model.Id');
             formData.append('OrderType', OrderType);
@@ -389,6 +409,8 @@
                     alert("errror");
                 }
             });
-        });
+                        return false;    //<---- Add this line
+                    }
+                });
     </script>
 }

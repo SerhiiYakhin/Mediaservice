@@ -25,7 +25,7 @@ namespace MediaService.DAL.Interfaces
 
         Task DeleteAsync(string fileName);
 
-        Task<(Stream blobStream, bool blobExist)> DownloadAsync(string blobName, int? blobSize = null);
+        Task<(Stream blobStream, string contentType)> DownloadAsync(string blobName, int? blobSize = null);
 
         Task DownloadAsync(Stream blobStream, string blobName, int? blobSize = null);
 
