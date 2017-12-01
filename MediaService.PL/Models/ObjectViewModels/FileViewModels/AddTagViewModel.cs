@@ -13,5 +13,9 @@ namespace MediaService.PL.Models.ObjectViewModels.FileViewModels
         [Required]
         [StringLength(200)]
         public string Name { get; set; }
+
+        [Required]
+        [HiddenInput(DisplayValue = false)]
+        public Guid ParentId { get; set; }
     }
 }

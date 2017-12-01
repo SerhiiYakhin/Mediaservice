@@ -107,10 +107,21 @@
     </div>
 </div>
 <div id="deleteDirectoryModal" style="display:none; width: 500px; height: 500px;">
-   
 </div>
-<div id="renameDirectoryModal" style="display:none">
-    @{Html.RenderPartial("~/Views/Directory/_RenameDirectory.cshtml", new RenameDirectoryViewModel { ParentId = Model.Id });}
+
+<div id="renameDirectoryModal" style="display:none; width: 500px; height: 500px;">   
+</div>
+
+<div id="fileFromLinkModal" style="display:none; width: 500px; height: 500px;">
+</div>
+
+<div id="renameFileModal" style="display:none; width: 500px; height: 500px;">
+</div>
+
+<div id="addTagModal" style="display:none; width: 500px; height: 500px;">
+</div>
+
+<div id="deleteFileModal" style="display:none; width: 500px; height: 500px;">
 </div>
 @section Scripts {
 
@@ -122,12 +133,9 @@
                 for (var i = 0; i < totalFiles; i++) {
                     var file = document.getElementById("FileUpload").files[i];
                     formData.append("FileUpload", file);
-
+                    formData.append("ParentId","@Model.Id");
                     formData.append('Tags[' + i + ']', $("#tag" + i).val());
                 }
-
-
-
                 $.ajax({
                     type: "POST",
                     url: '/File/UploadFilesAsync',
@@ -151,24 +159,19 @@
             var output = document.getElementById('fileList');
 
 
-
+            output.innerHTML = '';
             for (var i = 0; i < input.files.length; ++i) {
                 output.innerHTML += '<div class="row uploadFilesRow">';
-                output.innerHTML +=
-                    '<div class="col-xs-8" style="padding: 0"><img src="/fonts/icons-buttons/success.svg" height="20" width="20" class="uploadSuccessImg"/><img src="/fonts/icons-buttons/picture.svg" height="20" width="20" style="margin-right:18px"/>' +
+                output.innerHTML += '<div class="col-xs-8" style="padding: 0"><img src="/fonts/icons-buttons/success.svg" height="20" width="20" class="uploadSuccessImg"/><img src="/fonts/icons-buttons/picture.svg" height="20" width="20" style="margin-right:18px"/>'
+                    + input.files.item(i).name; + '</div>';
                 output.innerHTML += '<div class="col-xs-4" style="padding: 0"><input type="text" class="tags" id = "tag' + i + '" placeholder="+Добавить тег""></div >';
-                    '</div>';
-                output.innerHTML +=
-                    '<div class="col-xs-4" style="padding: 0"><input type="text" class="tags" id = "tag' +
-                    i +
-                    '" placeholder="+Добавить тег""></div >';
-                output.innerHTML += '<div class="col-xs-12" style="padding: 0"><hr/></div>';
+                output.innerHTML += '<div class="col-xs-12" style="padding: 0"><hr /></div>';
 
                 output.innerHTML += '</div>';
+
+
             }
         }
-
-        };
 
         $.ajax({
             url: '@Url.Action("DirectoriesList", "Directory", new DirectoriesListViewModel {ParentId = Model.Id})',
@@ -178,6 +181,7 @@
                 $('#directories').html(data);
             }
         });
+
         $.ajax({
             url: '@Url.Action("FilesList", "File", new FilesListViewModel {ParentId = Model.Id})',
             type: "GET",
@@ -186,6 +190,7 @@
                 $('#files').html(data);
             }
         });
+        @*------------------ Directory Context Menu-------------------------*@
         $(function () {
             $.contextMenu({
                 selector: '.directoryEntry',
@@ -193,42 +198,61 @@
                     var m =  key;
                     switch (m) {
                         case "edit":
+                            var Id = opt.$trigger.attr("id");
+                            var Name = opt.$trigger.text();
+                             var ParentId = "@Model.Id";
                             $("#renameDirectoryModal").modal();
-                            $('#FolderIdToRename').val(opt.$trigger.attr("id"));
-                            $('#FolderNameToRename').val(opt.$trigger.text());
+                            $.ajax({
+                                 type: "GET",
+                                 data: Id, Name,
+                                 url: '@Url.Action("Rename", "Directory")?Id=' + Id + '&Name='+ Name +'&ParentId=' + ParentId,
+                                 datatype:'html',
+                                 success: function (data) {
+                                     $('#renameDirectoryModal').html(data);
+                                 }
+                             })
                             break;
-                        case "addTag":
-                            alert(opt.$trigger.attr("id"));
-                            break;
+
                         case "downloadZip":
-                            alert("downloadZip");
+                            var formData = new FormData();
+                            formData.append('Id', opt.$trigger.attr("id"));
+                            formData.append('Name', opt.$trigger.text());
+                            $("#fileFromLinkModal").modal();
+                            $.ajax({
+                                 type: "POST",
+                                 cache: false,
+                                 contentType: false,
+                                 processData: false,
+                                 data: formData,
+                                 url: '@Url.Action("Download", "Directory")',
+                                 success: function (data) {
+                                     $('#fileFromLinkModal').html(data);
+
+                                 }
+                             })
                             break;
+
                         case "delete":
                             var Id = opt.$trigger.attr("id");
                             var ParentId = "@Model.Id";
                             $("#deleteDirectoryModal").modal();
                             $.ajax({
                                  type: "GET",
-                                 data: Id, ParentId, 
+                                 data: Id, ParentId,
                                  url: '@Url.Action("Delete", "Directory")?Id=' + Id + '&ParentId=' + ParentId,
                                  datatype:'html',
                                  success: function (data) {
                                      $('#deleteDirectoryModal').html(data);
                                  }
                              })
-                            
-
-
                             break;
                         default:
-                            alert("default");
+                            alert("Упс :(");
                     }
                 },
                 items: {
                     "edit": { name: "Переименовать" },
                     "sep1": "---------",
-                    "addTag": { name: "Добавить тег"},
-                    "sep2": "---------",
                     "downloadZip": { name: "Скачать ZIP-архив" },
                     "sep3": "---------",
                     "delete": { name: "Удалить папку" }
@@ -238,5 +262,81 @@
             });
 
         });
+        @*------------------ Files Context Menu-------------------------*@
+        $(function () {
+            $.contextMenu({
+                selector: '.fileEntry',
+                callback: function (key, opt) {
+                    var m =  key;
+                    switch (m) {
+                        case "edit":
+                            var Id = opt.$trigger.attr("id");
+                            var Name = opt.$trigger.text();
+                            var ParentId = "@Model.Id";
+                            $("#renameFileModal").modal();
+                            $.ajax({
+                                 type: "GET",
+                                 data: Id, Name,
+                                 url: '@Url.Action("Rename", "File")?Id=' + Id + '&Name='+ Name +'&ParentId=' + ParentId,
+                                 datatype:'html',
+                                 success: function (data) {
+                                     $('#renameFileModal').html(data);
+                                 }
+                             })
+                            break;
+                        case "addTag":
+                            var FileId = opt.$trigger.attr("id");
+                            var Name = opt.$trigger.text();
+                            $("#addTagModal").modal();
+                            $.ajax({
+                                 type: "GET",
+                                 data: Id, Name,
+                                 url: '@Url.Action("AddTag", "File")?Id=' + Id + '&Name='+ Name,
+                                 datatype:'html',
+                                 success: function (data) {
+                                     $('#addTagModal').html(data);
+                                 }
+                             })
+                            break;
+                        case "download":
+                            break;
+
+                       case "delete":
+                            var FileId = opt.$trigger.attr("id");
+                            var ParentId = "@Model.Id";
+                            $("#deleteFileModal").modal();
+                            $.ajax({
+                                 type: "GET",
+                                 data: FileId, ParentId,
+                                 url: '@Url.Action("Delete", "File")?FileId=' + FileId + '&ParentId=' + ParentId,
+                                 datatype:'html',
+                                 success: function (data) {
+                                     $('#deleteFileModal').html(data);
+                                 }
+                             })
+                            break;
+                        default:
+                            alert("Упс :(");
+                    }
+                },
+                items: {
+                    "edit": { name: "Переименовать" },
+                    "sep1": "---------",
+                    "addTag": { name: "Добавить тег" },
+                    "sep2": "---------",
+                    "download": { name: "Скачать файл" },
+                    "sep3": "---------",
+                    "delete": { name: "Удалить файл" }
+
+
+                }
+            });
+
+        });
+
+        clearModal = function () {
+            document.getElementById('fileList').innerHTML = '';
+            };
+
     </script>
 }

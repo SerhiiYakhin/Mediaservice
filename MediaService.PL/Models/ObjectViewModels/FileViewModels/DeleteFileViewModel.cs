@@ -9,5 +9,9 @@ namespace MediaService.PL.Models.ObjectViewModels.FileViewModels
         [Required]
         [HiddenInput(DisplayValue = false)]
         public Guid FileId { get; set; }
+
+        [Required]
+        [HiddenInput(DisplayValue = false)]
+        public Guid ParentId { get; set; }
     }
 }
