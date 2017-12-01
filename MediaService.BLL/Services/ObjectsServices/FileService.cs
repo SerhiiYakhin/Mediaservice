@@ -135,16 +135,18 @@ namespace MediaService.BLL.Services.ObjectsServices
                 fileEntry.Parent = parentDir;
                
                 await Context.Files.AddAsync(fileEntry);
-                await Storage.UploadAsync(fileDto.FileStream, $"{fileEntry.Id}{Path.GetExtension(fileEntry.Name)}", mimeType);
+                await Context.SaveChangesAsync();
 
-                filesNames.Add(fileEntry.Name);
+                var fileName = $"{fileEntry.Id}{Path.GetExtension(fileEntry.Name)}";
+
+                await Storage.UploadAsync(fileDto.FileStream, fileName, mimeType);
+
+                filesNames.Add(fileName);
             }
-
-            await Context.SaveChangesAsync();
 
             var messageInfo = new ThumbnailMessageInfo { OperationType = OperationType.GenerateThumbnail, FilesNames = filesNames};
 
-            await Queue.AddMessageAsync(JsonConvert.SerializeObject(messageInfo), QueueJob.Download);
+            await Queue.AddMessageAsync(JsonConvert.SerializeObject(messageInfo), QueueJob.GenerateThumbnails);
         }
 
         public override void Add(FileEntryDto item)
@@ -274,15 +276,27 @@ namespace MediaService.BLL.Services.ObjectsServices
             {
                 throw new InvalidDataException("Can't find user's file with this Id in database");
             }
+            var x = currFileEntry.Tags.ToList();
+            for (int i = 0; i < x.Count; i++)
+            {
+                if (x[i].FileEntries.Count == 1)
+                {
+                    await Context.Tags.RemoveAsync(x[i]);
+                }
+
+            }
+
+            var tagsToDelete = new List<Tag>();
 
             foreach (var tag in currFileEntry.Tags)
             {
                 if (tag.FileEntries.Count == 1)
                 {
-                    await Context.Tags.RemoveAsync(tag);
+                    tagsToDelete.Add(tag);
                 }
             }
 
+            await Context.Tags.RemoveRangeAsync(tagsToDelete);
             await Context.Files.RemoveAsync(currFileEntry);
             await Storage.DeleteAsync($"{currFileEntry.Id}{Path.GetExtension(currFileEntry.Name)}");
 

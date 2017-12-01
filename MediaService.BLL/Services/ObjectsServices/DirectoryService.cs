@@ -269,6 +269,17 @@ namespace MediaService.BLL.Services.ObjectsServices
 
             foreach (var file in childFiles)
             {
+                var tagsToDelete = new List<Tag>();
+
+                foreach (var tag in file.Tags)
+                {
+                    if (tag.FileEntries.Count == 1)
+                    {
+                        tagsToDelete.Add(tag);
+                    }
+                }
+
+                await Context.Tags.RemoveRangeAsync(tagsToDelete);
                 await Context.Files.RemoveAsync(file);
                 await Storage.DeleteAsync($"{file.Id}{Path.GetExtension(file.Name)}");
             }
