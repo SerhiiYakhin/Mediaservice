@@ -413,3 +413,22 @@ textarea.tags:focus,
 button.tags:focus {
     outline: none;
 }
+#feedback {
+    font-size: 1.4em;
+}
+
+#selectable .ui-selecting.folderItems {
+    color: #CA0B5C;
+}
+
+#selectable .ui-selected.folderItems {
+    color: #D3095F;
+}
+
+#selectable {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  
+}

@@ -79,17 +79,17 @@ namespace MediaService.PL.Controllers
 
         [HttpPost]
         [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
-        public async Task<ActionResult> UploadFilesAsync(Guid parentId, List<string> tags)
+        public async Task<ActionResult> UploadFilesAsync(UploadFilesViewModel model)
         {
             if (Request.Files.Count > 0)
             {
                 try
                 {
-                    var filesToUpload = GetFilesToUpload(Request.Files, tags);
+                    var filesToUpload = GetFilesToUpload(Request.Files, model.Tags);
                    
-                    await FilesService.AddRangeAsync(filesToUpload, parentId);
+                    await FilesService.AddRangeAsync(filesToUpload, model.ParentId);
                     
-                    var filesListModel = await FilesService.GetByParentIdAsync(parentId);
+                    var filesListModel = await FilesService.GetByParentIdAsync(model.ParentId);
                     var html = PartialView("_FilesList", filesListModel).RenderToString();
                     return Json(new { Success = true, html }, JsonRequestBehavior.AllowGet);
                   

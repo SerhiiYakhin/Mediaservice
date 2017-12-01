@@ -3,7 +3,7 @@
 <div>
     <input type="hidden" name="ParentId"  id="ParentId" value="@Model.ParentId">
     <input type="file" id="FileUpload" multiple onchange="javascript:updateList();"/>
-    <input type="button" id="Upload" value="Upload" onclick="javascript:clearModal(); $.modal.close()"/>
+    <input type="button" id="Upload" value="Upload" onclick="javascript:$.modal.close()"/>
     <div id="fileList"></div>
 </div>
 
