@@ -25,7 +25,7 @@ namespace MediaService.BLL.Interfaces
 
         Task DownloadAsync(IEnumerable<Guid> filesIds, Guid zipId);
 
-        Task<(Stream blobStream, string contentType)> DownloadAsync(Guid fileId)
+        Task<(Stream blobStream, string contentType)> DownloadAsync(Guid fileId);
 
         string GetLinkToZip(string fileName);
 

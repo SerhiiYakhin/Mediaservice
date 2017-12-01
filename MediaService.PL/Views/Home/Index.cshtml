@@ -24,7 +24,7 @@
             </table>
         </div>
         <div class="col-xs-4">
-            <h2 class="indexTitle text-center">LuxStorage</h2>
+            <h2 class="indexTitle text-center">LuxGate</h2>
         </div>
         <div class="col-xs-4">
             @Html.Partial("_LoginPartial")
@@ -58,11 +58,14 @@
     <div class="col-xs-5">
         <div>
             <a class="pull-right" href="#">
-                <img src="~/fonts/icons-buttons/tile.svg" id="tileImg" />
+               
+                <img src="~/fonts/icons-buttons/tile.svg" id="tileImg" data-view="true"/>
             </a>
             <a class="pull-right" href="#">
-                <img src="~/fonts/icons-buttons/list.svg" id="listImg" />
+              
+                <img src="~/fonts/icons-buttons/list.svg" id="listImg" data-view="false"/>
             </a>
+           @ViewBag.ListView
         </div>
         <img src="~/fonts/icons-buttons/next.svg" class="pull-right" id="dropdownImg" />
         <a class="pull-right btnLink" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -71,11 +74,12 @@
         <ul class="dropdown-menu dropdown-menu-right pull-right" aria-labelledby="navbarDropdownMenuLink">
             <li>
                 <a class="dropdown-item" href="#">По дате добавления</a>
-                @Html.ActionLink("По дате добавления", "Index", "Home", new { dirId = Model.ParentId }, new { @class = "dropdown-item" })
+                @Html.ActionLink("Сортировка", "Index", "Home", new { dirId = Model.ParentId }, new { @class = "dropdown-item" })
             </li>
             <li>
                 <a class="dropdown-item" href="#">По размеру</a>
             </li>
+
         </ul>
         <a class="pull-right btnLink" href="#">Настройки доступа </a>
     </div>
@@ -97,7 +101,7 @@
         <div id="selectable">
             <div id='files'></div>
         </div>
-        @Html.ActionLink("Back", "Index", "Home", new { dirId = Model.ParentId }, null)
+       
     </div>
     <div class="col-xs-3">
         <div id="dirListMenu">

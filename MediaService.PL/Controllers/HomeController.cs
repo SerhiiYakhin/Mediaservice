@@ -52,15 +52,14 @@ namespace MediaService.PL.Controllers
 
         [HttpGet]
         [ErrorHandle(ExceptionType = typeof(DataException), View = "Errors/Error")]
-        public async Task<ActionResult> Index(ObjectsListViewModel model)
+        public async Task<ActionResult> Index(Guid? dirId)
         {
             DirectoryEntryDto rootDir;
             try
             {
-                ViewBag.OrderType = model.OrderType;
-                if (model.ParentId.HasValue)
+                if (dirId.HasValue)
                 {
-                    rootDir = await DirectoryService.FindByIdAsync(model.ParentId.Value);
+                    rootDir = await DirectoryService.FindByIdAsync(dirId.Value);
                     return View(rootDir);
                 }
 
@@ -75,6 +74,7 @@ namespace MediaService.PL.Controllers
 
             return View(rootDir);
         }
+
 
 
         #endregion
