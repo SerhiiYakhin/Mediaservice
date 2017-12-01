@@ -25,7 +25,7 @@ namespace MediaService.PL.Controllers
 
         private IDirectoryService _directoryService;
 
-        private IFilesService _filesService;
+        private IFileService _filesService;
 
         private IMapper _mapper;
 
@@ -43,7 +43,7 @@ namespace MediaService.PL.Controllers
             ApplicationUserManager userManager,
             IUserService applicationUserService,
             IDirectoryService directoryService,
-            IFilesService filesService
+            IFileService filesService
         )
         {
             UserManager = userManager;
@@ -76,9 +76,9 @@ namespace MediaService.PL.Controllers
             set => _directoryService = value;
         }
 
-        private IFilesService FilesService
+        private IFileService FilesService
         {
-            get => _filesService ?? HttpContext.GetOwinContext().GetUserManager<IFilesService>();
+            get => _filesService ?? HttpContext.GetOwinContext().GetUserManager<IFileService>();
             set => _filesService = value;
         }
 

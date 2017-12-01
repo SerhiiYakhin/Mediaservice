@@ -11,13 +11,11 @@ namespace MediaService.DAL.Accessors
     {
         #region Fields
 
-        private const string DownloadQueueName = "download";
-
-        private const string RepositoryQueueName = "repository";
+        private static readonly string[] _queueNames = new string[] { "download", "thumbnails", "delete", "create", "update" };
 
         private static string _connectionString;
 
-        private readonly TimeSpan _timeToLive = new TimeSpan(0, 1, 0);
+        private readonly TimeSpan _timeToLive = new TimeSpan(0, 2, 30);
 
         #endregion
 
@@ -36,7 +34,6 @@ namespace MediaService.DAL.Accessors
         {
             var queue = GetQueue(queueJob);
             var message = new CloudQueueMessage(messageContent);
-
             queue.AddMessage(message, _timeToLive);
         }
 
@@ -58,17 +55,7 @@ namespace MediaService.DAL.Accessors
             var queueClient = storageAccount.CreateCloudQueueClient();
             CloudQueue queue;
 
-            switch (queueJob)
-            {
-                case QueueJob.Download:
-                    queue = queueClient.GetQueueReference(DownloadQueueName);
-                    break;
-                case QueueJob.DataOperation:
-                    queue = queueClient.GetQueueReference(RepositoryQueueName);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(queueJob), queueJob, "There is no such queue to work with");
-            }
+            queue = queueClient.GetQueueReference(_queueNames[(int)queueJob]);
 
             queue.CreateIfNotExists();
 
