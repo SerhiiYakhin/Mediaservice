@@ -47,7 +47,6 @@ body {
     border-radius: 5px;
 }
 
-
 /* Set padding to keep content from hitting the edges */
 
 .body-content {
@@ -357,18 +356,23 @@ input[type="search"], textarea {
     color: #787876;
     font-weight: 600;
 }
-a:hover.btnLink, a:focus.btnLink {
+
+a:hover.customLink, a:focus.customLink, a.customLink {
     text-decoration: none;
-} 
+    color: #787876;
+    font-weight: 600;
+}
+.customModal {
+    display:none;
+}
 
 #dropdownImg {
-   transform: rotate(90deg);
+    transform: rotate(90deg);
     height: 10px;
     width: 12px;
     margin-top: 6px;
     margin-right: 20px;
     margin-left: -10px;
-    
 }
 a:hover.dropdown-menu-right, a:focus.dropdown-menu-right {
     text-decoration: none;
@@ -432,7 +436,12 @@ button.tags:focus {
 #selectable .ui-selecting.folderItems {
     color: #CA0B5C;
 }
-
+a.ui-selecting {
+    color: #CA0B5C;
+}
+a.ui-selected {
+    color: #D3095F;
+}
 #selectable .ui-selected.folderItems {
     color: #D3095F;
 }
