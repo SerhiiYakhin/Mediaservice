@@ -2,7 +2,7 @@
   "$schema": "http://schemastore.org/schemas/json/webjobs-list.json",
   "WebJobs": [
     {
-      "filePath": "../MediaServiceBLLJob/MediaServiceBLLJob.csproj"
+      "filePath": "../MediaService-BLL-Job/MediaService-BLL-Job.csproj"
     }
   ]
 }

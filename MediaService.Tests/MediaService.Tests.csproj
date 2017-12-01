@@ -72,10 +72,6 @@
       <Project>{0692c7a9-adfa-4006-b242-0002fd228604}</Project>
       <Name>MediaService.PL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MediaServiceBLLJob\MediaServiceBLLJob.csproj">
-      <Project>{e445756f-7047-4228-954b-cef1430138a1}</Project>
-      <Name>MediaServiceBLLJob</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
