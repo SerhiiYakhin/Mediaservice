@@ -333,12 +333,13 @@ namespace MediaService.PL.Controllers
 
         [HttpGet]
         [OutputCache(Duration = 300, Location = OutputCacheLocation.Downstream)]
-        public async Task<string> GetThumnailLink(Guid fileId)
+        public async Task<ActionResult> GetThumnailLink(Guid fileId)
         {
             var link = await FilesService.GetLinkToFileThumbnailAsync(fileId);
+
             return link == null
-                ? Url.Content("~fonts/icons-buttons/picture-pink.svg")
-                : link;
+                ? Redirect("~fonts/icons-buttons/picture-pink.svg")
+                : Redirect(link);
         }
 
         #endregion

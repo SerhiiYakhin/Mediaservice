@@ -99,6 +99,8 @@ namespace MediaService.DAL.Accessors
             {
                 var blobStream = new MemoryStream();
                 await LoadBlobToStream(blobStream, blob, blobSize);
+
+                return (blobStream, true);
             }
 
             return (null, false);

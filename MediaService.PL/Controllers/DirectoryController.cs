@@ -239,7 +239,7 @@ namespace MediaService.PL.Controllers
         {
             try
             {
-                await DirectoryService.DeleteAsync(model.Id);
+                await DirectoryService.DeleteWithJobAsync(model.Id);
 
 
                 return RedirectToAction("Index", "Home", new { dirId = model.ParentId });
