@@ -286,7 +286,7 @@
                             break;
                         case "addTag":
                             var FileId = opt.$trigger.attr("id");
-                            var Name = opt.$trigger.text(); 
+                            var Name = opt.$trigger.text();
                             $("#addTagModal").modal();
                             $.ajax({
                                  type: "GET",
@@ -299,17 +299,16 @@
                              })
                             break;
                         case "download":
+                            break;
 
-
-                        case "delete":
-                            var Id = opt.$trigger.attr("id");
-                            var ReturnUrl = "@Model.Id";
-                            
+                       case "delete":
+                            var FileId = opt.$trigger.attr("id");
+                            var ParentId = "@Model.Id";
                             $("#deleteFileModal").modal();
                             $.ajax({
                                  type: "GET",
-                                 data: Id, ParentId,
-                                 url: '@Url.Action("Delete", "File")?Id=' + Id + '&ReturnUrl=' + ReturnUrl,
+                                 data: FileId, ParentId,
+                                 url: '@Url.Action("Delete", "File")?FileId=' + FileId + '&ParentId=' + ParentId,
                                  datatype:'html',
                                  success: function (data) {
                                      $('#deleteFileModal').html(data);
@@ -334,10 +333,10 @@
             });
 
         });
-       
+
         clearModal = function () {
             document.getElementById('fileList').innerHTML = '';
             };
-       
+
     </script>
 }

@@ -173,7 +173,7 @@ namespace MediaService.PL.Controllers
                         break;
                 }
 
-                return PartialView("_FilesList", files);
+                return PartialView("~/Views/File/_FilesList.cshtml", files);
             }
             catch (Exception e)
             {
@@ -206,7 +206,7 @@ namespace MediaService.PL.Controllers
                         break;
                 }
 
-                return PartialView("_FilesList", files);
+                return PartialView("~/Views/File/_FilesList.cshtml", files);
             }
             catch (Exception e)
             {
@@ -216,11 +216,11 @@ namespace MediaService.PL.Controllers
         }
 
         [HttpGet]
-        public ActionResult AddTag(Guid fileId)
+        public ActionResult AddTag(Guid fileId, Guid parentId, string name)
         {
-            var model = new AddTagViewModel { FileId = fileId };
+            var model = new AddTagViewModel { FileId = fileId, Name = name, ParentId = parentId };
 
-            return PartialView("_AddTag", model);
+            return PartialView("~/Views/File/_AddTag.cshtml", model);
         }
 
         [HttpPost]
@@ -229,14 +229,14 @@ namespace MediaService.PL.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return PartialView("_AddTag", model);
+                return RedirectToAction("Index", "Home", new { dirId = model.ParentId });
             }
 
             try
             {
                 await FilesService.AddTagAsync(model.FileId, model.Name);
 
-                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                return RedirectToAction("Index", "Home", new { dirId = model.ParentId });
             }
             catch (Exception e)
             {
@@ -262,11 +262,11 @@ namespace MediaService.PL.Controllers
         }
 
         [HttpGet]
-        public ActionResult Rename(Guid fileId, Guid parentId, string fileName)
+        public ActionResult Rename(Guid id, Guid parentId, string fileName)
         {
-            var model = new RenameFileViewModel { Id = fileId, ParentId = parentId, Name = fileName};
+            var model = new RenameFileViewModel { Id = id, ParentId = parentId, Name = fileName};
 
-            return PartialView("_RenameFile", model);
+            return PartialView("~/Views/File/_RenameFile.cshtml", model);
         }
 
         [HttpPost]
@@ -275,7 +275,7 @@ namespace MediaService.PL.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return PartialView("_RenameFile", model);
+                return RedirectToAction("Index", "Home", new { dirId = model.ParentId });
             }
 
             try
@@ -285,7 +285,7 @@ namespace MediaService.PL.Controllers
                     var editedFile = Mapper.Map<FileEntryDto>(model);
                     await FilesService.RenameAsync(editedFile);
 
-                    return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                    return RedirectToAction("Index", "Home", new { dirId = model.ParentId });
                 }
 
                 ModelState.AddModelError("Name", "The file with this name is already exist in this directory");
@@ -296,15 +296,15 @@ namespace MediaService.PL.Controllers
                     "This file can't be renamed this file at this moment, we're sorry, try again later", e);
             }
 
-            return PartialView("_RenameFile", model);
+            return RedirectToAction("Index", "Home", new { dirId = model.ParentId });
         }
 
         [HttpGet]
-        public ActionResult Delete(Guid fileId)
+        public ActionResult Delete(Guid fileId, Guid parentId)
         {
-            var model = new DeleteFileViewModel { FileId = fileId };
+            var model = new DeleteFileViewModel { FileId = fileId, ParentId = parentId };
 
-            return PartialView("_DeleteFile", model);
+            return PartialView("~/Views/File/_DeleteFile.cshtml", model);
         }
 
         [HttpPost]
@@ -313,15 +313,15 @@ namespace MediaService.PL.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return PartialView("_DeleteFile", model);
+                return RedirectToAction("Index", "Home", new { dirId = model.ParentId });
             }
 
             try
             {
                 await FilesService.DeleteAsync(model.FileId);
 
-                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
-            }
+            return RedirectToAction("Index", "Home", new { dirId = model.ParentId });
+        }
             catch (Exception e)
             {
                 throw new DbUpdateException(
