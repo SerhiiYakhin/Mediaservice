@@ -8,9 +8,6 @@
 }
 
 @*-----Context Menu-----*@
-<p id="feedback">
-    <span>You've selected:</span> <span id="select-result">none</span>.
-</p>
 
 
 
@@ -69,6 +66,7 @@
         <ul class="dropdown-menu dropdown-menu-right pull-right" aria-labelledby="navbarDropdownMenuLink">
             <li>
                 <a class="dropdown-item" href="#">По дате добавления</a>
+                @Html.ActionLink("По дате добавления", "Index", "Home", new { dirId = Model.ParentId }, new { @class =  "dropdown-item" })
             </li>
             <li>
                 <a class="dropdown-item" href="#">По размеру</a>
@@ -231,7 +229,6 @@
                                  url: '@Url.Action("Download", "Directory")',
                                  success: function (data) {
                                      $('#fileFromLinkModal').html(data);
-
                                  }
                              })
                             break;
@@ -291,11 +288,12 @@
                         case "addTag":
                             var FileId = opt.$trigger.attr("id");
                             var Name = opt.$trigger.text();
+                            var ParentId = "@Model.Id";
                             $("#addTagModal").modal();
                             $.ajax({
                                  type: "GET",
-                                 data: Id, Name,
-                                 url: '@Url.Action("AddTag", "File")?Id=' + Id + '&Name='+ Name,
+                                 data: FileId, Name, ParentId,
+                                 url: '@Url.Action("AddTag", "File")?FileId=' + FileId + '&Name=' + Name + '&ParentId=' + ParentId,
                                  datatype:'html',
                                  success: function (data) {
                                      $('#addTagModal').html(data);

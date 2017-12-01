@@ -1,0 +1,15 @@
+﻿@using MediaService.BLL.DTO.Enums
+﻿@model IEnumerable<MediaService.BLL.DTO.FileEntryDto>
+
+@foreach (var item in Model)
+{
+    <div class="row">
+        <div class="folderItems" >
+            <img width="18" height="18"
+                 src="@(item.FileType == FileType.Image ? Url.Content("/fonts/icons-buttons/picture.svg") : Url.Content("/fonts/icons-buttons/video-player.svg"))">
+           <a href="#" class="fileEntry" id="@item.Id">@item.Name</a>
+            @*<img src='@Url.Action("GetThumnailLink", "File", new {fileId = item.Id})' />*@
+            @Html.ActionLink("Download", "Download", "File", new { fileId = item.Id, fileSize = item.Size }, null)
+        </div>
+    </div>
+}

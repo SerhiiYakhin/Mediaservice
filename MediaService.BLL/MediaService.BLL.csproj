@@ -86,9 +86,9 @@
     <Compile Include="Infrastructure\OperationDetails.cs" />
     <Compile Include="Infrastructure\DIServiceModule.cs" />
     <Compile Include="Infrastructure\ValidationException.cs" />
+    <Compile Include="Interfaces\IFileService.cs" />
     <Compile Include="Interfaces\IUserService.cs" />
     <Compile Include="Interfaces\IDirectoryService.cs" />
-    <Compile Include="Interfaces\IFileService.cs" />
     <Compile Include="Interfaces\IObjectService.cs" />
     <Compile Include="Interfaces\IService.cs" />
     <Compile Include="Interfaces\ITagService.cs" />
