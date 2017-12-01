@@ -17,12 +17,12 @@
     <div class="row">
         <div class="col-xs-4">
             <table>
-            <tr class="custom-search-input">
-                <td>  <img src="~/fonts/icons-buttons/search.svg" id="searchImg" /></td>
-                <td> <input type="search"  id="searchInput" placeholder="Поиск файлов" data-SearchType="@ViewBag.Search"/></td>
-</tr>
-                </table>
-</div>
+                <tr class="custom-search-input">
+                    <td>  <img src="~/fonts/icons-buttons/search.svg" id="searchImg" /></td>
+                    <td> <input type="search" id="searchInput" placeholder="Поиск файлов" data-SearchType="@ViewBag.Search" /></td>
+                </tr>
+            </table>
+        </div>
         <div class="col-xs-4">
             <h2 class="indexTitle text-center">LuxStorage</h2>
         </div>
@@ -31,13 +31,12 @@
         </div>
     </div>
 </div>
-<hr/>
+<hr />
 <div class="row customNav">
     <div class="col-xs-7">
         <div class="customBreadcrumb">
-
             <ul style="list-style-type:none; white-space: nowrap; float:left ">
-                @Html.ActionLink("Мои файлы", "Index", "Home")
+                @Html.ActionLink("Мои файлы", "Index", "Home", new { @class = "customLink" })
 
                 @while (ViewBag.ChildModel.ParentId != null)
                 {
@@ -45,7 +44,7 @@
                     <li style="float:right;  display: inline-block">
                         <img width="10" height="12"
                              src="/fonts/icons-buttons/next.svg" />
-                        @Html.ActionLink((string)ViewBag.ChildModel.Name, "Index", "Home", new { dirId = ViewBag.ChildModel.Id }, null)
+                        @Html.ActionLink((string)ViewBag.ChildModel.Name, "Index", "Home", new { dirId = ViewBag.ChildModel.Id }, new { @class = "customLink" })
                     </li>
                     ViewBag.ChildModel = ViewBag.ChildModel.Parent;
                 }
@@ -59,20 +58,20 @@
     <div class="col-xs-5">
         <div>
             <a class="pull-right" href="#">
-                <img src="~/fonts/icons-buttons/tile.svg" id="tileImg"/>
+                <img src="~/fonts/icons-buttons/tile.svg" id="tileImg" />
             </a>
             <a class="pull-right" href="#">
-                <img src="~/fonts/icons-buttons/list.svg" id="listImg"/>
+                <img src="~/fonts/icons-buttons/list.svg" id="listImg" />
             </a>
         </div>
-        <img src="~/fonts/icons-buttons/next.svg" class="pull-right" id="dropdownImg"/>
+        <img src="~/fonts/icons-buttons/next.svg" class="pull-right" id="dropdownImg" />
         <a class="pull-right btnLink" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             По дате создания
         </a>
         <ul class="dropdown-menu dropdown-menu-right pull-right" aria-labelledby="navbarDropdownMenuLink">
             <li>
                 <a class="dropdown-item" href="#">По дате добавления</a>
-                @Html.ActionLink("По дате добавления", "Index", "Home", new { dirId = Model.ParentId }, new { @class =  "dropdown-item" })
+                @Html.ActionLink("По дате добавления", "Index", "Home", new { dirId = Model.ParentId }, new { @class = "dropdown-item" })
             </li>
             <li>
                 <a class="dropdown-item" href="#">По размеру</a>
@@ -82,56 +81,58 @@
     </div>
 </div>
 <div class="row dirListView">
-    <div class="col-xs-9">
+    <div class="col-xs-6" style="padding-left: 60px">
         Название
     </div>
-    <div class="col-xs-3">
+    <div class="col-xs-6">
         Теги
     </div>
 
 </div>
 <div class="row dirListView">
-    <div class="col-xs-9" >
+    <div class="col-xs-9">
 
         <div id='directories'></div>
 
-        <div id="selectable"> 
-        <div id='files'></div>
-    </div>
-        @Html.ActionLink("Back", "Index", "Home", new {dirId = Model.ParentId}, null)
+        <div id="selectable">
+            <div id='files'></div>
+        </div>
+        @Html.ActionLink("Back", "Index", "Home", new { dirId = Model.ParentId }, null)
     </div>
     <div class="col-xs-3">
         <div id="dirListMenu">
             <a href="#uploadFileModal" class="btn btn-primary  uploadFileBtn pull-right" rel="modal:open">Загрузить файл</a>
-            <div id="uploadFileModal" style="display: none">
-                @{ Html.RenderPartial("~/Views/File/_UploadFiles.cshtml", new UploadFilesViewModel {ParentId = Model.Id}); }
+            <div id="uploadFileModal" class="customModal">
+                @{ Html.RenderPartial("~/Views/File/_UploadFiles.cshtml", new UploadFilesViewModel { ParentId = Model.Id }); }
             </div>
             <a href="#createDirModal" class="btn btn-primary  createDirBtn pull-right" rel="modal:open">Создать папку</a>
-            <div id="createDirModal" style="display: none">
-                @{ Html.RenderPartial("~/Views/Directory/_CreateDirectory.cshtml", new CreateDirectoryViewModel {ParentId = Model.Id}); }
+            <div id="createDirModal" class="customModal">
+                @{ Html.RenderPartial("~/Views/Directory/_CreateDirectory.cshtml", new CreateDirectoryViewModel { ParentId = Model.Id }); }
             </div>
 
         </div>
     </div>
 </div>
-<div id="deleteDirectoryModal" style="display:none; width: 500px; height: 500px;">
+
+<!----------Modals-------->
+<div id="deleteDirectoryModal" class="customModal">
 </div>
 
-<div id="renameDirectoryModal" style="display:none; width: 500px; height: 500px;">   
+<div id="renameDirectoryModal" class="customModal">
 </div>
 
-<div id="fileFromLinkModal" style="display:none; width: 500px; height: 500px;">
+<div id="fileFromLinkModal" class="customModal modal">
 </div>
 
-<div id="renameFileModal" style="display:none; width: 500px; height: 500px;">
+<div id="renameFileModal" class="customModal modal">
 </div>
 
-<div id="addTagModal" style="display:none; width: 500px; height: 500px;">
+<div id="addTagModal" class="customModal modal">
 </div>
 
-<div id="deleteFileModal" style="display:none; width: 500px; height: 500px;">
+<div id="deleteFileModal" class="customModal">
 </div>
-<div id="downloadFileModal" style="display:none; width: 500px; height: 500px;">
+<div id="downloadFileModal" class="customModal">
 </div>
 @section Scripts {
 
@@ -424,10 +425,10 @@
                     alert("errror");
                 }
             });
-                        return false;    //<---- Add this line
+                        return false;
                     }
                 });
 
-       
+
     </script>
 }
