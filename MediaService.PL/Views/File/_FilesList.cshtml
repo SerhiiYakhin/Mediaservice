@@ -1,0 +1,25 @@
+﻿@using MediaService.BLL.DTO.Enums
+﻿@model IEnumerable<MediaService.BLL.DTO.FileEntryDto>
+
+@foreach (var item in Model)
+{
+    <div class="row">
+        <div class="folderItems">
+            <div class="col-xs-7" style="margin-left: -15px">
+                <img width="18" height="18"
+                     src="@(item.FileType == FileType.Image ? Url.Content("/fonts/icons-buttons/picture.svg") : Url.Content("/fonts/icons-buttons/video-player.svg"))">
+
+                @*<img src="@Url.Action("GetThumnailLink", "File", new { fileId = item.Id})">*@
+                <a href="#" class="fileEntry customLink" id="@item.Id">@item.Name</a>
+            </div>
+
+            <div class="col-xs-5" style="max-height: 44px; overflow: hidden;">
+                @foreach (var tag in item.Tags)
+                {
+                    @: #@Html.DisplayFor(modelItem => tag.Name)
+                }
+            </div>
+
+        </div>
+    </div>
+}

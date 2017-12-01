@@ -1,13 +1,12 @@
 CREATE TABLE [dbo].[DirectoryEntries] (
     [Id]         UNIQUEIDENTIFIER DEFAULT (newsequentialid()) NOT NULL,
-    [Owner_Id]   NVARCHAR (128)   NULL,
     [Name]       NVARCHAR (128)   NOT NULL,
+    [NodeLevel]  SMALLINT         NOT NULL,
     [Created]    DATETIME2 (7)    NOT NULL,
     [Downloaded] DATETIME2 (7)    NOT NULL,
     [Modified]   DATETIME2 (7)    NOT NULL,
-    [Thumbnail]  NVARCHAR (250)   NULL,
-    [Parent_Id]  UNIQUEIDENTIFIER NULL,
-    [NodeLevel]  SMALLINT         NOT NULL,
+    [Owner_Id]   NVARCHAR (128)   NULL,
+    [Parent_Id]  UNIQUEIDENTIFIER NULL
 
     CONSTRAINT [PK_dbo.DirectoryEntries] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_dbo.DirectoryEntries_dbo.AspNetUsers_Owner_Id] FOREIGN KEY ([Owner_Id]) REFERENCES [dbo].[AspNetUsers] ([Id]) ON DELETE CASCADE ON UPDATE CASCADE,

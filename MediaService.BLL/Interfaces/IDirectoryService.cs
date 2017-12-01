@@ -1,6 +1,7 @@
 ﻿#region usings
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using MediaService.BLL.DTO;
 
@@ -10,12 +11,20 @@ namespace MediaService.BLL.Interfaces
 {
     public interface IDirectoryService : IObjectService<DirectoryEntryDto>
     {
-        Task<bool> IsDirectoryExistAsync(string name, Guid parentId);
-
         Task AddRootDirToUserAsync(string userId);
 
         Task<DirectoryEntryDto> GetRootAsync(string ownerId);
 
-        Task AddAsync(string name, Guid parentId);
+        Task RenameAsync(DirectoryEntryDto editedDirEntryDto);
+
+        Task DeleteAsync(Guid entryId);
+
+        Task DeleteWithJobAsync(Guid entryId);
+
+        Task DownloadWithJobAsync(Guid directoryId, Guid zipId);
+
+        Task DownloadAsync(Guid directoryId, Guid zipId);
+
+        Task<(Stream blobStream, string blobContentType)> DownloadZip(string zipName);
     }
 }

@@ -15,12 +15,22 @@ namespace MediaService.BLL.Services
         where TDto : class
         where TEntity : class
     {
+        #region Fields
+
         private IMapper _mapper;
+
+        #endregion
+
+        #region Constructor
 
         protected Service(IUnitOfWork uow)
         {
             Context = uow;
         }
+
+        #endregion
+
+        #region Properties
 
         protected IUnitOfWork Context { get; }
 
@@ -28,11 +38,11 @@ namespace MediaService.BLL.Services
 
         protected IMapper DtoMapper => _mapper ?? (_mapper = MapperModule.GetMapper());
 
-        public void Dispose()
-        {
-            Context.Dispose();
-        }
+        #endregion
 
+        #region Methods
+
+        #region Select Methods
 
         public virtual TDto FindById(TId key)
         {
@@ -54,67 +64,29 @@ namespace MediaService.BLL.Services
             return DtoMapper.Map<IEnumerable<TDto>>(await Repository.GetDataAsync());
         }
 
-        public virtual void Add(TDto item)
+        #endregion
+
+        #region Abstract Methods
+
+        public abstract void Add(TDto item);
+
+        public abstract Task AddAsync(TDto item);
+
+        //public abstract void AddRange(IEnumerable<TDto> items);
+
+        //public abstract Task AddRangeAsync(IEnumerable<TDto> items);
+
+        //public abstract void Update(TDto item);
+
+        //public abstract Task UpdateAsync(TDto item);
+
+        #endregion
+
+        public void Dispose()
         {
-            Repository.Add(DtoMapper.Map<TEntity>(item));
-            Context.SaveChanges();
+            Context.Dispose();
         }
 
-        public virtual async Task AddAsync(TDto item)
-        {
-            await Repository.AddAsync(DtoMapper.Map<TEntity>(item));
-            await Context.SaveChangesAsync();
-        }
-
-
-        public virtual void AddRange(IEnumerable<TDto> items)
-        {
-            Repository.AddRange(DtoMapper.Map<IEnumerable<TEntity>>(items));
-            Context.SaveChanges();
-        }
-
-        public virtual async Task AddRangeAsync(IEnumerable<TDto> items)
-        {
-            await Repository.AddRangeAsync(DtoMapper.Map<IEnumerable<TEntity>>(items));
-            await Context.SaveChangesAsync();
-        }
-
-        public virtual void Update(TDto item)
-        {
-            Repository.Update(DtoMapper.Map<TEntity>(item));
-            Context.SaveChanges();
-        }
-
-        public virtual async Task UpdateAsync(TDto item)
-        {
-            await Repository.UpdateAsync(DtoMapper.Map<TEntity>(item));
-            await Context.SaveChangesAsync();
-        }
-
-
-        public virtual void Remove(TDto item)
-        {
-            Repository.Remove(DtoMapper.Map<TEntity>(item));
-            Context.SaveChanges();
-        }
-
-        public virtual async Task RemoveAsync(TDto item)
-        {
-            await Repository.RemoveAsync(DtoMapper.Map<TEntity>(item));
-            await Context.SaveChangesAsync();
-        }
-
-
-        public virtual void RemoveRange(IEnumerable<TDto> items)
-        {
-            Repository.RemoveRange(DtoMapper.Map<IEnumerable<TEntity>>(items));
-            Context.SaveChanges();
-        }
-
-        public virtual async Task RemoveRangeAsync(IEnumerable<TDto> items)
-        {
-            await Repository.RemoveRangeAsync(DtoMapper.Map<IEnumerable<TEntity>>(items));
-            await Context.SaveChangesAsync();
-        }
+        #endregion
     }
 }

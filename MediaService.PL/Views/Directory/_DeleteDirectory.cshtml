@@ -1,0 +1,24 @@
+﻿@model MediaService.PL.Models.ObjectViewModels.DirectoryViewModels.DeleteDirectoryViewModel
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>DeleteDirectoryViewModel</h4>
+    <hr/>
+    <dl class="dl-horizontal">
+    </dl>
+
+    @using (Html.BeginForm(Html.BeginForm("Delete", "Directory", FormMethod.Post)))
+    {
+        @Html.AntiForgeryToken()
+        <div class="form-group">
+            <div class="col-md-10">
+                @Html.HiddenFor(model => model.Id, Model.Id);
+                @Html.HiddenFor(model => model.ParentId, Model.ParentId);
+
+            </div>
+        </div>
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default"/>
+        </div>
+    }
+</div>

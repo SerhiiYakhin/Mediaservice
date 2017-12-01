@@ -13,5 +13,7 @@ namespace MediaService.BLL.Interfaces
         TagDto GetTagByName(string name);
 
         Task<TagDto> GetTagByNameAsync(string name);
+
+        Task RemoveAsync(Guid fileId, Guid tagId);
     }
 }

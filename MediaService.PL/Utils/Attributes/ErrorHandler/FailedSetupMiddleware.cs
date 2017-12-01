@@ -22,8 +22,8 @@ namespace MediaService.PL.Utils.Attributes.ErrorHandler
         {
             var message = "The service is unavailable because there was an error during application start";
             context.Response.StatusCode = 500;
-            //context.Response.Redirect("/Shared/Error");
             return context.Response.WriteAsync(message);
+            //context.Response.Redirect("/ErrorHandler/InternalServerError");
         }
     }
 }

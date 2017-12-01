@@ -15,15 +15,6 @@ namespace MediaService.DAL.Entities
         public Guid Id { get; set; }
 
         [Required]
-        [StringLength(128)]
-        //[ConcurrencyCheck]
-        public string Name { get; set; }
-
-        //[Required]
-        //[StringLength(128)]
-        //public string Discriminator { get; set; }
-
-        [Required]
         [Column(TypeName = "datetime2")]
         public DateTime Created { get; set; }
 
@@ -34,10 +25,6 @@ namespace MediaService.DAL.Entities
         [Required]
         [Column(TypeName = "datetime2")]
         public DateTime Modified { get; set; }
-
-        [StringLength(250)]
-        public string Thumbnail { get; set; }
-
 
         public DirectoryEntry Parent { get; set; }
 

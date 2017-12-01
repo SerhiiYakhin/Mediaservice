@@ -76,9 +76,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Accessors\AzureStorageAccessor.cs" />
+    <Compile Include="Accessors\AzureStorageBlobAccessor.cs" />
+    <Compile Include="Accessors\AzureStorageQueueAccessor.cs" />
+    <Compile Include="Accessors\Enums\QueueJob.cs" />
     <Compile Include="EF\DatabaseContext.cs" />
     <Compile Include="Entities\DirectoryViewers.cs" />
+    <Compile Include="Entities\Enums\FileType.cs" />
     <Compile Include="Entities\FileViewers.cs" />
     <Compile Include="Entities\User.cs" />
     <Compile Include="Entities\DirectoryEntry.cs" />
@@ -86,7 +89,8 @@
     <Compile Include="Entities\ObjectEntry.cs" />
     <Compile Include="Entities\Tag.cs" />
     <Compile Include="Entities\UserProfile.cs" />
-    <Compile Include="Interfaces\IStorage.cs" />
+    <Compile Include="Interfaces\IBlobStorage.cs" />
+    <Compile Include="Interfaces\IQueueStorage.cs" />
     <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Interfaces\IUnitOfWork.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

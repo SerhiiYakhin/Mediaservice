@@ -52,16 +52,6 @@ namespace MediaService.PL.Controllers
             base.Dispose(disposing);
         }
 
-        //protected override void OnException(ExceptionContext filterContext)
-        //{
-        //    filterContext.ExceptionHandled = true;
-
-        //    var handleErrorInfo = new HandleErrorInfo(filterContext.Exception,
-        //        filterContext.RouteData.Values["controller"].ToString(),
-        //        filterContext.RouteData.Values["action"].ToString());
-        //    filterContext.Result = RedirectToAction("Index", "ErrorHandler", handleErrorInfo);
-        //}
-
         #endregion
 
         #region Services
@@ -131,7 +121,6 @@ namespace MediaService.PL.Controllers
 
         #region Actions
 
-        // GET: /Account/Login
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
@@ -139,7 +128,6 @@ namespace MediaService.PL.Controllers
             return View();
         }
 
-        // POST: /Account/Login
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -164,18 +152,17 @@ namespace MediaService.PL.Controllers
             }
         }
 
-        // GET: /Account/VerifyCode
         [AllowAnonymous]
         public async Task<ActionResult> VerifyCode(string provider, string returnUrl, bool rememberMe)
         {
-            // Require that the user has already logged in via username/password or external login
             if (!await SignInManager.HasBeenVerifiedAsync())
-                return View("Error");
+            {
+                return View("Errors/Error");
+            }
 
             return View(new VerifyCodeViewModel {Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe});
         }
 
-        // POST: /Account/VerifyCode
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -188,7 +175,10 @@ namespace MediaService.PL.Controllers
             // If a user enters incorrect codes for a specified amount of time then the user account 
             // will be locked out for a specified amount of time. 
             // You can configure the account lockout settings in IdentityConfig
-            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, model.RememberMe,
+            var result = await SignInManager.TwoFactorSignInAsync(
+                model.Provider,
+                model.Code,
+                model.RememberMe,
                 model.RememberBrowser);
 
             switch (result)
@@ -203,21 +193,20 @@ namespace MediaService.PL.Controllers
             }
         }
 
-        // GET: /Account/Register
         [AllowAnonymous]
         public ActionResult Register()
         {
             return View();
         }
 
-        // POST: /Account/Register
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Error")]
+        [ErrorHandle(ExceptionType = typeof(DbUpdateException), View = "Errors/Error")]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
+            {
                 if (ValidateRequest)
                 {
                     var user = Mapper.Map<RegisterViewModel, ApplicationUser>(model);
@@ -249,28 +238,29 @@ namespace MediaService.PL.Controllers
 
                     AddErrors(result);
                 }
+            }
 
             return View(model);
         }
 
-        // GET: /Account/ConfirmEmail
         [AllowAnonymous]
         public async Task<ActionResult> ConfirmEmail(string userId, string code)
         {
             if (userId == null || code == null)
-                return View("Error");
+            {
+                return View("Errors/Error");
+            }
+
             var result = await UserManager.ConfirmEmailAsync(userId, code);
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
-        // GET: /Account/ForgotPassword
         [AllowAnonymous]
         public ActionResult ForgotPassword()
         {
             return View();
         }
 
-        // POST: /Account/ForgotPassword
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -279,8 +269,11 @@ namespace MediaService.PL.Controllers
             if (ModelState.IsValid)
             {
                 var user = await UserManager.FindByEmailAsync(model.Email);
+
                 if (user == null || !await UserManager.IsEmailConfirmedAsync(user.Id))
+                {
                     return View("ForgotPasswordConfirmation");
+                }
 
                 // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                 // Send an email with this link
@@ -290,71 +283,77 @@ namespace MediaService.PL.Controllers
                 // return RedirectToAction("ForgotPasswordConfirmation", "Account");
             }
 
-            // If we got this far, something failed, redisplay form
             return View(model);
         }
 
-        // GET: /Account/ForgotPasswordConfirmation
         [AllowAnonymous]
         public ActionResult ForgotPasswordConfirmation()
         {
             return View();
         }
 
-        // GET: /Account/ResetPassword
         [AllowAnonymous]
         public ActionResult ResetPassword(string code)
         {
-            return code == null ? View("Error") : View();
+            return code == null ? View("Errors/Error") : View();
         }
 
-        // POST: /Account/ResetPassword
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ResetPassword(ResetPasswordViewModel model)
         {
             if (!ModelState.IsValid)
+            {
                 return View(model);
+            }
+
             var user = await UserManager.FindByEmailAsync(model.Email);
+
             if (user == null)
+            {
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
+            }
+
             var result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
+
             if (result.Succeeded)
+            {
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
+            }
+
             AddErrors(result);
             return View();
         }
 
-        // GET: /Account/ResetPasswordConfirmation
         [AllowAnonymous]
         public ActionResult ResetPasswordConfirmation()
         {
             return View();
         }
 
-        // POST: /Account/ExternalLogin
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult ExternalLogin(string provider, string returnUrl)
         {
-            // Request a redirect to the external login provider
             return new ChallengeResult(provider,
                 Url.Action("ExternalLoginCallback", "Account", new {ReturnUrl = returnUrl}));
         }
 
-        // GET: /Account/SendCode
         [AllowAnonymous]
         public async Task<ActionResult> SendCode(string returnUrl, bool rememberMe)
         {
             var userId = await SignInManager.GetVerifiedUserIdAsync();
 
             if (userId == null)
-                return View("Error");
+            {
+                return View("Errors/Error");
+            }
 
             var userFactors = await UserManager.GetValidTwoFactorProvidersAsync(userId);
-            var factorOptions = userFactors.Select(purpose => new SelectListItem {Text = purpose, Value = purpose})
+            var factorOptions = userFactors
+                .Select(purpose => new SelectListItem {Text = purpose, Value = purpose})
                 .ToList();
 
             return View(new SendCodeViewModel
@@ -365,33 +364,35 @@ namespace MediaService.PL.Controllers
             });
         }
 
-        // POST: /Account/SendCode
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SendCode(SendCodeViewModel model)
         {
             if (!ModelState.IsValid)
+            {
                 return View();
+            }
 
-            // Generate the token and send it
             if (!await SignInManager.SendTwoFactorCodeAsync(model.SelectedProvider))
-                return View("Error");
+            {
+                return View("Errors/Error");
+            }
 
             return RedirectToAction("VerifyCode",
                 new {Provider = model.SelectedProvider, model.ReturnUrl, model.RememberMe});
         }
 
-        // GET: /Account/ExternalLoginCallback
         [AllowAnonymous]
         public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
         {
             var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync();
 
             if (loginInfo == null)
+            {
                 return RedirectToAction("Login");
+            }
 
-            // Sign in the user with this external login provider if the user already has a login
             var result = await SignInManager.ExternalSignInAsync(loginInfo, false);
 
             switch (result)
@@ -403,7 +404,6 @@ namespace MediaService.PL.Controllers
                 case SignInStatus.RequiresVerification:
                     return RedirectToAction("SendCode", new {ReturnUrl = returnUrl, RememberMe = false});
                 default:
-                    // If the user does not have an account, then prompt the user to create an account
                     ViewBag.ReturnUrl = returnUrl;
                     ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
 
@@ -412,7 +412,6 @@ namespace MediaService.PL.Controllers
             }
         }
 
-        // POST: /Account/ExternalLoginConfirmation
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -421,17 +420,21 @@ namespace MediaService.PL.Controllers
             string returnUrl)
         {
             if (User.Identity.IsAuthenticated)
+            {
                 return RedirectToAction("Index", "Manage");
+            }
 
             if (ModelState.IsValid)
             {
-                // Get the information about the user from the external login provider
                 var info = await AuthenticationManager.GetExternalLoginInfoAsync();
                 if (info == null)
+                {
                     return View("ExternalLoginFailure");
+                }
 
                 var user = Mapper.Map<ExternalLoginConfirmationViewModel, ApplicationUser>(model);
                 var result = await UserManager.CreateAsync(user);
+
                 if (result.Succeeded)
                 {
                     try
@@ -444,7 +447,9 @@ namespace MediaService.PL.Controllers
                         throw new DbUpdateException(
                             "We can't create disk space for you at this moment, we're sorry, try again later", ex);
                     }
+
                     result = await UserManager.AddLoginAsync(user.Id, info.Login);
+
                     if (result.Succeeded)
                     {
                         await SignInManager.SignInAsync(user, false, false);
@@ -458,7 +463,6 @@ namespace MediaService.PL.Controllers
             return View(model);
         }
 
-        // POST: /Account/LogOff
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
@@ -467,7 +471,7 @@ namespace MediaService.PL.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // GET: /Account/ExternalLoginFailure
+        [HttpGet]
         [AllowAnonymous]
         public ActionResult ExternalLoginFailure()
         {
@@ -478,7 +482,6 @@ namespace MediaService.PL.Controllers
 
         #region Helpers
 
-        // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
 
         private IAuthenticationManager AuthenticationManager => HttpContext.GetOwinContext().Authentication;
@@ -492,7 +495,9 @@ namespace MediaService.PL.Controllers
         private ActionResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))
+            {
                 return Redirect(returnUrl);
+            }
 
             return RedirectToAction("Index", "Home");
         }
@@ -518,8 +523,12 @@ namespace MediaService.PL.Controllers
             public override void ExecuteResult(ControllerContext context)
             {
                 var properties = new AuthenticationProperties {RedirectUri = RedirectUri};
+
                 if (UserId != null)
+                {
                     properties.Dictionary[XsrfKey] = UserId;
+                }
+
                 context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
             }
         }

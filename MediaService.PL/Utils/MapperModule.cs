@@ -4,7 +4,8 @@ using AutoMapper;
 using MediaService.BLL.DTO;
 using MediaService.PL.Models.AccountViewModels;
 using MediaService.PL.Models.IdentityModels;
-using MediaService.PL.Models.ObjectViewModels;
+using MediaService.PL.Models.ObjectViewModels.DirectoryViewModels;
+using MediaService.PL.Models.ObjectViewModels.FileViewModels;
 
 #endregion
 
@@ -21,7 +22,9 @@ namespace MediaService.PL.Utils
                 cfg.CreateMap<ExternalLoginConfirmationViewModel, ApplicationUser>();
                 cfg.CreateMap<RegisterViewModel, ApplicationUser>();
                 cfg.CreateMap<ApplicationUser, UserDto>();
-                cfg.CreateMap<CreateFolderViewModel, DirectoryEntryDto>();
+                cfg.CreateMap<CreateDirectoryViewModel, DirectoryEntryDto>();
+                cfg.CreateMap<RenameFileViewModel, FileEntryDto>();
+                cfg.CreateMap<RenameDirectoryViewModel, DirectoryEntryDto>();
             });
         }
 

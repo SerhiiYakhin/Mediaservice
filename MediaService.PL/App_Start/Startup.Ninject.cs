@@ -17,7 +17,8 @@ namespace MediaService.PL
     {
         private void ConfigureNinject()
         {
-            var kernel = new StandardKernel(new ServiceModule("DefaultConnection", CloudConfigurationManager.GetSetting("StorageConnectionString")));
+            var kernel = new StandardKernel(new DIServiceModule("DefaultConnection",
+                CloudConfigurationManager.GetSetting("StorageConnectionString")));
             try
             {
                 kernel.Bind<Func<IKernel>>().ToMethod(ctx => () => new Bootstrapper().Kernel);

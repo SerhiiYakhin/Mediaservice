@@ -9,14 +9,19 @@ namespace MediaService.DAL.EF
 {
     internal class DatabaseContext : DbContext
     {
+        #region Constructors
+
         public DatabaseContext(string connectionString) : base(connectionString)
         {
-            //Configuration.ProxyCreationEnabled = false;
         }
 
         public DatabaseContext() : base("DefaultConnection")
         {
         }
+
+        #endregion
+
+        #region DbSets
 
         public virtual DbSet<ObjectEntry> ObjectEntries { get; set; }
 
@@ -33,6 +38,10 @@ namespace MediaService.DAL.EF
         public virtual DbSet<DirectoryViewers> DirectoryViewers { get; set; }
 
         public virtual DbSet<User> Users { get; set; }
+
+        #endregion
+
+        #region Methods
 
         public static DatabaseContext Create()
         {
@@ -54,5 +63,7 @@ namespace MediaService.DAL.EF
                 m.ToTable("DirectoryEntries");
             });
         }
+
+        #endregion
     }
 }

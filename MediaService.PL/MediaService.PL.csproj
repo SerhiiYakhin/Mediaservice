@@ -215,10 +215,26 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\DirectoryController.cs" />
     <Compile Include="Controllers\ErrorHandlerController.cs" />
+    <Compile Include="Controllers\FileController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
-    <Compile Include="Models\ObjectViewModels\CreateFolderViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\DirectoryViewModels\DeleteDirectoryViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\DirectoryViewModels\DirectoriesListViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\DirectoryViewModels\DownloadDirectoryViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\Enums\OrderType.cs" />
+    <Compile Include="Models\ObjectViewModels\DirectoryViewModels\RenameDirectoryViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\FileViewModels\AddTagViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\DirectoryViewModels\CreateDirectoryViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\FileViewModels\DeleteFileViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\FileViewModels\DownloadFilesViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\FileViewModels\FilesListViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\FileViewModels\RemoveTagViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\FileViewModels\RenameFileViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\FileViewModels\SearchFilesViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\FileViewModels\UploadFilesViewModel.cs" />
+    <Compile Include="Models\ObjectViewModels\ObjectsListViewModel.cs" />
     <Compile Include="Utils\Attributes\ErrorHandler\AiHandleErrorAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -252,12 +268,15 @@
     <Compile Include="Utils\Attributes\ErrorHandler\ErrorHandleAttribute.cs" />
     <Compile Include="Utils\MapperModule.cs" />
     <Compile Include="Utils\NinjectDependencyResolver.cs" />
+    <Compile Include="Utils\ViewsExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\jquery-ui.css" />
+    <Content Include="Content\jquery.contextMenu.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -267,14 +286,25 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="Properties\webjobs-list.json" />
     <None Include="Scripts\jquery-3.2.1.intellisense.js" />
+    <Content Include="Scripts\application.insights.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\jquery-3.2.1.js" />
     <Content Include="Scripts\jquery-3.2.1.min.js" />
     <Content Include="Scripts\jquery-3.2.1.slim.js" />
     <Content Include="Scripts\jquery-3.2.1.slim.min.js" />
+    <Content Include="Scripts\jquery-ui.js" />
+    <Content Include="Scripts\jquery.contextMenu.min.css.map" />
+    <Content Include="Scripts\jquery.contextMenu.min.js.map" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.contextMenu.css" />
+    <Content Include="Scripts\jquery.contextMenu.js" />
+    <Content Include="Scripts\jquery.contextMenu.min.css" />
+    <Content Include="Scripts\jquery.contextMenu.min.js" />
+    <Content Include="Scripts\jquery.ui.position.js" />
+    <Content Include="Scripts\jquery.ui.position.min.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
@@ -332,7 +362,9 @@
     <Content Include="fonts\Raleway\Raleway-Thin.ttf" />
     <Content Include="fonts\Raleway\Raleway-ThinItalic.ttf" />
     <Content Include="Connected Services\Application Insights\ConnectedService.json" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\PublishProfiles\LuxStorage - Web Deploy.pubxml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -345,7 +377,7 @@
     </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\Errors\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
@@ -372,14 +404,23 @@
     <Content Include="Views\Home\_WelcomePartial.cshtml" />
     <Content Include="Views\Home\_GeneralPartial.cshtml" />
     <Content Include="Views\Home\_GeneralTilePartial.cshtml" />
-    <Content Include="Views\Home\_DirectoriesList.cshtml" />
-    <Content Include="Views\Home\_FilesList.cshtml" />
+    <Content Include="Views\Directory\_DirectoriesList.cshtml" />
+    <Content Include="Views\File\_FilesList.cshtml" />
     <Content Include="Views\ErrorHandler\InternalServerError.cshtml" />
     <Content Include="Views\ErrorHandler\NotFound.cshtml" />
     <Content Include="Views\ErrorHandler\Forbidden.cshtml" />
-    <Content Include="Views\Home\_CreateFolder.cshtml" />
+    <Content Include="Views\Directory\_CreateDirectory.cshtml" />
     <Content Include="Scripts\jquery-3.2.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.2.1.min.map" />
+    <Content Include="Views\File\_AddTag.cshtml" />
+    <Content Include="Views\File\_RenameFile.cshtml" />
+    <Content Include="Views\File\_DeleteFile.cshtml" />
+    <Content Include="Views\Directory\_RenameDirectory.cshtml" />
+    <Content Include="Views\Directory\_DeleteDirectory.cshtml" />
+    <Content Include="Views\File\_UploadFiles.cshtml" />
+    <Content Include="Views\File\_LoadFileFromLink.cshtml" />
+    <Content Include="Views\File\_Details.cshtml" />
+    <Content Include="Views\Directory\_LoadFileFromLink.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -428,6 +469,7 @@
     <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.2.4.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.2.4.0\build\Microsoft.Net.Compilers.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
   </Target>
+  <Import Project="..\packages\Microsoft.Web.WebJobs.Publish.1.1.0\tools\webjobs.targets" Condition="Exists('..\packages\Microsoft.Web.WebJobs.Publish.1.1.0\tools\webjobs.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

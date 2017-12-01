@@ -1,19 +1,58 @@
-﻿a { color: #d3095f; }
+﻿@font-face {
+    font-family: 'Raleway';
+    font-style: normal;
+    font-weight: normal;
+    src: url('../fonts/Raleway/Raleway-Medium.ttf') format('truetype');
+}
 
-a:any-link { color: #d3095f; }
+@font-face {
+    font-family: 'Raleway';
+    font-style: normal;
+    font-weight: bold;
+    src: url('../fonts/Raleway/Raleway-Black.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Raleway';
+    font-style: normal;
+    font-weight: 600;
+    src: url('../fonts/Raleway/Raleway-Bold.ttf') format('truetype');
+}
+
+a { color: #d3095f; }
 
 body {
     background-color: #e8e9f2;
-    padding-bottom: 80px;
-    padding-top: 40px;
+    color: #787876;
+    font-family: 'Raleway';
+    margin: 0 0 0 0;
+    padding: 0;
+}
+
+
+a:any-link { color: #d3095f; }
+
+#Index {
+    background-color: #E8E9F2;
+    padding-bottom: 30px;
+    padding-top: 0;
+}
+
+.row {
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    margin: 0 0 0 0;
 }
 
 /* Set padding to keep content from hitting the edges */
 
 .body-content {
-    padding-left: 10px;
-    padding-right: 10px;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;   
 }
+
+.container { width: 100%; }
 
 /* Override the default bootstrap behavior where horizontal description lists 
    will truncate terms that are too long to fit in the left column 
@@ -27,21 +66,39 @@ h1, h2, h3, h4, h5, h6 {
     text-align: center;
 }
 
-h1 { font-weight: 900; }
+h1 {
+    color: #2A2829;
+    font-weight: bold;
+}
+
+h2 {
+    color: #2A2829;
+    font-weight: bold;
+}
 
 h3 {
+    color: #2A2829;
     font-size: 24px;
-    font-weight: 900;
+    font-weight: bold;
 }
 
 h4 {
     color: #999999;
-    font-weight: 400;
+    font-size: 18px;
+    font-weight: normal;
+    padding-bottom: 20px;
+    padding-top: 20px;
 }
 
 
 
 /* Set width on the form input elements since they're 100% wide by default */
+
+input {
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
 
 input,
 select,
@@ -76,7 +133,7 @@ textarea { max-width: 280px; }
     color: #fff;
 }
 
-       
+
 .open > .dropdown-toggle.btn-primary.focus {
     background-color: #d3095f;
     border-color: #d3095f;
@@ -103,10 +160,15 @@ textarea { max-width: 280px; }
     margin-right: 0;
 }
 
-.form-control { border-color: #999999; }
+.form-control {
+    border-color: #999999;
+    font-size: 12px;
+    height: 40px;
+}
 
 .authForms {
     background-color: #fff;
+    max-width: 400px;
     min-height: 420px;
     min-width: 320px;
     overflow-wrap: break-word;
@@ -116,29 +178,262 @@ textarea { max-width: 280px; }
 
 .socialBtn {
     background-color: transparent;
-    background-position: 12px 12px;
+    background-position: 22px 12px;
     background-repeat: no-repeat;
-    background-size: 16px;
+    background-size: 20px;
     border-color: #616161;
     color: #616161;
     font-size: 12px;
-    font-weight: bold;
+    font-size: 12px;
+    font-weight: 600;
     height: 40px;
     margin-left: 0;
     margin-right: 0;
-    padding: 10px 32px;
+    text-indent: 26px;
 }
 
 #Facebook { background-image: url(/fonts/icons-buttons/facebook.svg); }
 
 #Google { background-image: url(/fonts/icons-buttons/google.svg); }
 
-.searchField { }
+hr {
+    color: #e8e9f2;
+    height: 2px;
+    margin: 0;
+}
 
-.mainMenu { background-color: white; }
+input[type="search"], textarea {
+    background-color: #e8e9f2;
+    border: solid;
+    border-color: #e8e9f2;
+    max-width: 340px;
+    min-height: 44px;
+    min-width: 100px;
+    outline: none;
+    vertical-align: middle;
+    width: 100%;
+}
 
-.folderList {
+.indexTitle { margin-top: 0; }
+
+.indexMenu {
+    background-color: #fff;
+    margin-top: -20px;
+    padding: 12px 100px 12px 100px;
+}
+
+
+.custom-search-input {
+    background-color: #e8e9f2;
+   
+    
+    color: #787876;      
+}
+
+#searchImg {
+    display: inline-block;
+    height: 18px;
+    margin-left: 15px;
+    margin-right: 15px;
+    vertical-align: middle;
+    width: 18px;
+}
+
+#searchInput {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.mainMenu {
     background-color: white;
-    margin-bottom: 3px;
-    margin-top: 3px;
+    margin: 0;
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
+}
+
+.folderItems {
+    -moz-box-shadow: 0 0 3px #ccc;
+    -webkit-box-shadow: 0 0 3px #ccc;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 3px #ccc;
+    height: 44px;
+    line-height: 44px;
+    margin-bottom: 4px;
+    margin-top: 4px;
+    padding-left: 0;
+    text-indent: 46px;
+    vertical-align: middle;
+}
+
+
+
+
+#userImg {
+    background-color: #e8e9f2;
+    border-radius: 22px;
+    display: inline-block;
+    height: 44px;
+    margin-left: 15px;
+    padding: 11px 9px 11px 9px;
+    stroke: currentColor;
+    stroke-width: 0;
+    width: 44px;   
+}
+
+.thumb-image {
+    height: 44px;
+    width: 44px;
+}
+
+.uploadFileBtn {
+    display: block;
+    margin-top: 4px;
+    min-height: 44px;
+    min-width: 160px;
+    padding-top: 10px;
+}
+
+.createDirBtn {
+    background-color: transparent;
+    border-color: #d3095f;
+    border-width: 2px;
+    color: #100000;
+    display: block;
+    margin-top: 10px;
+    min-height: 44px;
+    min-width: 160px;
+    padding-top: 10px;
+}
+
+.dirListView {
+    margin-left: 100px;
+    margin-right: 100px;
+    margin-top: 30px;
+}
+
+.customNav {
+    background-color: white;
+    min-height: 50px;
+    padding: 15px 100px 0 100px;
+
+    vertical-align: middle;
+    width: 100%;
+}
+
+#listImg {
+    height: 20px;
+    margin-right: 10px;
+    width: 25px;
+}
+
+#tileImg {
+    height: 20px;
+    width: 25px;
+}
+
+.customBreadcrumb {
+    color: #000;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.btnLink {
+    border-bottom-color: gainsboro;
+    border-right: 20px;
+    border-width: 2px;
+    color: #787876;
+    font-weight: 600;
+    padding-right: 20px;
+}
+
+a:hover.customLink, a:focus.customLink, a.customLink {
+    color: #787876;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.customModal { display: none; }
+
+#dropdownImg {
+    height: 10px;
+    margin-left: -10px;
+    margin-right: 20px;
+    margin-top: 6px;
+    transform: rotate(90deg);
+    width: 12px;
+}
+
+a:hover.dropdown-menu-right, a:focus.dropdown-menu-right { text-decoration: none; }
+
+.dropdown-menu-right {
+    color: #787876;
+    font-weight: 600;
+    margin-right: 60px;
+    margin-top: 14px;
+}
+
+.dropdown-item {
+    color: #787876;
+    font-weight: 600;
+}
+
+.fileImg {
+    height: 15px;
+    width: 15px;
+}
+
+.dirImg {
+    height: 15px;
+    margin-right: 10px;
+    width: 15px;
+}
+
+#uploadFileModal {
+    height: 680px;
+    padding: 0 0 0 0;
+    width: 600px;
+}
+
+.uploadSuccessImg { margin: 18px 18px 18px 18px; }
+
+.uploadFilesRow {
+    border-bottom: 1px;
+    border-bottom-color: grey;
+}
+
+.tags {
+    border: none;
+    color: black;
+    margin-top: 20px;
+    padding-right: 50px;
+}
+
+input.tags:focus::-webkit-input-placeholder {
+    border: none;
+    color: transparent;
+    outline: none;
+}
+
+input.tags:focus,
+select.tags:focus,
+textarea.tags:focus,
+button.tags:focus { outline: none; }
+
+#feedback { font-size: 1.4em; }
+
+#selectable .ui-selecting.folderItems { color: #CA0B5C; }
+
+a.ui-selecting { color: #CA0B5C; }
+
+a.ui-selected { color: #D3095F; }
+
+#selectable .ui-selected.folderItems { color: #D3095F; }
+
+#selectable {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;  
 }

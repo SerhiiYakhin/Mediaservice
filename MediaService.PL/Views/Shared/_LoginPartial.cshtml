@@ -7,13 +7,9 @@
     {
         @Html.AntiForgeryToken()
 
-        <ul class="nav navbar-nav navbar-right">
-            <li>
-                @Html.ActionLink(userName + User.Identity.Name, "Index", "Manage", null, new {title = "Manage"})
-            </li>
-            <li>
-                <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
-            </li>
-        </ul>
+        @User.Identity.Name
+        <a href="javascript:document.getElementById('logoutForm').submit()">
+            <img src="~/fonts/icons-buttons/user.svg" id="userImg"/>
+        </a>
     }
 }

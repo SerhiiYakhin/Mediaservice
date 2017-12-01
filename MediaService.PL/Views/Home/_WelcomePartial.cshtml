@@ -1,11 +1,31 @@
-﻿<div class="col-xs-4">
+﻿﻿@model MediaService.BLL.DTO.DirectoryEntryDto
+<div class="col-xs-4">
 </div>
 <div class="col-xs-4">
     <h2>Вы успешно зарегестрированы!</h2>
     <h5>Теперь вы можете начать использование лого! Загружайте свои файлы и делитесь ими с остальными пользователями!</h5>
-    <input type="button" class="btn btn-primary" value="Загрузить файл" onclick="location.href = '@Url.Action("UploadFile", "Home")'"/>
+    <input type="button" class="btn btn-primary" value="Загрузить файл" onclick="location.href = '@Url.Action("UploadFiles", "File")'"/>
+    @using (Ajax.BeginForm("UploadFiles", "File", null, new AjaxOptions {UpdateTargetId = "files", HttpMethod = "POST"}, new {enctype = "multipart/form-data"}))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+            @Html.Hidden("ParentId", Model.Id as Guid?)
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="file" id="FileUpload" multiple/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="button" id="btnUpload" value="Upload Files"/>
+                </div>
+            </div>
+        </div>
+    }
     <br/>
-    <input type="button" class="btn btn-primary btn-outline" value="Создать папку" onclick="location.href = '@Url.Action("CreateFolder", "Home")'"/>
+    <input type="button" class="btn btn-primary btn-outline" value="Создать папку" onclick="location.href = '@Url.Action("Create", "Directory", new {parentId = Model.Id})'"/>
 </div>
 <div class="col-xs-4">
 </div>

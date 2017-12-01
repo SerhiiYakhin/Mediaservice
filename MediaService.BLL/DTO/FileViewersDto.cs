@@ -1,21 +1,28 @@
 ﻿#region usings
 
 using System;
+using System.Runtime.Serialization;
 
 #endregion
 
 namespace MediaService.BLL.DTO
 {
+    [DataContract]
     public class FileViewersDto
     {
+        [DataMember]
         public string Link { get; set; }
 
-        public Guid DirectoryEntryId { get; set; }
+        [DataMember]
+        public Guid FileEntryId { get; set; }
 
+        [DataMember]
         public string UserId { get; set; }
 
-        public virtual DirectoryEntryDto DirectoryEntry { get; set; }
+        [DataMember]
+        public FileEntryDto FileEntry { get; set; }
 
-        public virtual UserDto User { get; set; }
+        [DataMember]
+        public UserDto User { get; set; }
     }
 }
