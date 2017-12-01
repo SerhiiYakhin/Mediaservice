@@ -194,10 +194,10 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public async Task DeleteWithJobAsync(Guid entryId)
         {
-            var messageInfo = new DeleteMessageInfo { OperationType = OperationType.DeleteFolder, EntryId = entryId };
+            //var messageInfo = new DeleteMessageInfo { OperationType = OperationType.DeleteFolder, EntryId = entryId };
 
-            await Queue.AddMessageAsync(JsonConvert.SerializeObject(messageInfo), QueueJob.Delete);
-            //await DeleteAsync(entryId);
+            //await Queue.AddMessageAsync(JsonConvert.SerializeObject(messageInfo), QueueJob.Delete);
+            await DeleteAsync(entryId);
         }
 
         #endregion
@@ -206,15 +206,15 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public async Task DownloadWithJobAsync(Guid directoryId, Guid zipId)
         {
-            var messageInfo = new DownloadMessageInfo
-            {
-                OperationType = OperationType.DownloadFolder,
-                EntriesIds = new List<Guid> { directoryId },
-                ZipId = zipId
-            };
+            //var messageInfo = new DownloadMessageInfo
+            //{
+            //    OperationType = OperationType.DownloadFolder,
+            //    EntriesIds = new List<Guid> { directoryId },
+            //    ZipId = zipId
+            //};
 
-            await Queue.AddMessageAsync(JsonConvert.SerializeObject(messageInfo), QueueJob.Download);
-            //await DownloadAsync(directoryId, zipId);
+            //await Queue.AddMessageAsync(JsonConvert.SerializeObject(messageInfo), QueueJob.Download);
+            await DownloadAsync(directoryId, zipId);
         }
 
         public async Task DownloadAsync(Guid directoryId, Guid zipId)

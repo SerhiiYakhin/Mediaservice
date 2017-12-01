@@ -100,7 +100,7 @@ namespace MediaService.BLL.Services.ObjectsServices
                 throw new InvalidDataException("Can't find this file in database");
             }
 
-            return Storage.GetDirectLinkToBlob($"thumbnail-{fileEntry.Id}{Path.GetExtension(fileEntry.Name)}", DateTimeOffset.Now.AddMinutes(5), SharedAccessBlobPermissions.Read);
+            return Storage.GetDirectLinkToBlob($"thumbnail-{fileEntry.Id}.png", DateTimeOffset.Now.AddMinutes(5), SharedAccessBlobPermissions.Read);
         }
 
         public async Task<IEnumerable<FileEntryDto>> SearchFilesAsync(Guid parentId, SearchType searchType, string searchValue)
@@ -144,9 +144,10 @@ namespace MediaService.BLL.Services.ObjectsServices
                 filesNames.Add(fileName);
             }
 
-            var messageInfo = new ThumbnailMessageInfo { OperationType = OperationType.GenerateThumbnail, FilesNames = filesNames};
+            //var messageInfo = new ThumbnailMessageInfo { OperationType = OperationType.GenerateThumbnail, FilesNames = filesNames};
 
-            await Queue.AddMessageAsync(JsonConvert.SerializeObject(messageInfo), QueueJob.GenerateThumbnails);
+            //await Queue.AddMessageAsync(JsonConvert.SerializeObject(messageInfo), QueueJob.GenerateThumbnails);
+            await GenerateThumbnailsToFilesAsync(filesNames);
         }
 
         public override void Add(FileEntryDto item)
@@ -236,7 +237,8 @@ namespace MediaService.BLL.Services.ObjectsServices
                     var thumbnailStream = new MemoryStream();
 
                     thumb.Save(thumbnailStream, ImageFormat.Png);
-                    await Storage.UploadAsync(thumbnailStream, $"thumbnail-{fileName}", "image/png");
+                    thumbnailStream.Position = 0;
+                    await Storage.UploadAsync(thumbnailStream, $"thumbnail-{Path.GetFileNameWithoutExtension(fileName)}.png", "image/png");
                 }
             }
         }
@@ -309,11 +311,11 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public async Task DownloadWithJobAsync(IEnumerable<Guid> filesIds, Guid zipId)
         {
-            var messageInfo = new DownloadMessageInfo { OperationType = OperationType.DownloadFiles, EntriesIds = filesIds.ToList(), ZipId = zipId };
+            //var messageInfo = new DownloadMessageInfo { OperationType = OperationType.DownloadFiles, EntriesIds = filesIds.ToList(), ZipId = zipId };
 
-            await Queue.AddMessageAsync(JsonConvert.SerializeObject(messageInfo), QueueJob.Download);
+            //await Queue.AddMessageAsync(JsonConvert.SerializeObject(messageInfo), QueueJob.Download);
 
-            //await DownloadAsync(filesIds, zipId);
+            await DownloadAsync(filesIds, zipId);
         }
 
         public async Task DownloadAsync(IEnumerable<Guid> filesIds, Guid zipId)
