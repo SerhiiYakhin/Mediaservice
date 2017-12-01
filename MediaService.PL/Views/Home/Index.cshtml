@@ -15,8 +15,13 @@
 <div class="container indexMenu">
     <div class="row">
         <div class="col-xs-4">
-            <input type="search" placeholder="Поиск файлов" class="custom-search-input"/>
-        </div>
+            <table>
+            <tr class="custom-search-input">
+                <td>  <img src="~/fonts/icons-buttons/search.svg" id="searchImg" /></td>
+                <td> <input type="search" id="searchInput" placeholder="Поиск файлов" /></td>
+</tr>
+                </table>
+</div>
         <div class="col-xs-4">
             <h2 class="indexTitle text-center">LuxStorage</h2>
         </div>
@@ -124,6 +129,8 @@
 </div>
 
 <div id="deleteFileModal" style="display:none; width: 500px; height: 500px;">
+</div>
+<div id="downloadFileModal" style="display:none; width: 500px; height: 500px;">
 </div>
 @section Scripts {
 
@@ -301,6 +308,18 @@
                              })
                             break;
                         case "download":
+                            var FileId = opt.$trigger.attr("id");
+                            var FileSize = 100000;
+                            $("#downloadFileModal").modal();
+                            $.ajax({
+                                 type: "GET",
+                                 data: FileId, FileSize,
+                                 url: '@Url.Action("Download", "File")?FileId=' + FileId + '&FileSize=' + FileSize,
+                                 datatype:'html',
+                                 success: function (data) {
+                                     $('#downloadFileModal').html(data);
+                                 }
+                             })
                             break;
 
                        case "delete":
@@ -346,6 +365,33 @@
                         var ids = $("a.ui-selected.folderItems").attr("id")
                         result.append(" #"+ ids);
                     });
+                }
+            });
+        });
+        @*----search submit---*@
+        $("#searchImg").click(function () {
+            var SearchValue = $("#searchInput").val();
+            var formData = new FormData();
+            var OrderType = "ByName";
+            var SearchType = "ByName";
+            formData.append('SearchValue', SearchValue);
+            formData.append('ParentId', '@Model.Id');
+            formData.append('OrderType', OrderType);
+            formData.append('SearchType', SearchType);
+            $.ajax({
+
+                type: "POST",
+                url: '/File/Search',
+                data: formData,
+                dataType: 'json',
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    $('#files').html(data.html);
+
+                },
+                error: function (error) {
+                    alert("errror");
                 }
             });
         });
