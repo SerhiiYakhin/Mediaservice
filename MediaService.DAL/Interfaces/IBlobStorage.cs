@@ -1,6 +1,7 @@
 ﻿#region usings
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -24,6 +25,10 @@ namespace MediaService.DAL.Interfaces
         Task UploadFileInBlocksAsync(Stream file, string fileName, string contentType);
 
         Task DeleteAsync(string fileName);
+
+        Task DeleteRangeAsync(IEnumerable<string> fileNames);
+
+        Task DeleteRangeAsync(params string[] fileNames);
 
         Task<(Stream blobStream, string contentType)> DownloadAsync(string blobName, int? blobSize = null);
 

@@ -12,6 +12,9 @@ namespace MediaService.DAL.Interfaces
 {
     public interface IRepository<TEntity, in TKey> where TEntity : class
     {
+        Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate);
+
+
         TEntity FindByKey(TKey key);
 
         Task<TEntity> FindByKeyAsync(TKey key);
@@ -21,16 +24,7 @@ namespace MediaService.DAL.Interfaces
 
         IQueryable<TEntity> GetQuery(Expression<Func<TEntity, bool>> predicate);
 
-        Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate);
-
         IEnumerable<TEntity> GetData();
-
-        Task<IEnumerable<TEntity>> GetDataAsync();
-
-
-        IEnumerable<TEntity> GetData(Expression<Func<TEntity, bool>> predicate);
-
-        Task<IEnumerable<TEntity>> GetDataAsync(Expression<Func<TEntity, bool>> predicate);
 
 
         void Add(TEntity item);

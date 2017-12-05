@@ -1,12 +1,14 @@
 ﻿#region usings
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Web;
 using MediaService.BLL.DTO;
@@ -52,7 +54,9 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public async Task<IEnumerable<FileEntryDto>> GetByParentIdAsync(Guid id)
         {
-            return DtoMapper.Map<IEnumerable<FileEntryDto>>(await Context.Files.GetDataAsync(f => f.ParentId == id));
+            return await Task.Run(() =>
+                DtoMapper.Map<IEnumerable<FileEntryDto>>(
+                    Context.Files.GetQuery(f => f.ParentId == id).AsEnumerable()));
         }
 
         public async Task<IEnumerable<FileEntryDto>> GetByAsync(
@@ -65,47 +69,60 @@ namespace MediaService.BLL.Services.ObjectsServices
             string ownerId = null
         )
         {
-            var dirs = GetQuery(id, name, parentId, created, downloaded, modified, ownerId);
-            return await Task.Run(() => DtoMapper.Map<IEnumerable<FileEntryDto>>(dirs.AsParallel().ToList()));
+            return await Task.Run(() =>
+            {
+                var dirs = GetQuery(id, name, parentId, created, downloaded, modified, ownerId);
+                return DtoMapper.Map<IEnumerable<FileEntryDto>>(dirs.AsParallel().ToList());
+            });
         }
 
         public string GetLinkToZip(string fileName)
         {
-            return Storage.GetDirectLinkToBlob(fileName, DateTimeOffset.Now.AddHours(1),
-                SharedAccessBlobPermissions.Read);
+            return Storage.GetDirectLinkToBlob(
+                fileName,
+                DateTimeOffset.Now.AddHours(1),
+                SharedAccessBlobPermissions.Read
+                );
         }
 
         public async Task<string> GetPublicLinkToFileAsync(Guid fileId, DateTimeOffset expiryTime)
         {
-            var fileEntry = await Context.Files.FindByKeyAsync(fileId);
-
-            if (fileEntry == null)
+            return await Task.Run(() =>
             {
-                throw new InvalidDataException("Can't find this file in database");
-            }
+                var fileEntry = Context.Files.FindByKey(fileId)
+                                ?? throw new InvalidDataException("Can't find this file in database");
 
-            return Storage.GetDirectLinkToBlob($"{fileEntry.Id}{Path.GetExtension(fileEntry.Name)}", expiryTime,
-                SharedAccessBlobPermissions.Read);
+                return Storage.GetDirectLinkToBlob(
+                    $"{fileEntry.Id}{Path.GetExtension(fileEntry.Name)}",
+                    expiryTime,
+                    SharedAccessBlobPermissions.Read
+                );
+            });
         }
 
         public async Task<string> GetLinkToFileThumbnailAsync(Guid fileId)
         {
-            var fileEntry = await Context.Files.FindByKeyAsync(fileId);
-
-            if (fileEntry == null)
+            return await Task.Run(() =>
             {
-                throw new InvalidDataException("Can't find this file in database");
-            }
+                var fileEntry = Context.Files.FindByKeyAsync(fileId)
+                                ?? throw new InvalidDataException("Can't find this file in database");
 
-            return Storage.GetDirectLinkToBlob($"thumbnail-{fileEntry.Id}.png", DateTimeOffset.Now.AddMinutes(5),
-                SharedAccessBlobPermissions.Read);
+                return Storage.GetDirectLinkToBlob(
+                    $"thumbnail-{fileEntry.Id}.png",
+                    DateTimeOffset.Now.AddMinutes(5),
+                    SharedAccessBlobPermissions.Read
+                );
+            });
         }
 
-        public async Task<IEnumerable<FileEntryDto>> SearchFilesAsync(Guid parentId, SearchType searchType,
-            string searchValue)
+        public async Task<IEnumerable<FileEntryDto>> SearchFilesAsync(
+            Guid parentId,
+            SearchType searchType,
+            string searchValue
+            )
         {
-            return DtoMapper.Map<IEnumerable<FileEntryDto>>(await SearchFilesHelperAsync(parentId, searchType,
-                searchValue));
+            return DtoMapper.Map<IEnumerable<FileEntryDto>>(
+                await SearchFilesHelperAsync(parentId, searchType, searchValue));
         }
 
         #endregion
@@ -114,40 +131,39 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public async Task AddRangeAsync(IEnumerable<FileEntryDto> filesDto, Guid folderId)
         {
-            var parentDir = await Context.Directories.FindByKeyAsync(folderId);
-
-            if (parentDir == null)
+            await Task.Run(async () =>
             {
-                throw new InvalidDataException("Can't find parent folder user with this Id in database");
-            }
+                var parentDir = Context.Directories.FindByKey(folderId)
+                                ?? throw new InvalidDataException(
+                                    "Can't find parent folder user with this Id in database");
 
-            parentDir.Modified = DateTime.Now;
+                var filesNames = new ConcurrentBag<string>();
 
-            var filesNames = new List<string>();
+                Parallel.ForEach(filesDto, fileDto =>
+                {
+                    var fileEntry = DtoMapper.Map<FileEntry>(fileDto);
+                    var mimeType = MimeMapping.GetMimeMapping(fileEntry.Name);
 
-            foreach (var fileDto in filesDto)
-            {
-                var fileEntry = DtoMapper.Map<FileEntry>(fileDto);
-                var mimeType = MimeMapping.GetMimeMapping(fileEntry.Name);
+                    fileEntry.Downloaded = fileEntry.Created = fileEntry.Modified = DateTime.Now;
+                    fileEntry.Owner = parentDir.Owner;
+                    fileEntry.Parent = parentDir;
 
-                fileEntry.Downloaded = fileEntry.Created = fileEntry.Modified = DateTime.Now;
-                fileEntry.Owner = parentDir.Owner;
-                fileEntry.Parent = parentDir;
+                    Context.Files.Add(fileEntry);
+                    Context.SaveChanges();
 
-                await Context.Files.AddAsync(fileEntry);
-                await Context.SaveChangesAsync();
+                    var fileName = $"{fileEntry.Id}{Path.GetExtension(fileEntry.Name)}";
 
-                var fileName = $"{fileEntry.Id}{Path.GetExtension(fileEntry.Name)}";
+                    Storage.Upload(fileDto.FileStream, fileName, mimeType);
 
-                await Storage.UploadAsync(fileDto.FileStream, fileName, mimeType);
+                    filesNames.Add(fileName);
+                });
+                parentDir.Modified = DateTime.Now;
 
-                filesNames.Add(fileName);
-            }
+                //var messageInfo = new ThumbnailMessageInfo { OperationType = OperationType.GenerateThumbnail, FilesNames = filesNames};
 
-            //var messageInfo = new ThumbnailMessageInfo { OperationType = OperationType.GenerateThumbnail, FilesNames = filesNames};
-
-            //await Queue.AddMessageAsync(JsonConvert.SerializeObject(messageInfo), QueueJob.GenerateThumbnails);
-            await GenerateThumbnailsToFilesAsync(filesNames);
+                //await Queue.AddMessageAsync(JsonConvert.SerializeObject(messageInfo), QueueJob.GenerateThumbnails);
+                await GenerateThumbnailsToFilesAsync(filesNames);
+            });
         }
 
         public override void Add(FileEntryDto item)
@@ -157,14 +173,8 @@ namespace MediaService.BLL.Services.ObjectsServices
                 throw new InvalidDataException("Can't create file without any parent directory");
             }
 
-            var parentDir = Context.Directories.FindByKey(item.ParentId.Value);
-
-            if (parentDir == null)
-            {
-                throw new InvalidDataException("Can't find parent folder user with this Id in database");
-            }
-
-            parentDir.Modified = DateTime.Now;
+            var parentDir = Context.Directories.FindByKey(item.ParentId.Value)
+                 ?? throw new InvalidDataException("Can't find parent folder user with this Id in database");
 
             var fileEntry = DtoMapper.Map<FileEntry>(item);
             var mimeType = MimeMapping.GetMimeMapping(fileEntry.Name);
@@ -172,43 +182,33 @@ namespace MediaService.BLL.Services.ObjectsServices
             fileEntry.Downloaded = fileEntry.Created = fileEntry.Modified = DateTime.Now;
             fileEntry.Owner = parentDir.Owner;
             fileEntry.Parent = parentDir;
-            Context.Files.Add(fileEntry);
-            Context.SaveChanges();
-            Storage.Upload(item.FileStream, $"{fileEntry.Id}{Path.GetExtension(fileEntry.Name)}", mimeType);
+
+            //todo: Add transaction security
+            try
+            {
+                parentDir.Modified = DateTime.Now;
+                Context.Files.Add(fileEntry);
+                Context.SaveChanges();
+
+                Storage.Upload(item.FileStream, $"{fileEntry.Id}{Path.GetExtension(fileEntry.Name)}", mimeType);
+            }
+            catch (Exception e)
+            {
+                throw new ExternalException(e.Message, e);
+            }
         }
 
         public override async Task AddAsync(FileEntryDto item)
         {
-            if (!item.ParentId.HasValue)
-            {
-                throw new InvalidDataException("Can't create file without any parent directory");
-            }
-
-            var parentDir = await Context.Directories.FindByKeyAsync(item.ParentId.Value);
-
-            if (parentDir == null)
-            {
-                throw new InvalidDataException("Can't find parent folder user with this Id in database");
-            }
-
-            parentDir.Modified = DateTime.Now;
-
-            var fileEntry = DtoMapper.Map<FileEntry>(item);
-            var mimeType = MimeMapping.GetMimeMapping(fileEntry.Name);
-
-            fileEntry.Downloaded = fileEntry.Created = fileEntry.Modified = DateTime.Now;
-            fileEntry.Owner = parentDir.Owner;
-            fileEntry.Parent = parentDir;
-            await Context.Files.AddAsync(fileEntry);
-            await Context.SaveChangesAsync();
-            await Storage.UploadAsync(item.FileStream, $"{fileEntry.Id}{Path.GetExtension(fileEntry.Name)}", mimeType);
+            await Task.Run(() => Add(item));
         }
 
         public async Task AddTagAsync(Guid fileId, string tagName)
         {
             var fileEntry = await Context.Files.FindByKeyAsync(fileId);
 
-            var tagEntry = (await Context.Tags.GetDataAsync(t => t.Name == tagName)).FirstOrDefault();
+            var tagEntry = Context.Tags.GetQuery(t => t.Name == tagName).FirstOrDefault();
+
             if (tagEntry == null)
             {
                 tagEntry = new Tag {Name = tagName};
@@ -220,8 +220,7 @@ namespace MediaService.BLL.Services.ObjectsServices
                 tagEntry.FileEntries.Add(fileEntry);
                 await Context.Tags.UpdateAsync(tagEntry);
             }
-            //fileEntry.Tags.Add(tagEntry);
-            //await Context.Files.UpdateAsync(fileEntry);
+
             await Context.SaveChangesAsync();
         }
 
@@ -273,13 +272,12 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public async Task DeleteAsync(Guid entryId)
         {
-            var currFileEntry = await Context.Files.FindByKeyAsync(entryId);
+            var currFileEntry = await Context.Files.FindByKeyAsync(entryId)
+                                ?? throw new InvalidDataException(
+                                    "Can't find user's file with this Id in database");
 
-            if (currFileEntry == null)
-            {
-                throw new InvalidDataException("Can't find user's file with this Id in database");
-            }
             var x = currFileEntry.Tags.ToList();
+
             for (var i = 0; i < x.Count; i++)
             {
                 if (x[i].FileEntries.Count == 1)
@@ -332,7 +330,7 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public async Task DownloadAsync(IEnumerable<Guid> filesIds, Guid zipId)
         {
-            var filesEntries = (await Context.Files.GetDataAsync(f => filesIds.Contains(f.Id))).ToList();
+            var filesEntries = Context.Files.GetQuery(f => filesIds.Contains(f.Id)).ToList();
 
             if (filesEntries == null || !filesEntries.Any())
             {
@@ -378,64 +376,67 @@ namespace MediaService.BLL.Services.ObjectsServices
             string ownerId
         )
         {
-            var dirs = Context.Files.GetQuery();
+            var files = Context.Files.GetQuery();
+
             if (id.HasValue)
             {
-                dirs = dirs.Intersect(Context.Files.GetQuery(f => f.Id == id.Value));
+                files = files.Where(f => f.Id == id.Value);
             }
             if (name != null)
             {
-                dirs = dirs.Intersect(Context.Files.GetQuery(f => f.Name == name));
+                files = files.Where(f => f.Name == name);
             }
             if (parentId.HasValue)
             {
-                dirs = dirs.Intersect(Context.Files.GetQuery(f => f.ParentId == parentId));
+                files = files.Where(f => f.ParentId == parentId);
             }
             if (created.HasValue)
             {
-                dirs = dirs.Intersect(Context.Files.GetQuery(f => f.Created == created));
+                files = files.Where(f => f.Created == created);
             }
             if (downloaded.HasValue)
             {
-                dirs = dirs.Intersect(Context.Files.GetQuery(f => f.Downloaded == downloaded));
+                files = files.Where(f => f.Downloaded == downloaded);
             }
             if (modified.HasValue)
             {
-                dirs = dirs.Intersect(Context.Files.GetQuery(f => f.Modified == modified));
+                files = files.Where(f => f.Modified == modified);
             }
             if (ownerId != null)
             {
-                dirs = dirs.Intersect(Context.Files.GetQuery(f => f.Owner.Id == ownerId));
+                files = files.Where(f => f.Owner.Id == ownerId);
             }
 
-            return dirs;
+            return files;
         }
 
-        private async Task<IEnumerable<FileEntry>> SearchFilesHelperAsync(Guid parentId, SearchType searchType,
-            string searchValue)
+        private async Task<IEnumerable<FileEntry>> SearchFilesHelperAsync(
+            Guid parentId,
+            SearchType searchType,
+            string searchValue
+            )
         {
-            var childDirs = await Context.Directories.GetDataAsync(f => f.ParentId == parentId);
+            var result = Context.Files.GetQuery(f => f.ParentId == parentId);
 
-            IEnumerable<FileEntry> result;
             switch (searchType)
             {
                 case SearchType.ByName:
-                    result = await Context.Files.GetDataAsync(f => f.ParentId == parentId && f.Name == searchValue);
+                    result = result.Where(f => f.Name == searchValue);
                     break;
                 case SearchType.ByTag:
-                    result = await Context.Files.GetDataAsync(f =>
-                        f.ParentId == parentId && f.Tags.Any(t => t.Name == searchValue));
-                    break;
-                case SearchType.None:
-                    result = await Context.Files.GetDataAsync(f => f.ParentId == parentId);
+                    result = result.Where(f => f.Tags.Any(t => t.Name == searchValue));
                     break;
                 default:
                     return Enumerable.Empty<FileEntry>();
             }
 
-            foreach (var directoryEntry in childDirs)
+            var childDirIds = Context.Directories
+                .GetQuery(d => d.ParentId == parentId)
+                .Select(d => d.Id);
+
+            foreach (var dirId in childDirIds)
             {
-                result = result.Concat(await SearchFilesHelperAsync(directoryEntry.Id, searchType, searchValue));
+                result = result.Concat(await SearchFilesHelperAsync(dirId, searchType, searchValue));
             }
 
             return result;

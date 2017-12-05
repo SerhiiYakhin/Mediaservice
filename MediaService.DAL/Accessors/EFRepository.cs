@@ -24,11 +24,6 @@ namespace MediaService.DAL.Accessors
 
         #endregion
 
-        public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate)
-        {
-            return await _dbSet.AnyAsync(predicate);
-        }
-
         #region Fields
 
         private readonly DbContext _context;
@@ -36,6 +31,11 @@ namespace MediaService.DAL.Accessors
         private readonly DbSet<TEntity> _dbSet;
 
         #endregion
+
+        public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await _dbSet.AnyAsync(predicate);
+        }
 
         #region Select Methods
 
@@ -51,7 +51,7 @@ namespace MediaService.DAL.Accessors
 
         public IQueryable<TEntity> GetQuery()
         {
-            return _dbSet.AsQueryable();
+            return _dbSet;
         }
 
         public IQueryable<TEntity> GetQuery(Expression<Func<TEntity, bool>> predicate)
@@ -62,21 +62,6 @@ namespace MediaService.DAL.Accessors
         public IEnumerable<TEntity> GetData()
         {
             return _dbSet;
-        }
-
-        public async Task<IEnumerable<TEntity>> GetDataAsync()
-        {
-            return await Task.Run(() => _dbSet);
-        }
-
-        public IEnumerable<TEntity> GetData(Expression<Func<TEntity, bool>> predicate)
-        {
-            return _dbSet.Where(predicate);
-        }
-
-        public async Task<IEnumerable<TEntity>> GetDataAsync(Expression<Func<TEntity, bool>> predicate)
-        {
-            return await Task.Run(() => _dbSet.Where(predicate));
         }
 
         #endregion

@@ -23,27 +23,28 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public TagDto GetTagByName(string name)
         {
-            return DtoMapper.Map<TagDto>(Context.Tags.GetData(t => t.Name.Equals(name)).SingleOrDefault());
+            return DtoMapper.Map<TagDto>(Context.Tags.GetQuery(t => t.Name.Equals(name)).SingleOrDefault());
         }
 
         public async Task<TagDto> GetTagByNameAsync(string name)
         {
-            return DtoMapper.Map<TagDto>((await Context.Tags.GetDataAsync(t => t.Name.Equals(name)))
-                .SingleOrDefault());
+            return await Task.Run(() => GetTagByName(name));
         }
 
         public override void Add(TagDto item)
         {
-            var tagEntry = Context.Tags.GetData(t => t.Name == item.Name).FirstOrDefault();
+            var tagEntry = Context.Tags.GetQuery(t => t.Name == item.Name).FirstOrDefault();
 
             if (tagEntry == null)
             {
                 tagEntry = new Tag { Name = item.Name };
+
                 foreach (var fileEntryDto in item.FileEntries)
                 {
                     var fileEntry = Context.Files.FindByKey(fileEntryDto.Id);
                     tagEntry.FileEntries.Add(fileEntry);
                 }
+
                 Context.Tags.Add(tagEntry);
                 Context.SaveChanges();
             }
@@ -56,51 +57,29 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public override async Task AddAsync(TagDto item)
         {
-            var tagEntry = (await Context.Tags.GetDataAsync(t => t.Name == item.Name)).FirstOrDefault();
-
-            if (tagEntry == null)
-            {
-                tagEntry = new Tag { Name = item.Name };
-                foreach (var fileEntryDto in item.FileEntries)
-                {
-                    var fileEntry = await Context.Files.FindByKeyAsync(fileEntryDto.Id);
-                    tagEntry.FileEntries.Add(fileEntry);
-                }
-                await Context.Tags.AddAsync(tagEntry);
-                await Context.SaveChangesAsync();
-            }
-            else
-            {
-                throw new InvalidExpressionException(
-                    "Tag already exist in database, maybe you wan't to use command Update");
-            }
+            await Task.Run(() => Add(item));
         }
 
         public async Task RemoveAsync(Guid fileId, Guid tagId)
         {
-            var currFileEntry = await Context.Files.FindByKeyAsync(fileId);
-
-            if (currFileEntry == null)
+            await Task.Run(() =>
             {
-                throw new InvalidDataException("Can't find user's file with this Id in database");
-            }
+                var currFileEntry = Context.Files.FindByKey(fileId)
+                                    ?? throw new InvalidDataException("Can't find user's file with this Id in database"); ;
 
-            var tag = currFileEntry.Tags.FirstOrDefault(t => t.Id == tagId);
+                var tag = currFileEntry.Tags.FirstOrDefault(t => t.Id == tagId)
+                          ?? throw new InvalidDataException("Can't find  file's tag with this Id in database"); ;
 
-            if (tag == null)
-            {
-                throw new InvalidDataException("Can't find  file's tag with this Id in database");
-            }
+                if (tag.FileEntries.Count == 1)
+                {
+                    Context.Tags.Remove(tag);
+                }
 
-            if (tag.FileEntries.Count == 1)
-            {
-                await Context.Tags.RemoveAsync(tag);
-            }
+                currFileEntry.Tags.Remove(tag);
 
-            currFileEntry.Tags.Remove(tag);
-
-            await Context.Files.UpdateAsync(currFileEntry);
-            await Context.SaveChangesAsync();
+                Context.Files.Update(currFileEntry);
+                Context.SaveChanges();
+            });
         }
     }
 }

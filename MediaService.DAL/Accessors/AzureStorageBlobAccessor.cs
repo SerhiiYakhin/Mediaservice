@@ -1,6 +1,7 @@
 ﻿#region usings
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -150,6 +151,32 @@ namespace MediaService.DAL.Accessors
             await blob.DeleteAsync();
         }
 
+        public async Task DeleteRangeAsync(IEnumerable<string> fileNames)
+        {
+            await Task.Run(() =>
+                {
+                    foreach (var fileName in fileNames)
+                    {
+                        var blob = GetBlob(fileName);
+                        blob.Delete();
+                    }
+                }
+            );
+        }
+
+        public async Task DeleteRangeAsync(params string[] fileNames)
+        {
+            await Task.Run(() =>
+                {
+                    foreach (var fileName in fileNames)
+                    {
+                        var blob = GetBlob(fileName);
+                        blob.Delete();
+                    }
+                }
+            );
+        }
+
         #endregion
 
         #endregion
@@ -184,8 +211,13 @@ namespace MediaService.DAL.Accessors
             return blob;
         }
 
-        private static void PrepareBlobToUploadInBlocks(long fileLenght, string fileName, string contentType,
-            out CloudBlockBlob blob, out BlobRequestOptions requestOptions)
+        private static void PrepareBlobToUploadInBlocks(
+            long fileLenght,
+            string fileName,
+            string contentType,
+            out CloudBlockBlob blob,
+            out BlobRequestOptions requestOptions
+            )
         {
             blob = PrepapreBlobToUpload(fileName, contentType);
             blob.StreamWriteSizeInBytes = GetBlockSize(fileLenght);
@@ -224,10 +256,7 @@ namespace MediaService.DAL.Accessors
             return (int) Math.Ceiling((double) fileSize / blocksize);
         }
 
-        private static string GetBase64BlockId(int blockId)
-        {
-            return Convert.ToBase64String(Encoding.ASCII.GetBytes($"{blockId:0000000}"));
-        }
+        private static string GetBase64BlockId(int blockId) => Convert.ToBase64String(Encoding.ASCII.GetBytes($"{blockId:0000000}"));
 
         private static CloudBlockBlob GetBlob(string blobName)
         {

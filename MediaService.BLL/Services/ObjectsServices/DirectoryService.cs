@@ -1,15 +1,15 @@
 ﻿#region usings
 
+using MediaService.BLL.DTO;
+using MediaService.BLL.Interfaces;
+using MediaService.DAL.Entities;
+using MediaService.DAL.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
-using MediaService.BLL.DTO;
-using MediaService.BLL.Interfaces;
-using MediaService.DAL.Entities;
-using MediaService.DAL.Interfaces;
 
 #endregion
 
@@ -47,8 +47,10 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public async Task<IEnumerable<DirectoryEntryDto>> GetByParentIdAsync(Guid id)
         {
-            return DtoMapper.Map<IEnumerable<DirectoryEntryDto>>(
-                await Context.Directories.GetDataAsync(d => d.ParentId == id));
+            return await Task.Run(() =>
+                DtoMapper.Map<IEnumerable<DirectoryEntryDto>>(
+                    Context.Directories.GetQuery(d => d.ParentId == id).AsEnumerable())
+            );
         }
 
         public async Task<IEnumerable<DirectoryEntryDto>> GetByAsync(
@@ -61,29 +63,38 @@ namespace MediaService.BLL.Services.ObjectsServices
             string ownerId = null
         )
         {
-            var dirs = GetQuery(id, name, parentId, created, downloaded, modified, ownerId);
-
-            return await Task.Run(() => DtoMapper.Map<IEnumerable<DirectoryEntryDto>>(dirs.AsParallel().ToList()));
+            return await Task.Run(() =>
+                {
+                    var dirs = GetQuery(id, name, parentId, created, downloaded, modified, ownerId);
+                    return DtoMapper.Map<IEnumerable<DirectoryEntryDto>>(dirs.AsEnumerable());
+                }
+            );
         }
 
-        /// <exception cref="InvalidDataException">Thrown when user with given Id or his root folder doesn't exist in the Database</exception>
+        /// <exception cref="InvalidDataException">
+        ///     Thrown when user with given Id or his root folder doesn't exist in the Database
+        /// </exception>
         public async Task<DirectoryEntryDto> GetRootAsync(string ownerId)
         {
-            var root = (await Context.Directories.GetDataAsync(d => d.Owner.Id == ownerId && d.Name == "root"))
-                .SingleOrDefault();
+            return await Task.Run(() =>
+                {
+                    var root = Context.Directories
+                            .GetQuery(d => d.Owner.Id == ownerId && d.ParentId == null)
+                            .SingleOrDefault()
+                            ?? throw new InvalidDataException("Can't find root folder user with this Id in database");
 
-            if (root == null)
-            {
-                throw new InvalidDataException("Can't find root folder user with this Id in database");
-            }
-
-            return await Task.Run(() => DtoMapper.Map<DirectoryEntryDto>(root));
+                    return DtoMapper.Map<DirectoryEntryDto>(root);
+                }
+            );
         }
 
         #endregion
 
         #region Create Methods
 
+        /// <exception cref="InvalidDataException">
+        ///     Thrown when DTO doesn't have ParentId or DirectoryEntry with this id doesn't exist in database
+        /// </exception>
         public override void Add(DirectoryEntryDto directoryEntryDto)
         {
             if (!directoryEntryDto.ParentId.HasValue)
@@ -91,91 +102,86 @@ namespace MediaService.BLL.Services.ObjectsServices
                 throw new InvalidDataException("Can't find parent folder: there is no parentId");
             }
 
-            var parentDir = Context.Directories.FindByKey(directoryEntryDto.ParentId.Value);
+            var parentDir = Context.Directories.FindByKey(directoryEntryDto.ParentId.Value)
+                            ?? throw new InvalidDataException("Can't find parent folder user with this Id in database");
 
-            if (parentDir == null)
-            {
-                throw new InvalidDataException("Can't find parent folder user with this Id in database");
-            }
-
-            parentDir.Modified = DateTime.Now;
             var dir = DtoMapper.Map<DirectoryEntry>(directoryEntryDto);
+
+            dir.Modified = dir.Created = dir.Downloaded = DateTime.Now;
             dir.Owner = parentDir.Owner;
             dir.Parent = parentDir;
             dir.NodeLevel = (short) (parentDir.NodeLevel + 1);
-            dir.Modified = dir.Created = dir.Downloaded = DateTime.Now;
+
+            parentDir.Modified = DateTime.Now;
 
             Context.Directories.Add(dir);
             Context.SaveChanges();
         }
 
-        /// <exception cref="InvalidDataException">Thrown when user with given Id or his root folder doesn't exist in the Database</exception>
+        /// <exception cref="InvalidDataException">
+        ///     Thrown when DTO doesn't have ParentId or DirectoryEntry with this id doesn't exist in database
+        /// </exception>
         public override async Task AddAsync(DirectoryEntryDto directoryEntryDto)
         {
-            if (!directoryEntryDto.ParentId.HasValue)
-            {
-                throw new InvalidDataException("Can't find parent folder: there is no parentId");
-            }
-
-            var parentDir = await Context.Directories.FindByKeyAsync(directoryEntryDto.ParentId.Value);
-
-            if (parentDir == null)
-            {
-                throw new InvalidDataException("Can't find parent folder user with this Id in database");
-            }
-
-            parentDir.Modified = DateTime.Now;
-            var dir = DtoMapper.Map<DirectoryEntry>(directoryEntryDto);
-            dir.Owner = parentDir.Owner;
-            dir.Parent = parentDir;
-            dir.NodeLevel = (short) (parentDir.NodeLevel + 1);
-            dir.Modified = dir.Created = dir.Downloaded = DateTime.Now;
-
-            await Context.Directories.AddAsync(dir);
-            await Context.SaveChangesAsync();
+            await Task.Run(() => Add(directoryEntryDto));
         }
 
-        /// <exception cref="InvalidDataException">Thrown when user with given Id doesn't exist in the Database</exception>
-        public async Task AddRootDirToUserAsync(string userId)
+        /// <exception cref="InvalidDataException">
+        ///     Thrown when user with given Id doesn't exist in the Database
+        /// </exception>
+        public void AddRootDirToUser(string userId)
         {
+            var user = Context.Users.FindByKey(userId)
+                        ?? throw new InvalidDataException("Can't find user with this Id in database");
+
             var rootDir = new DirectoryEntry
             {
                 NodeLevel = 0,
                 Created = DateTime.Now,
                 Downloaded = DateTime.Now,
                 Modified = DateTime.Now,
-                Name = "root"
+                Name = "root",
+                Owner = user
             };
-            var user = await Context.Users.FindByKeyAsync(userId);
-            rootDir.Owner = user ?? throw new InvalidDataException("Can't find user with this Id in database");
 
-            await Context.Directories.AddAsync(rootDir);
-            await Context.SaveChangesAsync();
+            Context.Directories.Add(rootDir);
+            Context.SaveChanges();
+        }
+
+        /// <exception cref="InvalidDataException">
+        ///     Thrown when user with given Id doesn't exist in the Database
+        /// </exception>
+        public async Task AddRootDirToUserAsync(string userId)
+        {
+            await Task.Run(() => AddRootDirToUser(userId));
         }
 
         #endregion
 
         #region Update Methods
 
-        public async Task RenameAsync(DirectoryEntryDto editedDirEntryDto)
+        public void Rename(DirectoryEntryDto editedDirEntryDto)
         {
-            var currDirectoryEntry = await Context.Directories.FindByKeyAsync(editedDirEntryDto.Id);
+            var currDirectoryEntry = Context.Directories.FindByKey(editedDirEntryDto.Id);
 
-            if (currDirectoryEntry == null)
+            if (currDirectoryEntry?.Parent == null)
             {
-                throw new InvalidDataException("Can't find user's folder with this Id in database");
+                throw new InvalidDataException(
+                    "User folder with this Id doesn't exist or folder don't have parent");
             }
 
-            if (currDirectoryEntry.Parent != null)
-            {
-                currDirectoryEntry.Parent.Modified = DateTime.Now;
-            }
-
+            currDirectoryEntry.Parent.Modified = DateTime.Now;
             currDirectoryEntry.Modified = DateTime.Now;
             currDirectoryEntry.Name = editedDirEntryDto.Name;
 
-            await Context.Directories.UpdateAsync(currDirectoryEntry);
-            await Context.SaveChangesAsync();
+            Context.Directories.Update(currDirectoryEntry);
+
+            Context.SaveChanges();
+        }
+
+        public async Task RenameAsync(DirectoryEntryDto editedDirEntryDto)
+        {
+            await Task.Run(() => Rename(editedDirEntryDto));
         }
 
         #endregion
@@ -185,7 +191,7 @@ namespace MediaService.BLL.Services.ObjectsServices
         public async Task DeleteAsync(Guid entryId)
         {
             await DeleteHelperAsync(entryId);
-            await Context.SaveChangesAsync();
+            Context.SaveChanges();
         }
 
         public async Task DeleteWithJobAsync(Guid entryId)
@@ -253,47 +259,60 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         private async Task DeleteHelperAsync(Guid entryId)
         {
-            var currDirectoryEntry = await Context.Directories.FindByKeyAsync(entryId);
+            var currDirectoryEntryTask = Context.Directories.FindByKeyAsync(entryId);
 
-            if (currDirectoryEntry == null)
-            {
-                throw new InvalidDataException("Can't find parent folder user with this Id in database");
-            }
-
-            var childFiles = await Context.Files.GetDataAsync(f => f.ParentId == entryId);
-            var childDirs = await Context.Directories.GetDataAsync(d => d.ParentId == entryId);
-
-            foreach (var file in childFiles)
-            {
-                var tagsToDelete = new List<Tag>();
-
-                foreach (var tag in file.Tags)
+            var childDirsDeleteTask = Task.Run(() =>
                 {
-                    if (tag.FileEntries.Count == 1)
+                    var childDirIds = Context.Directories.GetQuery(d => d.ParentId == entryId).Select(dir => dir.Id);
+
+                    Parallel.ForEach(childDirIds, async dirId => { await DeleteHelperAsync(dirId); });
+                }
+            );
+
+            var childFiles = Context.Files.GetQuery(f => f.ParentId == entryId);
+
+            Parallel.ForEach(childFiles, file =>
+            {
+                var removeTagsTask = Context.Tags.RemoveRangeAsync(file.Tags.Where(t => t.FileEntries.Count == 1));
+                var removeFileBlobsTask = Storage.DeleteRangeAsync($"{file.Id}{Path.GetExtension(file.Name)}", $"thumbnail-{file.Id}.png");
+
+                try
+                {
+                    Context.Files.Remove(file);
+                    Task.WaitAll(removeTagsTask, removeFileBlobsTask);
+                }
+                catch (AggregateException aggregate)
+                {
+                    if (removeFileBlobsTask.IsFaulted)
                     {
-                        tagsToDelete.Add(tag);
+                        Context.Files.Add(file);
                     }
                 }
+            });
 
-                await Context.Tags.RemoveRangeAsync(tagsToDelete);
-                await Context.Files.RemoveAsync(file);
-                await Storage.DeleteAsync($"{file.Id}{Path.GetExtension(file.Name)}");
-            }
+            var currDirectoryEntry = await currDirectoryEntryTask
+                                     ?? throw new InvalidDataException("Can't find parent folder user with this Id in database");
 
-            foreach (var dir in childDirs)
-            {
-                await DeleteHelperAsync(dir.Id);
-            }
-
-            await Context.Directories.RemoveAsync(currDirectoryEntry);
+            await childDirsDeleteTask;
+            Context.Directories.Remove(currDirectoryEntry);
         }
 
         private async Task WriteToFolderAsync(Guid dirId, ZipArchive archive, string path)
         {
-            var files = await Context.Files.GetDataAsync(f => f.ParentId == dirId);
-            var dirs = await Context.Directories.GetDataAsync(d => d.ParentId == dirId);
+            var dirs = Context.Directories.GetQuery(d => d.ParentId == dirId).Select(d => new { d.Id, d.Name });
 
-            foreach (var file in files)
+            var writeChildDirsTask = Task.Run(() =>
+                {
+                    Parallel.ForEach(dirs, async dir =>
+                    {
+                        await WriteToFolderAsync(dir.Id, archive, $"{path}/{dir.Name}");
+                    });
+                }
+            );
+
+            var files = Context.Files.GetQuery(f => f.ParentId == dirId).Select(f => new { f.Id, f.Name, f.Size });
+
+            Parallel.ForEach(files, async file =>
             {
                 var blobName = $"{file.Id}{Path.GetExtension(file.Name)}";
 
@@ -306,12 +325,9 @@ namespace MediaService.BLL.Services.ObjectsServices
                         await Storage.DownloadAsync(zipEntryStream, blobName, file.Size);
                     }
                 }
-            }
+            });
 
-            foreach (var dir in dirs)
-            {
-                await WriteToFolderAsync(dir.Id, archive, $"{path}/{dir.Name}");
-            }
+            await writeChildDirsTask;
         }
 
         private IQueryable<DirectoryEntry> GetQuery(
@@ -328,31 +344,31 @@ namespace MediaService.BLL.Services.ObjectsServices
 
             if (id.HasValue)
             {
-                dirs = dirs.Intersect(Context.Directories.GetQuery(d => d.Id == id.Value));
+                dirs = dirs.Where(d => d.Id == id.Value);
             }
             if (name != null)
             {
-                dirs = dirs.Intersect(Context.Directories.GetQuery(d => d.Name == name));
+                dirs = dirs.Where(d => d.Name == name);
             }
             if (parentId.HasValue)
             {
-                dirs = dirs.Intersect(Context.Directories.GetQuery(d => d.ParentId == parentId));
+                dirs = dirs.Where(d => d.ParentId == parentId);
             }
             if (created.HasValue)
             {
-                dirs = dirs.Intersect(Context.Directories.GetQuery(d => d.Created == created));
+                dirs = dirs.Where(d => d.Created == created);
             }
             if (downloaded.HasValue)
             {
-                dirs = dirs.Intersect(Context.Directories.GetQuery(d => d.Downloaded == downloaded));
+                dirs = dirs.Where(d => d.Downloaded == downloaded);
             }
             if (modified.HasValue)
             {
-                dirs = dirs.Intersect(Context.Directories.GetQuery(d => d.Modified == modified));
+                dirs = dirs.Where(d => d.Modified == modified);
             }
             if (ownerId != null)
             {
-                dirs = dirs.Intersect(Context.Directories.GetQuery(d => d.Owner.Id == ownerId));
+                dirs = dirs.Where(d => d.Owner.Id == ownerId);
             }
 
             return dirs;

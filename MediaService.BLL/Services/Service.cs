@@ -61,7 +61,7 @@ namespace MediaService.BLL.Services
 
         public virtual async Task<IEnumerable<TDto>> GetDataAsync()
         {
-            return DtoMapper.Map<IEnumerable<TDto>>(await Repository.GetDataAsync());
+            return await Task.Run(() => GetData());
         }
 
         #endregion
