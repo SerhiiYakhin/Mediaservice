@@ -3,14 +3,18 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Management;
 using MediaService.BLL.DTO;
 using MediaService.BLL.DTO.Enums;
 using MediaService.BLL.Interfaces;
@@ -139,7 +143,7 @@ namespace MediaService.BLL.Services.ObjectsServices
 
                 var filesNames = new ConcurrentBag<string>();
 
-                Parallel.ForEach(filesDto, fileDto =>
+                foreach(var fileDto in filesDto)
                 {
                     var fileEntry = DtoMapper.Map<FileEntry>(fileDto);
                     var mimeType = MimeMapping.GetMimeMapping(fileEntry.Name);
@@ -156,7 +160,7 @@ namespace MediaService.BLL.Services.ObjectsServices
                     Storage.Upload(fileDto.FileStream, fileName, mimeType);
 
                     filesNames.Add(fileName);
-                });
+                }
                 parentDir.Modified = DateTime.Now;
 
                 //var messageInfo = new ThumbnailMessageInfo { OperationType = OperationType.GenerateThumbnail, FilesNames = filesNames};
@@ -249,21 +253,23 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public async Task RenameAsync(FileEntryDto editedFileEntryDto)
         {
-            var currFileEntry = await Context.Files.FindByKeyAsync(editedFileEntryDto.Id);
+            await Task.Run(() =>
+                {
+                    var currFileEntry = Context.Files.FindByKey(editedFileEntryDto.Id)
+                                        ?? throw new InvalidDataException(
+                                            "Can't find user's file with this Id in database");
 
-            if (currFileEntry == null)
-            {
-                throw new InvalidDataException("Can't find user's file with this Id in database");
-            }
-            if (currFileEntry.Parent != null)
-            {
-                currFileEntry.Parent.Modified = DateTime.Now;
-            }
-            currFileEntry.Modified = DateTime.Now;
-            currFileEntry.Name = editedFileEntryDto.Name;
+                    if (currFileEntry.Parent != null)
+                    {
+                        currFileEntry.Parent.Modified = DateTime.Now;
+                    }
+                    currFileEntry.Modified = DateTime.Now;
+                    currFileEntry.Name = editedFileEntryDto.Name;
 
-            await Context.Files.UpdateAsync(currFileEntry);
-            await Context.SaveChangesAsync();
+                    Context.Files.Update(currFileEntry);
+                    Context.SaveChanges();
+                }
+            );
         }
 
         #endregion
@@ -272,35 +278,35 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public async Task DeleteAsync(Guid entryId)
         {
-            var currFileEntry = await Context.Files.FindByKeyAsync(entryId)
+            var currFileEntry = Context.Files.FindByKey(entryId)
                                 ?? throw new InvalidDataException(
                                     "Can't find user's file with this Id in database");
 
-            var x = currFileEntry.Tags.ToList();
+            Context.Tags.RemoveRange(currFileEntry.Tags.Where(tag => tag.FileEntries.Count == 1));
 
-            for (var i = 0; i < x.Count; i++)
+            var t1 = Task.Run(() =>
             {
-                if (x[i].FileEntries.Count == 1)
-                {
-                    await Context.Tags.RemoveAsync(x[i]);
-                }
-            }
+                Context.Files.Remove(currFileEntry);
+                Context.SaveChanges();
+            });
 
-            var tagsToDelete = new List<Tag>();
+            var t2 = Storage.DeleteAsync($"{currFileEntry.Id}{Path.GetExtension(currFileEntry.Name)}");
 
-            foreach (var tag in currFileEntry.Tags)
+            try
             {
-                if (tag.FileEntries.Count == 1)
-                {
-                    tagsToDelete.Add(tag);
-                }
+                await t1;
+                await t2;
+                //Task.WaitAll(t1, t2);
             }
-
-            await Context.Tags.RemoveRangeAsync(tagsToDelete);
-            await Context.Files.RemoveAsync(currFileEntry);
-            await Storage.DeleteAsync($"{currFileEntry.Id}{Path.GetExtension(currFileEntry.Name)}");
-
-            await Context.SaveChangesAsync();
+            catch (AggregateException ae)
+            {
+                var message = t1.IsFaulted && t2.IsFaulted
+                    ? "Error while deleting file entry from db and deleting file from storage"
+                    : t1.IsFaulted
+                        ? "Error while deleting file entry from db"
+                        : "Error while deleting file from storage";
+                throw new DbUpdateException(message, ae);
+            }
         }
 
         #endregion
@@ -318,19 +324,20 @@ namespace MediaService.BLL.Services.ObjectsServices
 
         public async Task<(Stream blobStream, string contentType)> DownloadAsync(Guid fileId)
         {
-            var fileEntry = await Context.Files.FindByKeyAsync(fileId);
+            return await Task.Run(() =>
+                {
+                    var fileEntry = Context.Files.FindByKey(fileId)
+                                    ??
+                                    throw new InvalidDataException("There is no such file in database to download");
 
-            if (fileEntry == null)
-            {
-                throw new InvalidDataException("There is no such file in database to download");
-            }
-
-            return await Storage.DownloadAsync(fileEntry.Name, fileEntry.Size);
+                    return Storage.DownloadAsync(fileEntry.Name, fileEntry.Size);
+                }
+            );
         }
 
         public async Task DownloadAsync(IEnumerable<Guid> filesIds, Guid zipId)
         {
-            var filesEntries = Context.Files.GetQuery(f => filesIds.Contains(f.Id)).ToList();
+            var filesEntries = Context.Files.GetQuery(f => filesIds.Contains(f.Id)).AsParallel().ToList();
 
             if (filesEntries == null || !filesEntries.Any())
             {
@@ -359,7 +366,16 @@ namespace MediaService.BLL.Services.ObjectsServices
                 fs.Position = 0;
                 await Storage.UploadFileInBlocksAsync(fs, zipName, "application/zip");
             }
-            File.Delete(zipName);
+
+            try
+            {
+                File.Delete(zipName);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         #endregion
